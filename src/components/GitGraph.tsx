@@ -118,7 +118,7 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
       cx={MAIN_X} cy={0}
       r={NODE_R}
       fill="none"
-      stroke="rgba(150,170,255,0.7)"
+      stroke="rgba(220,225,255,0.8)"
       strokeWidth={1}
       strokeDasharray="2.5 2"
     />
@@ -198,7 +198,7 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
             cx={MAIN_X}
             cy={mergeY}
             r={NODE_R}
-            fill="rgb(200,210,255)"
+            fill={col}
           />
         )}
 
