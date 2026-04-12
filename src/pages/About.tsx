@@ -467,7 +467,7 @@ export default function About() {
           <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>principal ai engineer · london</p>
         </div>
 
-        <div style={{ padding: '0 3.5rem 8rem', backgroundColor: 'rgba(4,4,4,0.5)' }}>
+        <div style={{ padding: '0 3.5rem 8rem' }}>
 
           {/* ── Projects ── */}
           <p style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '1rem' }}>
