@@ -198,20 +198,18 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
             cx={MAIN_X}
             cy={mergeY}
             r={NODE_R}
-            fill="rgba(200,210,255,0.35)"
+            fill="rgb(200,210,255)"
           />
         )}
 
-        {/* Commit node — semi-transparent fill, fixed size */}
+        {/* Commit node — opaque fill, fixed size */}
         <circle
           cx={LX}
           cy={nodeY}
           r={NODE_R}
           fill={col}
-          fillOpacity={activeIdx === null ? 0.5 : isActive ? 0.85 : 0.3}
           style={{
             cursor: 'pointer',
-            transition: 'fill-opacity 0.35s',
             filter: isActive ? `drop-shadow(0 0 6px ${col})` : 'none',
           }}
           onClick={() => onNodeClick?.(j)}
@@ -224,19 +222,6 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
             <animate attributeName="opacity" from="0.6" to="0"     dur="1.6s" repeatCount="indefinite" />
           </circle>
         )}
-
-        {/* Branch label — at row midpoint to prevent overlap */}
-        <text
-          x={LX + 6}
-          y={commitY + 4}
-          fontSize={8.5}
-          fill={col}
-          fillOpacity={isActive ? 0.75 : 0.3}
-          fontFamily="var(--font-mono)"
-          style={{ userSelect: 'none', pointerEvents: 'none', transition: 'fill-opacity 0.35s' }}
-        >
-          {entry.branchLabel}
-        </text>
 
       </g>
     )
