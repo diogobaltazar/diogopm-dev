@@ -398,26 +398,27 @@ export default function About() {
     <>
       {pdfOpen && <PdfModal onClose={() => setPdfOpen(false)} />}
 
-      {/* ── Globe — fixed, behind all content, exits bottom-left ── */}
+      {/* ── Globe — full-viewport fixed layer, behind all content ── */}
       <div
         style={{
           position: 'fixed',
           left: 0,
           top: '3rem',
+          right: 0,
           bottom: 0,
-          width: GLOB_W,
           zIndex: 1,
-          overflow: 'visible',
+          pointerEvents: 'none',
         }}
       >
         {/* Shift globe so it exits left (~20%) and bottom (~20%), Europe stays visible */}
         <div
           style={{
             position: 'absolute',
-            left: '-20%',
+            left: '-10%',
             bottom: '-20%',
-            width: '130%',
-            height: '130%',
+            width: '65vw',
+            height: '120%',
+            pointerEvents: 'auto',
           }}
         >
           <Globe
