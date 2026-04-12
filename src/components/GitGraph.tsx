@@ -121,14 +121,12 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const LX      = LANE_BASE + lane * LANE_STEP
     const col     = entry.type === 'experience' ? CYAN : PURPLE
 
-    // mergeY: where this branch rejoins main = top of its OWN row.
-    // lineTopY: how far up the branch line is drawn = top of the newest concurrent row.
-    // Separating these means each branch merges at its own timeline position,
-    // while the line still extends upward to show concurrency.
-    const mergeY   = yPos[j] ?? 0
-    const lineTopY = yPos[extTop] ?? 0
-    const forkY    = (yPos[j] ?? 0) + (entryHeights[j] ?? 0)
-    const commitY  = (yPos[j] ?? 0) + (entryHeights[j] ?? 0) / 2
+    // mergeY is always the topmost row the branch reaches — the merge curve must sit
+    // at the TOP of the branch line. Moving it to yPos[j] instead would put the merge
+    // curve in the middle of the line for concurrent branches, which is visually wrong.
+    const mergeY  = yPos[extTop] ?? 0
+    const forkY   = (yPos[j] ?? 0) + (entryHeights[j] ?? 0)
+    const commitY = (yPos[j] ?? 0) + (entryHeights[j] ?? 0) / 2
 
     const isActive  = j === activeIdx
     const isOngoing = entry.endTs === null
@@ -139,11 +137,8 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const avail = entryHeights[j] ?? 0
     const R     = Math.min(CURVE_R, avail * 0.38)
 
-    // Non-concurrent merged branch: line starts at mergeY+R (flush with merge curve).
-    // Concurrent merged branch: line extends up to lineTopY to show the overlap period.
-    // Ongoing branch: line extends up to lineTopY (the open tip).
-    const lineTop = (!isOngoing && extTop === j) ? mergeY + R : lineTopY
-    const nodeY   = isOngoing ? lineTopY : commitY
+    const lineTop = isOngoing ? mergeY : mergeY + R
+    const nodeY   = isOngoing ? lineTop : commitY
 
     const forkD  = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
     const mergeD = `M ${LX},${mergeY + R} C ${LX},${mergeY} ${MAIN_X},${mergeY + R} ${MAIN_X},${mergeY}`
