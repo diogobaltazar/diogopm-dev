@@ -20,7 +20,7 @@ const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
 const NODE_R = 4.5   // matches globe city dot size
 
-const MAIN_COL = 'rgba(50,70,200,0.4)'
+const MAIN_COL = 'rgba(100,130,255,0.7)'
 const CYAN     = '#00e5ff'
 const PURPLE   = '#cc44ff'
 
@@ -111,6 +111,19 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     />
   )
 
+  // Trunk tip — hollow dashed node at y=0 (HEAD of main)
+  elems.push(
+    <circle
+      key="trunk-tip"
+      cx={MAIN_X} cy={0}
+      r={NODE_R}
+      fill="none"
+      stroke="rgba(150,170,255,0.7)"
+      strokeWidth={1}
+      strokeDasharray="2.5 2"
+    />
+  )
+
   // ── Per-branch rendering ───────────────────────────────────────────────────
   for (let j = 0; j < entries.length; j++) {
     const entry   = entries[j]
@@ -135,6 +148,10 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
 
     // For ongoing branches the line just ends at the top — no merge curve
     const lineTop = isOngoing ? mergeY : mergeY + R
+
+    // Ongoing branch: commit node sits at the line tip (open HEAD)
+    // Merged branch: commit node sits at the row midpoint
+    const nodeY = isOngoing ? lineTop : commitY
 
     // Fork curve: main trunk → branch lane (at bottom of commit row)
     const forkD = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
@@ -181,17 +198,17 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
             cx={MAIN_X}
             cy={mergeY}
             r={NODE_R}
-            fill="rgba(200,210,255,0.55)"
+            fill="rgba(200,210,255,0.35)"
           />
         )}
 
-        {/* Commit node — solid fill, fixed size */}
+        {/* Commit node — semi-transparent fill, fixed size */}
         <circle
           cx={LX}
-          cy={commitY}
+          cy={nodeY}
           r={NODE_R}
           fill={col}
-          fillOpacity={activeIdx === null ? 0.75 : isActive ? 1 : 0.45}
+          fillOpacity={activeIdx === null ? 0.5 : isActive ? 0.85 : 0.3}
           style={{
             cursor: 'pointer',
             transition: 'fill-opacity 0.35s',
@@ -202,19 +219,19 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
 
         {/* Pulse ring when active */}
         {isActive && (
-          <circle cx={LX} cy={commitY} r={NODE_R} fill="none" stroke={col} strokeWidth={1}>
+          <circle cx={LX} cy={nodeY} r={NODE_R} fill="none" stroke={col} strokeWidth={1}>
             <animate attributeName="r"       from={String(NODE_R)} to="14" dur="1.6s" repeatCount="indefinite" />
             <animate attributeName="opacity" from="0.6" to="0"     dur="1.6s" repeatCount="indefinite" />
           </circle>
         )}
 
-        {/* Branch label */}
+        {/* Branch label — at row midpoint to prevent overlap */}
         <text
-          x={LX + 4}
-          y={mergeY + 9}
-          fontSize={6.5}
+          x={LX + 6}
+          y={commitY + 4}
+          fontSize={8.5}
           fill={col}
-          fillOpacity={isActive ? 0.65 : 0.25}
+          fillOpacity={isActive ? 0.75 : 0.3}
           fontFamily="var(--font-mono)"
           style={{ userSelect: 'none', pointerEvents: 'none', transition: 'fill-opacity 0.35s' }}
         >

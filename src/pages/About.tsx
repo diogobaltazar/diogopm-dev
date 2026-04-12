@@ -478,74 +478,76 @@ function Entry({
         <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.6 }}>{entry.locationLabel}</span>
       </div>
 
-      {/* ── Expanded content ── */}
-      {isActive && (
-        <>
-          {/* Organisation */}
-          <div style={{ marginTop: '0.5rem' }}>
-            {entry.organizationUrl
-              ? <a href={entry.organizationUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.18)' }}>{entry.organization}</a>
-              : <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{entry.organization}</span>
+      {/* ── Expanded content — animated via max-height ── */}
+      <div style={{
+        maxHeight: isActive ? '800px' : '0',
+        overflow: 'hidden',
+        transition: 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}>
+        {/* Organisation */}
+        <div style={{ marginTop: '0.5rem' }}>
+          {entry.organizationUrl
+            ? <a href={entry.organizationUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.18)' }}>{entry.organization}</a>
+            : <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{entry.organization}</span>
+          }
+          {entry.note && <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: '0.5rem', fontStyle: 'italic' }}>({entry.note})</span>}
+        </div>
+
+        {/* Team */}
+        {entry.team && (
+          <div style={{ marginTop: '0.3rem' }}>
+            {entry.teamUrl
+              ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.12)' }}>{entry.team}</a>
+              : <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{entry.team}</span>
             }
-            {entry.note && <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: '0.5rem', fontStyle: 'italic' }}>({entry.note})</span>}
           </div>
+        )}
 
-          {/* Team */}
-          {entry.team && (
-            <div style={{ marginTop: '0.3rem' }}>
-              {entry.teamUrl
-                ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.12)' }}>{entry.team}</a>
-                : <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{entry.team}</span>
-              }
-            </div>
-          )}
+        {entry.description && <p style={{ marginTop: '0.6rem', fontSize: '0.8rem', lineHeight: 1.65, color: '#c8c8c8' }}>{entry.description}</p>}
+        {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
+        {entry.tags && <TechTags tags={entry.tags} />}
 
-          {entry.description && <p style={{ marginTop: '0.6rem', fontSize: '0.8rem', lineHeight: 1.65, color: '#c8c8c8' }}>{entry.description}</p>}
-          {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
-          {entry.tags && <TechTags tags={entry.tags} />}
-
-          {/* Domain tags */}
-          {entry.tags2 && (
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-              {entry.tags2.map(({ icon: Icon, label }) => (
-                <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.62rem', color: 'var(--muted)', opacity: 0.6 }}>
-                  <Icon size={11} strokeWidth={1.5} />
-                  {label}
-                </span>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-      {/* ── Closed Source — visible when expanded ── */}
-      {isActive && entry.closedSource && entry.closedSource.length > 0 && (
-        <div style={{ marginTop: '1.25rem' }} onClick={e => e.stopPropagation()}>
-          <p style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.7rem' }}>
-            Closed Source
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
-            {entry.closedSource.map(p => (
-              <div
-                key={p.name}
-                style={{
-                  padding: '0.75rem 0.9rem',
-                  border: '1px solid var(--border)',
-                  borderRadius: 5,
-                  background: 'rgba(255,255,255,0.015)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
-                  <span style={{ fontSize: '0.58rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
-                </div>
-                <p style={{ fontSize: '0.68rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
-                <TechTagList tags={p.tags} />
-              </div>
+        {/* Domain tags */}
+        {entry.tags2 && (
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+            {entry.tags2.map(({ icon: Icon, label }) => (
+              <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.62rem', color: 'var(--muted)', opacity: 0.6 }}>
+                <Icon size={11} strokeWidth={1.5} />
+                {label}
+              </span>
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ── Closed Source ── */}
+        {entry.closedSource && entry.closedSource.length > 0 && (
+          <div style={{ marginTop: '1.25rem' }} onClick={e => e.stopPropagation()}>
+            <p style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.7rem' }}>
+              Closed Source
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+              {entry.closedSource.map(p => (
+                <div
+                  key={p.name}
+                  style={{
+                    padding: '0.75rem 0.9rem',
+                    border: '1px solid var(--border)',
+                    borderRadius: 5,
+                    background: 'rgba(255,255,255,0.015)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
+                    <span style={{ fontSize: '0.58rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
+                  </div>
+                  <p style={{ fontSize: '0.68rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
+                  <TechTagList tags={p.tags} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
