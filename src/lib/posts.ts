@@ -4,6 +4,7 @@ interface Frontmatter {
   title: string
   date: string
   description: string
+  version?: string
 }
 
 interface PostModule {

@@ -31,9 +31,16 @@ export default function Post() {
           </Link>
 
           <header className="mb-10">
-            <time className="text-xs" style={{ color: 'var(--muted)' }}>
-              {formatDate(frontmatter.date)}
-            </time>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem' }}>
+              <time className="text-xs" style={{ color: 'var(--muted)' }}>
+                {formatDate(frontmatter.date)}
+              </time>
+              {frontmatter.version && (
+                <span style={{ fontSize: '0.6rem', color: 'var(--muted)', opacity: 0.45, letterSpacing: '0.04em' }}>
+                  v{frontmatter.version}
+                </span>
+              )}
+            </div>
             <h1
               className="mt-3 text-4xl font-semibold tracking-tight leading-tight"
               style={{

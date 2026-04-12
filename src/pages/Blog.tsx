@@ -25,6 +25,7 @@ export default function Blog() {
               title={frontmatter.title}
               date={frontmatter.date}
               description={frontmatter.description}
+              version={frontmatter.version}
             />
           ))}
         </div>
