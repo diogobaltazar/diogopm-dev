@@ -18,8 +18,8 @@ const MAIN_X    = 14
 const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
-const NODE_R    = 4
-const NODE_R_ACTIVE = 5.5
+const NODE_R        = 3    // matches globe city dot (inactive)
+const NODE_R_ACTIVE = 4.5  // matches globe city dot (active)
 
 const MAIN_COL = 'rgba(50,70,200,0.4)'
 const CYAN     = '#00e5ff'
@@ -176,12 +176,12 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
           />
         )}
 
-        {/* Merge node on main trunk — small neutral dot, visually distinct from commit nodes */}
+        {/* Merge node on main trunk — same size as commit node */}
         {!isOngoing && (
           <circle
             cx={MAIN_X}
             cy={mergeY}
-            r={1.5}
+            r={NODE_R}
             fill="rgba(200,210,255,0.55)"
           />
         )}
