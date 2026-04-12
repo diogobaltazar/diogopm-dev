@@ -176,14 +176,13 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
           />
         )}
 
-        {/* Merge node on main trunk — small filled dot at merge point */}
+        {/* Merge node on main trunk — small neutral dot, visually distinct from commit nodes */}
         {!isOngoing && (
           <circle
             cx={MAIN_X}
             cy={mergeY}
-            r={2.5}
-            fill={col}
-            fillOpacity={lineOp * 0.75}
+            r={1.5}
+            fill="rgba(200,210,255,0.55)"
           />
         )}
 
