@@ -98,29 +98,18 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     return <div style={{ width: SVG_W, flexShrink: 0 }} />
   }
 
-  const elems: React.ReactNode[] = []
+  const lines:       React.ReactNode[] = []
+  const nodes:       React.ReactNode[] = []
+  const mergeNodes:  React.ReactNode[] = []
 
   // ── Main trunk ─────────────────────────────────────────────────────────────
-  elems.push(
+  lines.push(
     <line
       key="trunk"
       x1={MAIN_X} y1={0}
       x2={MAIN_X} y2={totalHeight}
       stroke={MAIN_COL}
       strokeWidth={1.2}
-    />
-  )
-
-  // Trunk tip — hollow dashed node at y=0 (HEAD of main)
-  elems.push(
-    <circle
-      key="trunk-tip"
-      cx={MAIN_X} cy={0}
-      r={NODE_R}
-      fill="none"
-      stroke="rgba(220,225,255,0.8)"
-      strokeWidth={1}
-      strokeDasharray="2.5 2"
     />
   )
 
@@ -142,27 +131,18 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const lineOp = activeIdx === null ? 0.6  : isActive ? 0.9  : 0.4
     const lineW  = activeIdx === null ? 1.1  : isActive ? 1.8  : 1.0
 
-    // Clamp curve radius to fit within the row height
     const avail = entryHeights[j] ?? 0
     const R     = Math.min(CURVE_R, avail * 0.38)
 
-    // For ongoing branches the line just ends at the top — no merge curve
     const lineTop = isOngoing ? mergeY : mergeY + R
+    const nodeY   = isOngoing ? lineTop : commitY
 
-    // Ongoing branch: commit node sits at the line tip (open HEAD)
-    // Merged branch: commit node sits at the row midpoint
-    const nodeY = isOngoing ? lineTop : commitY
-
-    // Fork curve: main trunk → branch lane (at bottom of commit row)
-    const forkD = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
-
-    // Merge curve: branch lane → main trunk (at top of extent), only when merged
+    const forkD  = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
     const mergeD = `M ${LX},${mergeY + R} C ${LX},${mergeY} ${MAIN_X},${mergeY + R} ${MAIN_X},${mergeY}`
 
-    elems.push(
-      <g key={`branch-${j}`} style={{ transition: 'opacity 0.35s' }}>
-
-        {/* Vertical branch line */}
+    // ── Lines & curves (painted first) ───────────────────────────────────────
+    lines.push(
+      <g key={`lines-${j}`}>
         <line
           x1={LX} y1={lineTop}
           x2={LX} y2={Math.max(lineTop, forkY - R)}
@@ -171,42 +151,18 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
           strokeOpacity={lineOp}
           style={{ transition: 'stroke-width 0.35s, stroke-opacity 0.35s' }}
         />
-
-        {/* Fork curve (always shown) */}
-        <path
-          d={forkD}
-          fill="none"
-          stroke={col}
-          strokeWidth={lineW * 0.85}
-          strokeOpacity={lineOp * 0.85}
-        />
-
-        {/* Merge curve — only when the branch has merged back to main */}
+        <path d={forkD} fill="none" stroke={col} strokeWidth={lineW * 0.85} strokeOpacity={lineOp * 0.85} />
         {!isOngoing && (
-          <path
-            d={mergeD}
-            fill="none"
-            stroke={col}
-            strokeWidth={lineW * 0.85}
-            strokeOpacity={lineOp * 0.85}
-          />
+          <path d={mergeD} fill="none" stroke={col} strokeWidth={lineW * 0.85} strokeOpacity={lineOp * 0.85} />
         )}
+      </g>
+    )
 
-        {/* Merge node on main trunk — same size as commit node */}
-        {!isOngoing && (
-          <circle
-            cx={MAIN_X}
-            cy={mergeY}
-            r={NODE_R}
-            fill={col}
-          />
-        )}
-
-        {/* Commit node — opaque fill, fixed size */}
+    // ── Commit node (painted after all lines) ─────────────────────────────────
+    nodes.push(
+      <g key={`node-${j}`}>
         <circle
-          cx={LX}
-          cy={nodeY}
-          r={NODE_R}
+          cx={LX} cy={nodeY} r={NODE_R}
           fill={col}
           style={{
             cursor: 'pointer',
@@ -214,18 +170,35 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
           }}
           onClick={() => onNodeClick?.(j)}
         />
-
-        {/* Pulse ring when active */}
         {isActive && (
           <circle cx={LX} cy={nodeY} r={NODE_R} fill="none" stroke={col} strokeWidth={1}>
             <animate attributeName="r"       from={String(NODE_R)} to="14" dur="1.6s" repeatCount="indefinite" />
             <animate attributeName="opacity" from="0.6" to="0"     dur="1.6s" repeatCount="indefinite" />
           </circle>
         )}
-
       </g>
     )
+
+    // ── Merge node on main trunk (painted last — always on top) ───────────────
+    if (!isOngoing) {
+      mergeNodes.push(
+        <circle key={`merge-${j}`} cx={MAIN_X} cy={mergeY} r={NODE_R} fill={col} />
+      )
+    }
   }
+
+  // Trunk tip — hollow dashed node at y=0 (HEAD of main), painted last
+  mergeNodes.push(
+    <circle
+      key="trunk-tip"
+      cx={MAIN_X} cy={0}
+      r={NODE_R}
+      fill="none"
+      stroke="rgba(220,225,255,0.8)"
+      strokeWidth={1}
+      strokeDasharray="2.5 2"
+    />
+  )
 
   return (
     <svg
@@ -233,7 +206,9 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
       height={totalHeight}
       style={{ display: 'block', overflow: 'visible', flexShrink: 0 }}
     >
-      {elems}
+      {lines}
+      {nodes}
+      {mergeNodes}
     </svg>
   )
 }
