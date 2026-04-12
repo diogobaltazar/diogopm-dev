@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Brain, Database, Cloud, Anchor, Plane, Briefcase,
@@ -13,8 +13,8 @@ import {
   SiOpenjdk, SiDotnet, SiApachehadoop, SiKubernetes, SiTerraform,
   SiLangchain, SiOpenai, SiNodedotjs,
 } from 'react-icons/si'
-import Globe from '../components/Globe'
 import GitGraph from '../components/GitGraph'
+import { useGlobeCtx } from '../context/GlobeContext'
 
 // ─── tech icons ───────────────────────────────────────────────────────────────
 
@@ -144,6 +144,23 @@ function ts(year: number, month = 1, day = 1) {
   return Date.UTC(year, month - 1, day)
 }
 
+// ─── organisation logo map ────────────────────────────────────────────────────
+
+const ORG_LOGO: Record<string, { src: string; height?: number }> = {
+  roche:           { src: '/logos/roche.svg',        height: 18 },
+  'nn-lead':       { src: '/logos/novo-nordisk.svg'             },
+  'nn-platform':   { src: '/logos/novo-nordisk.svg'             },
+  'nn-senior':     { src: '/logos/novo-nordisk.svg'             },
+  maersk:          { src: '/logos/maersk.svg'                   },
+  airbus:          { src: '/logos/airbus.svg'                   },
+  'accenture-se':  { src: '/logos/accenture.svg',    height: 18 },
+  'accenture-fsd': { src: '/logos/accenture.svg',    height: 18 },
+  ku:              { src: '/logos/ku.svg'                       },
+  'fcul-cs':       { src: '/logos/ulisboa.svg'                  },
+  'fcul-math':     { src: '/logos/ulisboa.svg'                  },
+  'flul-phil':     { src: '/logos/ulisboa.svg'                  },
+}
+
 function branchLabel(entry: { type: 'experience' | 'education'; title: string }) {
   const prefix = entry.type === 'experience' ? 'industry' : 'education'
   const slug   = entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -192,7 +209,7 @@ const TIMELINE: TimelineEntry[] = [
     id: 'nn-lead', type: 'experience',
     title: 'Lead Software Engineer',
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
-    location: 'london', locationLabel: 'London Area, UK',
+    location: 'london', locationLabel: 'Oxford and London, UK',
     period: 'Oct 2023 – Dec 2025', startYear: 2023,
     startTs: ts(2023, 10), endTs: ts(2025, 12),
     team: 'R&ED – Target Discovery',
@@ -224,11 +241,12 @@ const TIMELINE: TimelineEntry[] = [
   {
     id: 'ku', type: 'education',
     title: 'MSc, Computer Science',
-    organization: 'Københavns Universitet – University of Copenhagen',
+    organization: 'University of Copenhagen',
     organizationUrl: 'https://kurser.ku.dk/course/ndaa09027u',
     location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
-    period: '2021 – 2022', startYear: 2021,
-    startTs: ts(2021, 1), endTs: ts(2022, 8),
+    description: 'Signal and Image Processing with Fourier Analysis, Wavelets, and Deep Learning.',
+    period: '2021 – 2021', startYear: 2021,
+    startTs: ts(2021, 1), endTs: ts(2021, 8),
     tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
     arcId: 'lisbon-copenhagen-edu',
   },
@@ -253,7 +271,7 @@ const TIMELINE: TimelineEntry[] = [
     id: 'maersk', type: 'experience',
     title: 'Software Engineer',
     organization: 'A.P. Moller – Maersk', organizationUrl: 'https://www.maersk.com',
-    location: 'copenhagen', locationLabel: 'Copenhagen Metropolitan Area · On-site',
+    location: 'copenhagen', locationLabel: 'Copenhagen · On-site',
     period: 'Oct 2019 – Sep 2020', startYear: 2019,
     startTs: ts(2019, 10), endTs: ts(2020, 9),
     team: 'Inland Container Logistics',
@@ -269,9 +287,9 @@ const TIMELINE: TimelineEntry[] = [
     id: 'airbus', type: 'experience',
     title: 'Software Engineer',
     organization: 'Airbus', organizationUrl: 'https://www.airbus.com',
-    location: 'toulouse', locationLabel: 'Greater Toulouse Metropolitan Area · On-site',
-    period: 'Sep 2018 – Sep 2020', startYear: 2018,
-    startTs: ts(2018, 9), endTs: ts(2020, 9),
+    location: 'toulouse', locationLabel: 'Toulouse · On-site',
+    period: 'Sep 2018 – Sep 2019', startYear: 2018,
+    startTs: ts(2018, 9), endTs: ts(2019, 9),
     description: 'Fleet Reliability – Skywise Core. Migration of Airbus A350 FAL Quality Platform to Skywise.',
     tags: 'Palantir Foundry, js, AWS, python, pyspark, postgresql, git, docker, nosql, elasticsearch',
     tags2: [{ icon: Plane, label: 'Aerospace' }, { icon: Database, label: 'Data Engineering' }],
@@ -313,36 +331,36 @@ const TIMELINE: TimelineEntry[] = [
   {
     id: 'fcul-cs', type: 'education',
     title: 'BSc, Computer Software Engineering',
-    organization: 'Faculdade de Ciências da Universidade de Lisboa',
+    organization: 'University of Lisbon',
     organizationUrl: 'https://ciencias.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
-    period: '2015 – 2018', startYear: 2015,
-    startTs: ts(2015, 9), endTs: ts(2018, 6),
-    description: 'Cybersecurity, AI, Machine Learning, Statistics, Software Engineering, Algorithms.',
+    period: '2015 – 2017', startYear: 2015,
+    startTs: ts(2015, 9), endTs: ts(2017, 6),
+    description: 'Computer Architecture, Networks, Operating Systems, Distributed Systems, Software Engineering, Algorithms and Machine Learning.',
     tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
     arcId: null,
   },
   {
     id: 'fcul-math', type: 'education',
     title: 'BSc, Mathematics',
-    organization: 'Faculdade de Ciências da Universidade de Lisboa',
+    organization: 'University of Lisbon',
     organizationUrl: 'https://ciencias.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
     period: '2014 – 2015', startYear: 2014,
     startTs: ts(2014, 9), endTs: ts(2015, 6),
-    description: 'Real Analysis, Algebra, Discrete Mathematics, Logic.',
+    description: 'Calculus, Algebra, Discrete Mathematics and Logic.',
     tags2: [{ icon: Calculator, label: 'Mathematics' }],
     arcId: null,
   },
   {
     id: 'flul-phil', type: 'education',
     title: 'BPhil, Philosophy',
-    organization: 'Faculdade de Letras da Universidade de Lisboa',
+    organization: 'University of Lisbon',
     organizationUrl: 'https://letras.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
     period: '2011 – 2014', startYear: 2011,
     startTs: ts(2011, 9), endTs: ts(2014, 6),
-    description: 'Logic, Logical Philosophy, Philosophy of Logic, Philosophy of Mathematics, Philosophy of Language, Philosophy of Science.',
+    description: 'Logic, Philosophy of Mathematics, Mathematical Logic, and Philosophy of Language.',
     thesis: 'The Logicist Program of Arithmetic: Frege and Russell',
     tags2: [{ icon: BookOpen, label: 'Philosophy' }, { icon: Calculator, label: 'Mathematics' }],
     arcId: null,
@@ -424,18 +442,18 @@ const submitBtn: React.CSSProperties = {
 // ─── timeline entry ───────────────────────────────────────────────────────────
 
 function Entry({
-  entry, activeIdx, entryRef, idx, onClick,
+  entry, isActive, entryRef, onClick,
 }: {
   entry: TimelineEntry
-  activeIdx: number | null
+  isActive: boolean
   entryRef: (el: HTMLDivElement | null) => void
-  idx: number
   onClick: () => void
 }) {
+  const orgLogo = ORG_LOGO[entry.id]
+  const logoHeight = orgLogo?.height ?? 26
   const CYAN   = '#00e5ff'
   const PURPLE = '#cc44ff'
   const typeColor = entry.type === 'experience' ? CYAN : PURPLE
-  const isActive = activeIdx === idx
   const opacity = isActive ? 1 : 0.3
 
   const statusColor: Record<string, string> = {
@@ -473,10 +491,16 @@ function Entry({
         <span style={{ fontSize: '0.68rem', color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>{entry.period}</span>
       </div>
 
-      {/* Location — always visible */}
-      <div style={{ marginTop: '0.25rem' }}>
-        <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.6 }}>{entry.locationLabel}</span>
-      </div>
+      {/* Organisation logo — always visible, name on hover */}
+      {orgLogo && (
+        <div style={{ marginTop: '0.3rem', display: 'inline-block' }} title={entry.organization}>
+          <img
+            src={orgLogo.src}
+            alt={entry.organization}
+            style={{ height: logoHeight, width: 'auto', maxWidth: 100, objectFit: 'contain', opacity: 0.5, flexShrink: 0, display: 'block' }}
+          />
+        </div>
+      )}
 
       {/* ── Expanded content — animated via max-height ── */}
       <div style={{
@@ -484,13 +508,10 @@ function Entry({
         overflow: 'hidden',
         transition: 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
-        {/* Organisation */}
-        <div style={{ marginTop: '0.5rem' }}>
-          {entry.organizationUrl
-            ? <a href={entry.organizationUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.18)' }}>{entry.organization}</a>
-            : <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{entry.organization}</span>
-          }
-          {entry.note && <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: '0.5rem', fontStyle: 'italic' }}>({entry.note})</span>}
+        {/* Location + note (organisation already shown in collapsed header) */}
+        <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.55 }}>{entry.locationLabel}</span>
+          {entry.note && <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.55, fontStyle: 'italic' }}>· {entry.note}</span>}
         </div>
 
         {/* Team */}
@@ -557,7 +578,8 @@ function Entry({
 const GLOB_W = '44vw'  // width of the fixed globe panel
 
 export default function About() {
-  const [activeIdx, setActiveIdx]   = useState<number | null>(null)
+  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
+  const [activeGlobeLocation, setActiveGlobeLocation] = useState<string | null>(null)
   const [pdfOpen, setPdfOpen]       = useState(false)
   const [entryHeights, setEntryHeights] = useState<number[]>([])
   const refs = useRef<(HTMLDivElement | null)[]>([])
@@ -571,58 +593,53 @@ export default function About() {
     return () => ro.disconnect()
   }, [])
 
-  const active = activeIdx !== null ? TIMELINE[activeIdx] : null
+  // Primary entry: when exactly one is active, use it for globe arc + location
+  const primaryActiveEntry = activeIndices.size === 1
+    ? TIMELINE[[...activeIndices][0]]
+    : null
 
   function toggleEntry(idx: number) {
-    setActiveIdx(prev => prev === idx ? null : idx)
+    setActiveIndices(prev => {
+      if (prev.size === 1 && prev.has(idx)) return new Set()
+      return new Set([idx])
+    })
+    setActiveGlobeLocation(TIMELINE[idx].location)
   }
 
-  // Globe city click → scroll to entry + highlight it
+  // Globe city click → expand all entries at that location
   function handleCityClick(locationKey: string) {
-    const idx = TIMELINE.findIndex(e => e.location === locationKey)
-    if (idx === -1) return
-    setActiveIdx(prev => {
-      if (prev !== idx) {
-        setTimeout(() => refs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
-      }
-      return prev === idx ? null : idx
+    const matching = TIMELINE.map((e, i) => ({ e, i })).filter(({ e }) => e.location === locationKey).map(({ i }) => i)
+    if (matching.length === 0) return
+    setActiveIndices(prev => {
+      const allActive = matching.every(i => prev.has(i))
+      return allActive ? new Set() : new Set(matching)
     })
+    setActiveGlobeLocation(locationKey)
+    setTimeout(() => refs.current[matching[0]]?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
   }
+
+  // ── Sync globe state to Layout via context ──────────────────────────────────
+  const { _setOnCityClick, _setGlobeState } = useGlobeCtx()
+
+  // Register click handler once, using a ref so it always calls the latest closure
+  const cityClickFnRef = useRef(handleCityClick)
+  useEffect(() => { cityClickFnRef.current = handleCityClick })
+  useEffect(() => {
+    _setOnCityClick((key) => cityClickFnRef.current(key))
+    return () => _setOnCityClick(() => {})
+  }, [])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync active arc + location whenever selection changes
+  useEffect(() => {
+    _setGlobeState({
+      activeArc: primaryActiveEntry?.arcId ?? null,
+      activeLocation: activeGlobeLocation,
+    })
+  }, [primaryActiveEntry?.arcId, activeGlobeLocation]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
       {pdfOpen && <PdfModal onClose={() => setPdfOpen(false)} />}
-
-      {/* ── Globe — full-viewport fixed layer, behind all content ── */}
-      <div
-        style={{
-          position: 'fixed',
-          left: 0,
-          top: '3rem',
-          right: 0,
-          bottom: 0,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      >
-        {/* Shift globe so it exits left (~20%) and bottom (~20%), Europe stays visible */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '-10%',
-            bottom: '-20%',
-            width: '65vw',
-            height: '120%',
-            pointerEvents: 'auto',
-          }}
-        >
-          <Globe
-            activeArc={active?.arcId ?? null}
-            activeLocation={active?.location ?? null}
-            onCityClick={handleCityClick}
-          />
-        </div>
-      </div>
 
       {/* ── Right panel — scrolls normally, above globe ── */}
       <motion.div
@@ -643,7 +660,7 @@ export default function About() {
                 backgroundClip: 'text',
               }}
             >
-              diogo pereira-marques
+              Diogo Pereira-Marques
             </h1>
             <button
               onClick={() => setPdfOpen(true)}
@@ -660,7 +677,7 @@ export default function About() {
               <Download size={15} strokeWidth={1.5} />
             </button>
           </div>
-          <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>principal ai engineer · london</p>
+          <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>Principal AI Engineer · London, UK</p>
         </div>
 
         <div style={{ padding: '0 3.5rem 8rem' }}>
@@ -717,7 +734,7 @@ export default function About() {
             Experience & Education
           </p>
           <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.18)', marginBottom: '0.5rem' }}>
-            scroll to explore · click a city on the globe to jump
+            scroll to explore · select to expand
           </p>
 
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
@@ -729,7 +746,7 @@ export default function About() {
                 startTs: e.startTs,
                 endTs: e.endTs,
               }))}
-              activeIdx={activeIdx}
+              activeIndices={activeIndices}
               entryHeights={entryHeights}
               onNodeClick={idx => {
                 toggleEntry(idx)
@@ -743,8 +760,7 @@ export default function About() {
                 <Entry
                   key={entry.id}
                   entry={entry}
-                  activeIdx={activeIdx}
-                  idx={idx}
+                  isActive={activeIndices.has(idx)}
                   entryRef={el => { refs.current[idx] = el }}
                   onClick={() => toggleEntry(idx)}
                 />

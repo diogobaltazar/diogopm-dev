@@ -35,7 +35,7 @@ export interface GitEntry {
 
 interface GitGraphProps {
   entries: GitEntry[]
-  activeIdx: number | null
+  activeIndices: Set<number>
   entryHeights: number[]
   onNodeClick?: (idx: number) => void
 }
@@ -81,7 +81,7 @@ function computeLayout(entries: GitEntry[]): { lanes: number[]; extentTopRow: nu
 
 // ─── component ────────────────────────────────────────────────────────────────
 
-export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick }: GitGraphProps) {
+export default function GitGraph({ entries, activeIndices, entryHeights, onNodeClick }: GitGraphProps) {
   const totalHeight = entryHeights.reduce((a, b) => a + b, 0)
 
   const yPos = useMemo(() => {
@@ -128,11 +128,11 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const forkY   = (yPos[j] ?? 0) + (entryHeights[j] ?? 0)
     const commitY = (yPos[j] ?? 0) + (entryHeights[j] ?? 0) / 2
 
-    const isActive  = j === activeIdx
+    const isActive  = activeIndices.has(j)
     const isOngoing = entry.endTs === null
 
-    const lineOp = activeIdx === null ? 0.6  : isActive ? 0.9  : 0.4
-    const lineW  = activeIdx === null ? 1.1  : isActive ? 1.8  : 1.0
+    const lineOp = activeIndices.size === 0 ? 0.6  : isActive ? 0.9  : 0.4
+    const lineW  = 1.8
 
     const avail = entryHeights[j] ?? 0
     const R     = Math.min(CURVE_R, avail * 0.38)
