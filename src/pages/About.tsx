@@ -6,8 +6,97 @@ import {
   Download, X,
 } from 'lucide-react'
 import { FaGithub as GithubIcon } from 'react-icons/fa'
+import {
+  SiPython, SiTypescript, SiJavascript, SiDocker, SiGit, SiGithub,
+  SiReact, SiPytorch, SiPostgresql, SiElasticsearch, SiApachespark,
+  SiPalantir, SiMlflow, SiDatabricks, SiCloudera, SiAnthropic,
+  SiOpenjdk, SiDotnet, SiApachehadoop, SiKubernetes, SiTerraform,
+  SiLangchain, SiOpenai, SiNodedotjs,
+} from 'react-icons/si'
 import Globe from '../components/Globe'
 import GitGraph from '../components/GitGraph'
+
+// ─── tech icons ───────────────────────────────────────────────────────────────
+
+type IconComponent = React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+
+const TECH_ICON_MAP: Record<string, IconComponent> = {
+  python:            SiPython,
+  ts:                SiTypescript,
+  typescript:        SiTypescript,
+  js:                SiJavascript,
+  javascript:        SiJavascript,
+  docker:            SiDocker,
+  git:               SiGit,
+  github:            SiGithub,
+  react:             SiReact,
+  pytorch:           SiPytorch,
+  postgresql:        SiPostgresql,
+  psql:              SiPostgresql,
+  elasticsearch:     SiElasticsearch,
+  pyspark:           SiApachespark,
+  spark:             SiApachespark,
+  'apache spark':    SiApachespark,
+  'palantir foundry': SiPalantir,
+  palantir:          SiPalantir,
+  mlflow:            SiMlflow,
+  databricks:        SiDatabricks,
+  cloudera:          SiCloudera,
+  'cloudera hadoop': SiCloudera,
+  hadoop:            SiApachehadoop,
+  'claude api':      SiAnthropic,
+  anthropic:         SiAnthropic,
+  java:              SiOpenjdk,
+  openjdk:           SiOpenjdk,
+  'c# asp.net':      SiDotnet,
+  'asp.net':         SiDotnet,
+  dotnet:            SiDotnet,
+  kubernetes:        SiKubernetes,
+  terraform:         SiTerraform,
+  langchain:         SiLangchain,
+  openai:            SiOpenai,
+  node:              SiNodedotjs,
+  nodejs:            SiNodedotjs,
+}
+
+function TechTags({ tags }: { tags: string }) {
+  const items = tags.split(',').map(t => t.trim()).filter(Boolean)
+  return (
+    <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.6rem' }}>
+      {items.map(t => {
+        const Icon = TECH_ICON_MAP[t.toLowerCase()]
+        return Icon ? (
+          <span key={t} title={t} style={{ color: 'var(--muted)', opacity: 0.55 }}>
+            <Icon size={13} />
+          </span>
+        ) : (
+          <span key={t} style={{ fontSize: '0.6rem', padding: '0.1rem 0.45rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)', opacity: 0.55 }}>
+            {t}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
+function TechTagList({ tags }: { tags: string[] }) {
+  return (
+    <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+      {tags.map(t => {
+        const Icon = TECH_ICON_MAP[t.toLowerCase()]
+        return Icon ? (
+          <span key={t} title={t} style={{ color: 'var(--muted)', opacity: 0.6 }}>
+            <Icon size={12} />
+          </span>
+        ) : (
+          <span key={t} style={{ fontSize: '0.58rem', padding: '0.1rem 0.4rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)' }}>
+            {t}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -406,7 +495,7 @@ function Entry({
 
       {entry.description && <p style={{ marginTop: '0.6rem', fontSize: '0.8rem', lineHeight: 1.65, color: '#c8c8c8' }}>{entry.description}</p>}
       {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
-      {entry.tags && <p style={{ marginTop: '0.6rem', fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.65 }}>{entry.tags}</p>}
+      {entry.tags && <TechTags tags={entry.tags} />}
 
       {/* Domain tags */}
       {entry.tags2 && (
@@ -442,11 +531,7 @@ function Entry({
                   <span style={{ fontSize: '0.58rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
                 </div>
                 <p style={{ fontSize: '0.68rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
-                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                  {p.tags.map(t => (
-                    <span key={t} style={{ fontSize: '0.58rem', padding: '0.1rem 0.4rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)' }}>{t}</span>
-                  ))}
-                </div>
+                <TechTagList tags={p.tags} />
               </div>
             ))}
           </div>
