@@ -108,6 +108,22 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
   const dragStart  = useRef<[number, number]>([0, 0])
   const rotAtDrag  = useRef<[number, number, number]>([...INITIAL])
   const rafId      = useRef<number>()
+  const targetRot  = useRef<[number, number, number] | null>(null)
+
+  // When a city becomes active, animate the globe to centre on it
+  useEffect(() => {
+    if (!activeLocation) return
+    const city = CITIES[activeLocation]
+    if (!city) return
+    // Orthographic: to centre [lon, lat], rotate to [-lon, -lat, 0]
+    const tgt: [number, number, number] = [-city.coords[0], -city.coords[1], 0]
+    // Normalise current longitude so we take the shortest arc
+    let cur0 = rotRef.current[0] % 360
+    if (cur0 > 180) cur0 -= 360
+    if (cur0 < -180) cur0 += 360
+    rotRef.current[0] = cur0
+    targetRot.current = tgt
+  }, [activeLocation])
 
   useEffect(() => {
     if (staticMode) return
@@ -118,7 +134,26 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
       const dt = Math.min(now - prev, 50)
       prev = now
       if (!isDragging.current) {
-        rotRef.current[0] -= SPEED * dt
+        if (targetRot.current) {
+          const tgt = targetRot.current
+          const cur = rotRef.current
+          // Shortest-path longitude delta
+          let dLon = tgt[0] - cur[0]
+          if (dLon > 180) dLon -= 360
+          if (dLon < -180) dLon += 360
+          const dLat = tgt[1] - cur[1]
+          const ease = 1 - Math.pow(0.97, dt)
+          cur[0] += dLon * ease
+          cur[1] += dLat * ease
+          // Snap when close enough
+          if (Math.abs(dLon) < 0.05 && Math.abs(dLat) < 0.05) {
+            cur[0] = tgt[0]
+            cur[1] = tgt[1]
+            targetRot.current = null
+          }
+        } else {
+          rotRef.current[0] -= SPEED * dt
+        }
         setRotation([...rotRef.current] as [number, number, number])
       }
       rafId.current = requestAnimationFrame(tick)
