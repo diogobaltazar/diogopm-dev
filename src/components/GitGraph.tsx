@@ -18,7 +18,7 @@ const MAIN_X    = 14
 const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
-const NODE_R = 3   // fixed size — active state shown via glow only
+const NODE_R = 4.5   // matches globe city dot size
 
 const MAIN_COL = 'rgba(50,70,200,0.4)'
 const CYAN     = '#00e5ff'
