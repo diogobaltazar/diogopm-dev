@@ -99,6 +99,16 @@ const TIMELINE: TimelineEntry[] = [
     arcId: 'toulouse-copenhagen',
   },
   {
+    id: 'ku', type: 'education',
+    title: 'MSc, Computer Science',
+    organization: 'Københavns Universitet – University of Copenhagen',
+    organizationUrl: 'https://kurser.ku.dk/course/ndaa09027u',
+    location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
+    period: '2021', startYear: 2021,
+    tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
+    arcId: 'lisbon-copenhagen-edu',
+  },
+  {
     id: 'nn-senior', type: 'experience',
     title: 'Senior Software Engineer',
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
@@ -154,16 +164,6 @@ const TIMELINE: TimelineEntry[] = [
     tags: 'C# ASP.NET, js, git',
     tags2: [{ icon: Briefcase, label: 'Consulting' }, { icon: Code, label: 'Software Engineering' }],
     arcId: null,
-  },
-  {
-    id: 'ku', type: 'education',
-    title: 'MSc, Computer Science',
-    organization: 'Københavns Universitet – University of Copenhagen',
-    organizationUrl: 'https://kurser.ku.dk/course/ndaa09027u',
-    location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
-    period: '2021', startYear: 2021,
-    tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
-    arcId: 'lisbon-copenhagen-edu',
   },
   {
     id: 'fcul-cs', type: 'education',
@@ -407,7 +407,7 @@ export default function About() {
           bottom: 0,
           width: GLOB_W,
           zIndex: 1,
-          overflow: 'hidden',
+          overflow: 'visible',
         }}
       >
         {/* Shift globe so it exits left (~20%) and bottom (~20%), Europe stays visible */}
@@ -467,7 +467,7 @@ export default function About() {
           <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>principal ai engineer · london</p>
         </div>
 
-        <div style={{ padding: '0 3.5rem 8rem' }}>
+        <div style={{ padding: '0 3.5rem 8rem', backgroundColor: 'rgba(4,4,4,0.5)' }}>
 
           {/* ── Projects ── */}
           <p style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '1rem' }}>

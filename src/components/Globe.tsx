@@ -282,7 +282,6 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
             strokeWidth={active ? 2.5 : 1}
             strokeOpacity={active ? 1 : DIM}
             strokeLinecap="round"
-            strokeDasharray={active ? undefined : '5 6'}
             filter={active ? 'url(#arc-glow)' : undefined}
             style={{ transition: 'stroke-width 0.5s, stroke-opacity 0.5s' }}
           />
