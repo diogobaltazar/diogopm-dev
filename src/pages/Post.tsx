@@ -20,28 +20,33 @@ export default function Post() {
 
   return (
     <PageTransition>
-      <article>
+      <article className="pt-16">
         <Link
           to="/blog"
-          className="inline-block text-xs tracking-widest uppercase mb-10 transition-opacity hover:opacity-60"
-          style={{ color: '#6b6b6b' }}
+          className="inline-block text-xs tracking-widest uppercase mb-12 transition-opacity hover:opacity-60"
+          style={{ color: 'var(--muted)' }}
         >
           ← Writing
         </Link>
 
         <header className="mb-10">
-          <time className="text-xs tracking-wide" style={{ color: '#6b6b6b' }}>
+          <time className="text-xs" style={{ color: 'var(--muted)' }}>
             {formatDate(frontmatter.date)}
           </time>
           <h1
-            className="mt-3 text-4xl leading-tight"
-            style={{ fontFamily: 'var(--font-serif)' }}
+            className="mt-3 text-4xl font-semibold tracking-tight leading-tight"
+            style={{
+              background: 'linear-gradient(to bottom, #ffffff 50%, rgba(255,255,255,0.6))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
           >
             {frontmatter.title}
           </h1>
         </header>
 
-        <div className="prose prose-sm max-w-none">
+        <div className="prose prose-sm prose-invert max-w-none">
           <Component />
         </div>
       </article>

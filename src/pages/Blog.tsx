@@ -6,12 +6,17 @@ export default function Blog() {
   return (
     <PageTransition>
       <h1
-        className="pt-4 text-5xl leading-tight"
-        style={{ fontFamily: 'var(--font-serif)' }}
+        className="pt-20 text-5xl font-semibold tracking-tight mb-12"
+        style={{
+          background: 'linear-gradient(to bottom, #ffffff 50%, rgba(255,255,255,0.5))',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
       >
         Writing
       </h1>
-      <div className="mt-10 border-t" style={{ borderColor: '#e5e2de' }}>
+      <div style={{ borderTop: '1px solid var(--border)' }}>
         {posts.map(({ slug, frontmatter }) => (
           <PostCard
             key={slug}

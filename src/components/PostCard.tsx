@@ -19,19 +19,19 @@ export default function PostCard({ slug, title, date, description }: Props) {
   return (
     <Link
       to={`/blog/${slug}`}
-      className="group block py-7 border-b"
-      style={{ borderColor: '#e5e2de' }}
+      className="group block py-6 transition-colors duration-200"
+      style={{ borderBottom: '1px solid var(--border)' }}
     >
-      <time className="text-xs tracking-wide" style={{ color: '#6b6b6b' }}>
+      <time className="text-xs" style={{ color: 'var(--muted)' }}>
         {formatDate(date)}
       </time>
       <h2
-        className="mt-2 font-serif text-xl leading-snug transition-colors duration-200"
-        style={{ fontFamily: 'var(--font-serif)' }}
+        className="mt-2 text-sm font-medium transition-colors duration-200"
+        style={{ color: 'var(--fg)' }}
       >
         {title}
       </h2>
-      <p className="mt-1 text-sm leading-relaxed" style={{ color: '#6b6b6b' }}>
+      <p className="mt-1 text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
         {description}
       </p>
     </Link>
