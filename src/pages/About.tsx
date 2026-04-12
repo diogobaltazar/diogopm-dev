@@ -436,7 +436,7 @@ function Entry({
   const PURPLE = '#cc44ff'
   const typeColor = entry.type === 'experience' ? CYAN : PURPLE
   const isActive = activeIdx === idx
-  const opacity = activeIdx === null ? 0.8 : isActive ? 1 : 0.3
+  const opacity = isActive ? 1 : 0.3
 
   const statusColor: Record<string, string> = {
     shipped: 'rgba(0,229,255,0.5)',
