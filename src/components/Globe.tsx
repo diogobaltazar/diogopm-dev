@@ -94,13 +94,19 @@ function detectStatic() {
 // ─── component ────────────────────────────────────────────────────────────────
 
 interface GlobeProps {
+  mode?: 'globe' | 'orb'
   activeArc: string | null
   activeLocation: string | null
   onCityClick?: (key: string) => void
 }
 
-export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeProps) {
+export default function Globe({ mode = 'globe', activeArc, activeLocation, onCityClick }: GlobeProps) {
+  const isOrb = mode === 'orb'
   const staticMode = useMemo(detectStatic, [])
+
+  // Stop rotation in orb mode so returning to About restores the original view
+  const isOrbRef = useRef(isOrb)
+  useEffect(() => { isOrbRef.current = isOrb }, [isOrb])
 
   const [rotation, setRotation] = useState<[number, number, number]>([...INITIAL])
   const rotRef     = useRef<[number, number, number]>([...INITIAL])
@@ -150,7 +156,7 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
       const dt = Math.min(now - prev, 50)
       prev = now
 
-      if (!isDragging.current) {
+      if (!isDragging.current && !isOrbRef.current) {
         if (flyAnim.current) {
           const { from, to, t0 } = flyAnim.current
           const t = Math.min((now - t0) / DURATION, 1)
@@ -200,7 +206,8 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
   const CYAN   = '#00e5ff'
   const PURPLE = '#cc44ff'
   const DIM    = 0.20
-  const cursor = isDragging.current ? 'grabbing' : 'grab'
+  const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
+  const haloColor = isOrb ? 'rgba(180,68,255,0.55)' : 'rgba(0,200,255,0.6)'
 
   return (
     <svg
@@ -237,6 +244,8 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
       <circle cx={CX} cy={CY} r={R} fill="#040404" />
 
       {/* Clipped globe content */}
+      {/* Globe content — fades out in orb mode */}
+      <g style={{ opacity: isOrb ? 0 : 1, transition: 'opacity 0.9s ease' }}>
       <g clipPath="url(#clip)">
         {/* Land — slightly lighter black, no blue tint */}
         <path
@@ -291,7 +300,7 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
         })}
       </g>
 
-      {/* Elevated arcs — rendered outside clip, floats above sphere */}
+      {/* Elevated arcs — inside the fading group */}
       {CAREER_ARCS.map(({ id, from, to }) => {
         const active = activeArc === id
         const d = elevatedArcPath(CITIES[from].coords, CITIES[to].coords, proj, 50)
@@ -329,14 +338,15 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
           />
         )
       })}
+      </g> {/* end fading globe content group */}
 
-      {/* Rim halo — glow only */}
+      {/* Rim halo — colour transitions cyan ↔ purple */}
       <circle
         cx={CX} cy={CY} r={R}
         fill="none"
-        stroke="rgba(0,200,255,0.6)"
         strokeWidth={2}
         filter="url(#rim)"
+        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
       />
     </svg>
   )
