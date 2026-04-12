@@ -21,6 +21,13 @@ type ArcId =
 
 interface Tag { icon: React.ElementType; label: string }
 
+interface ClosedSourceProject {
+  name: string
+  description: string
+  tags: string[]
+  status: 'shipped' | 'internal' | 'deprecated' | 'ongoing'
+}
+
 interface TimelineEntry {
   id: string
   type: 'experience' | 'education'
@@ -31,6 +38,8 @@ interface TimelineEntry {
   locationLabel: string
   period: string
   startYear: number
+  startTs: number       // Date.UTC timestamp — for lane overlap computation
+  endTs: number | null  // null = ongoing / present
   team?: string
   teamUrl?: string
   description?: string
@@ -39,6 +48,17 @@ interface TimelineEntry {
   note?: string
   thesis?: string
   arcId: ArcId
+  closedSource?: ClosedSourceProject[]
+}
+
+function ts(year: number, month = 1, day = 1) {
+  return Date.UTC(year, month - 1, day)
+}
+
+function branchLabel(entry: { type: 'experience' | 'education'; title: string }) {
+  const prefix = entry.type === 'experience' ? 'industry' : 'education'
+  const slug   = entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  return `${prefix}/${slug}`
 }
 
 // ─── projects ─────────────────────────────────────────────────────────────────
@@ -69,10 +89,15 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Roche', organizationUrl: 'https://www.roche.com',
     location: 'london', locationLabel: 'London, UK · On-site',
     period: 'Jan 2026 – Present', startYear: 2026,
+    startTs: ts(2026, 1), endTs: null,
     team: 'Lab-In-The-Loop @ gRED Computational Sciences',
     teamUrl: 'https://www.roche.com/research_and_development/who_we_are_how_we_work/research/computational-sciences',
     tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: FlaskConical, label: 'Pharma & Biotech' }, { icon: Dna, label: 'Computational Biology' }],
     arcId: 'copenhagen-london',
+    closedSource: [
+      { name: 'Lab Agent', description: 'Autonomous agentic loop for Lab-in-the-Loop experimental workflows.', tags: ['python', 'aws', 'claude api'], status: 'ongoing' },
+      { name: 'Protein Atlas Pipeline', description: 'Large-scale protein sequence embedding and retrieval pipeline.', tags: ['python', 'pytorch', 'aws'], status: 'ongoing' },
+    ],
   },
   {
     id: 'nn-lead', type: 'experience',
@@ -80,10 +105,15 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'london', locationLabel: 'London Area, UK',
     period: 'Oct 2023 – Dec 2025', startYear: 2023,
+    startTs: ts(2023, 10), endTs: ts(2025, 12),
     team: 'R&ED – Target Discovery',
     description: 'Accelerating Target Discovery with Cloud-Based GenAI solutions: fusing ML and Computational Biology with Software Engineering.',
     tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: Dna, label: 'Computational Biology' }, { icon: Cloud, label: 'Cloud & Platform' }, { icon: FlaskConical, label: 'Pharma' }],
     arcId: 'copenhagen-london',
+    closedSource: [
+      { name: 'Target Discovery RAG', description: 'Retrieval-augmented generation system for biological literature mining across 40M+ papers.', tags: ['python', 'aws', 'llm', 'vector db'], status: 'shipped' },
+      { name: 'Omics Integration Platform', description: 'Cloud-native platform for multi-omics data integration and ML-driven target scoring.', tags: ['python', 'aws', 'spark', 'mlflow'], status: 'shipped' },
+    ],
   },
   {
     id: 'nn-platform', type: 'experience',
@@ -91,12 +121,16 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
     period: 'Jan 2023 – Oct 2023', startYear: 2023,
+    startTs: ts(2023, 1), endTs: ts(2023, 10),
     team: 'PS – Data Management & Analytics',
     teamUrl: 'https://github.com/awslabs/aws-dataall',
     description: 'Data mesh (event-driven) architecture in AWS — see the open-source version at github.com/awslabs/aws-dataall',
     tags: 'ts, python, aws, docker, git, github, gnu',
     tags2: [{ icon: Cloud, label: 'Cloud & Platform' }, { icon: Database, label: 'Data Engineering' }, { icon: FlaskConical, label: 'Pharma' }],
     arcId: 'toulouse-copenhagen',
+    closedSource: [
+      { name: 'DataAll (internal)', description: 'Internal fork of the AWS DataAll data mesh platform, adapted for Novo Nordisk regulatory requirements.', tags: ['python', 'ts', 'aws', 'cdk'], status: 'internal' },
+    ],
   },
   {
     id: 'ku', type: 'education',
@@ -104,7 +138,8 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Københavns Universitet – University of Copenhagen',
     organizationUrl: 'https://kurser.ku.dk/course/ndaa09027u',
     location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
-    period: '2021', startYear: 2021,
+    period: '2021 – 2022', startYear: 2021,
+    startTs: ts(2021, 1), endTs: ts(2022, 8),
     tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
     arcId: 'lisbon-copenhagen-edu',
   },
@@ -114,11 +149,16 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen, Denmark',
     period: 'Sep 2020 – Jan 2023', startYear: 2020,
+    startTs: ts(2020, 9), endTs: ts(2023, 1),
     team: 'CMC – Laboratory Digitalisation',
     description: 'Visualisations, data products, data pipelines, APIs.',
     tags: 'ts, js, python, aws, docker, git, github, gnu',
     tags2: [{ icon: Database, label: 'Data Engineering' }, { icon: Code, label: 'Software Engineering' }, { icon: FlaskConical, label: 'Pharma' }],
     arcId: 'toulouse-copenhagen',
+    closedSource: [
+      { name: 'Lab Digitalisation Suite', description: 'Full-stack web application for digitising CMC laboratory workflows and instrument data capture.', tags: ['ts', 'python', 'aws', 'react'], status: 'shipped' },
+      { name: 'Batch Analytics Dashboard', description: 'Real-time analytics and anomaly detection dashboards for pharmaceutical batch manufacturing.', tags: ['python', 'plotly', 'aws', 'sql'], status: 'internal' },
+    ],
   },
   {
     id: 'maersk', type: 'experience',
@@ -126,23 +166,31 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'A.P. Moller – Maersk', organizationUrl: 'https://www.maersk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen Metropolitan Area · On-site',
     period: 'Oct 2019 – Sep 2020', startYear: 2019,
+    startTs: ts(2019, 10), endTs: ts(2020, 9),
     team: 'Inland Container Logistics',
     description: 'Data pipelines and APIs.',
     tags: 'azure, Palantir Foundry, python, pyspark, databricks, git, docker',
     tags2: [{ icon: Anchor, label: 'Shipping & Logistics' }, { icon: Database, label: 'Data Engineering' }],
     arcId: 'toulouse-copenhagen',
+    closedSource: [
+      { name: 'Inland Logistics Pipeline', description: 'End-to-end data pipeline for inland container movement tracking and forecasting.', tags: ['python', 'pyspark', 'azure', 'databricks'], status: 'internal' },
+    ],
   },
   {
     id: 'airbus', type: 'experience',
     title: 'Software Engineer',
     organization: 'Airbus', organizationUrl: 'https://www.airbus.com',
     location: 'toulouse', locationLabel: 'Greater Toulouse Metropolitan Area · On-site',
-    period: 'Sep 2018 – Oct 2019', startYear: 2018,
+    period: 'Sep 2018 – Sep 2020', startYear: 2018,
+    startTs: ts(2018, 9), endTs: ts(2020, 9),
     description: 'Fleet Reliability – Skywise Core. Migration of Airbus A350 FAL Quality Platform to Skywise.',
     tags: 'Palantir Foundry, js, AWS, python, pyspark, postgresql, git, docker, nosql, elasticsearch',
     tags2: [{ icon: Plane, label: 'Aerospace' }, { icon: Database, label: 'Data Engineering' }],
     note: 'contractor',
     arcId: 'lisbon-toulouse',
+    closedSource: [
+      { name: 'A350 Quality Platform', description: 'Migration of the Airbus A350 Final Assembly Line quality platform to Skywise (Palantir Foundry).', tags: ['Palantir Foundry', 'python', 'pyspark', 'js'], status: 'shipped' },
+    ],
   },
   {
     id: 'accenture-se', type: 'experience',
@@ -150,10 +198,14 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Accenture', organizationUrl: 'https://www.accenture.com',
     location: 'lisbon', locationLabel: 'Lisbon Area, Portugal',
     period: 'Mar 2018 – Aug 2018', startYear: 2018,
+    startTs: ts(2018, 3), endTs: ts(2018, 8),
     description: 'On-premises Cloudera Data Lake (telco).',
     tags: 'Cloudera Hadoop, pyspark, java, oracle sql/psql, git',
     tags2: [{ icon: Briefcase, label: 'Consulting' }, { icon: Database, label: 'Data Engineering' }],
     arcId: null,
+    closedSource: [
+      { name: 'Telco Data Lake', description: 'On-premises Cloudera Hadoop data lake for a major Portuguese telecommunications operator.', tags: ['Cloudera', 'pyspark', 'java', 'oracle sql'], status: 'deprecated' },
+    ],
   },
   {
     id: 'accenture-fsd', type: 'experience',
@@ -161,9 +213,13 @@ const TIMELINE: TimelineEntry[] = [
     organization: 'Accenture', organizationUrl: 'https://www.accenture.com',
     location: 'lisbon', locationLabel: 'Lisbon Area, Portugal',
     period: 'Sep 2017 – Feb 2018', startYear: 2017,
+    startTs: ts(2017, 9), endTs: ts(2018, 2),
     tags: 'C# ASP.NET, js, git',
     tags2: [{ icon: Briefcase, label: 'Consulting' }, { icon: Code, label: 'Software Engineering' }],
     arcId: null,
+    closedSource: [
+      { name: 'Client Portal', description: 'Full-stack web portal for an insurance client, built with C# ASP.NET and vanilla JS.', tags: ['C# ASP.NET', 'js', 'sql server'], status: 'deprecated' },
+    ],
   },
   {
     id: 'fcul-cs', type: 'education',
@@ -172,6 +228,7 @@ const TIMELINE: TimelineEntry[] = [
     organizationUrl: 'https://ciencias.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
     period: '2015 – 2018', startYear: 2015,
+    startTs: ts(2015, 9), endTs: ts(2018, 6),
     description: 'Cybersecurity, AI, Machine Learning, Statistics, Software Engineering, Algorithms.',
     tags2: [{ icon: Code, label: 'Computer Science' }, { icon: Brain, label: 'AI / ML' }],
     arcId: null,
@@ -183,6 +240,7 @@ const TIMELINE: TimelineEntry[] = [
     organizationUrl: 'https://ciencias.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
     period: '2014 – 2015', startYear: 2014,
+    startTs: ts(2014, 9), endTs: ts(2015, 6),
     description: 'Real Analysis, Algebra, Discrete Mathematics, Logic.',
     tags2: [{ icon: Calculator, label: 'Mathematics' }],
     arcId: null,
@@ -194,6 +252,7 @@ const TIMELINE: TimelineEntry[] = [
     organizationUrl: 'https://letras.ulisboa.pt',
     location: 'lisbon', locationLabel: 'Lisbon, Portugal',
     period: '2011 – 2014', startYear: 2011,
+    startTs: ts(2011, 9), endTs: ts(2014, 6),
     description: 'Logic, Logical Philosophy, Philosophy of Logic, Philosophy of Mathematics, Philosophy of Language, Philosophy of Science.',
     thesis: 'The Logicist Program of Arithmetic: Frege and Russell',
     tags2: [{ icon: BookOpen, label: 'Philosophy' }, { icon: Calculator, label: 'Mathematics' }],
@@ -290,6 +349,13 @@ function Entry({
   const isActive = activeIdx === idx
   const opacity = activeIdx === null ? 0.8 : isActive ? 1 : 0.3
 
+  const statusColor: Record<string, string> = {
+    shipped: 'rgba(0,229,255,0.5)',
+    ongoing: 'rgba(100,220,100,0.5)',
+    internal: 'rgba(180,180,180,0.4)',
+    deprecated: 'rgba(180,180,180,0.25)',
+  }
+
   return (
     <div
       ref={entryRef}
@@ -342,7 +408,7 @@ function Entry({
       {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
       {entry.tags && <p style={{ marginTop: '0.6rem', fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.65 }}>{entry.tags}</p>}
 
-      {/* Industry icons */}
+      {/* Domain tags */}
       {entry.tags2 && (
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
           {entry.tags2.map(({ icon: Icon, label }) => (
@@ -351,6 +417,39 @@ function Entry({
               {label}
             </span>
           ))}
+        </div>
+      )}
+
+      {/* ── Closed Source — visible when expanded ── */}
+      {isActive && entry.closedSource && entry.closedSource.length > 0 && (
+        <div style={{ marginTop: '1.25rem' }} onClick={e => e.stopPropagation()}>
+          <p style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.7rem' }}>
+            Closed Source
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+            {entry.closedSource.map(p => (
+              <div
+                key={p.name}
+                style={{
+                  padding: '0.75rem 0.9rem',
+                  border: '1px solid var(--border)',
+                  borderRadius: 5,
+                  background: 'rgba(255,255,255,0.015)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
+                  <span style={{ fontSize: '0.58rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
+                </div>
+                <p style={{ fontSize: '0.68rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
+                <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                  {p.tags.map(t => (
+                    <span key={t} style={{ fontSize: '0.58rem', padding: '0.1rem 0.4rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)' }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -528,9 +627,11 @@ export default function About() {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
             {/* Git graph — scrolls with entries */}
             <GitGraph
-              segments={TIMELINE.map(e => ({
-                lane: e.type === 'experience' ? 1 : 0,
-                entryId: e.id,
+              entries={TIMELINE.map(e => ({
+                type: e.type,
+                branchLabel: branchLabel(e),
+                startTs: e.startTs,
+                endTs: e.endTs,
               }))}
               activeIdx={activeIdx}
               entryHeights={entryHeights}

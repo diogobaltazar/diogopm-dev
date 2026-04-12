@@ -1,68 +1,88 @@
 /**
  * Git-log-style branch visualisation.
- * – Central main branch line (dark indigo trunk, full height)
- * – Industry commits (cyan) and education commits (purple) share the same BRANCH_X lane
- * – Entries grouped into consecutive runs of the same type
- * – Each group: vertical branch line + fork curve at top + merge curve at bottom
- * – Hollow circle nodes; active node glows with pulse ring
+ *
+ * Rules:
+ *  – One commit per entry, on its own branch (fork → commit → merge).
+ *  – Branches whose real-world date ranges overlap occupy different lane columns.
+ *  – Lane assignment: greedy interval colouring on branch "extents" (the set of
+ *    rows a branch line passes through, from its merge point down to its commit row).
+ *  – Branch line extends from the merge point (top, newer) to the fork point (bottom, older).
+ *  – Clicking a node fires onNodeClick.
  */
 
 import { useMemo } from 'react'
 
-const MAIN_X   = 10
-const BRANCH_X = 38
-const SVG_W    = 52
+// ─── constants ────────────────────────────────────────────────────────────────
+
+const MAIN_X    = 14
+const LANE_BASE = 40   // x of lane 0
+const LANE_STEP = 26   // px between lanes
+const CURVE_R   = 14   // bezier curve arm length
+const NODE_R    = 4
+const NODE_R_ACTIVE = 5.5
 
 const MAIN_COL = 'rgba(50,70,200,0.4)'
 const CYAN     = '#00e5ff'
 const PURPLE   = '#cc44ff'
 
-export interface GitSegment {
-  lane: 0 | 1   // 0 = education (purple)  1 = industry (cyan)
-  entryId: string
+// ─── types ────────────────────────────────────────────────────────────────────
+
+export interface GitEntry {
+  type: 'experience' | 'education'
+  branchLabel: string   // e.g. "industry/principal-ai-engineer"
+  startTs: number       // Date.UTC timestamp
+  endTs: number | null  // null = ongoing / present
 }
 
 interface GitGraphProps {
-  segments: GitSegment[]
+  entries: GitEntry[]
   activeIdx: number | null
   entryHeights: number[]
   onNodeClick?: (idx: number) => void
 }
 
-interface Group {
-  lane: 0 | 1
-  col: string
-  start: number   // first index in this group
-  end: number     // last index in this group (inclusive)
-}
+// ─── layout computation ───────────────────────────────────────────────────────
 
-function buildGroups(segments: GitSegment[]): Group[] {
-  if (segments.length === 0) return []
-  const groups: Group[] = []
-  let cur: Group = {
-    lane: segments[0].lane,
-    col: segments[0].lane === 1 ? CYAN : PURPLE,
-    start: 0,
-    end: 0,
-  }
-  for (let i = 1; i < segments.length; i++) {
-    if (segments[i].lane === cur.lane) {
-      cur.end = i
-    } else {
-      groups.push(cur)
-      cur = {
-        lane: segments[i].lane,
-        col: segments[i].lane === 1 ? CYAN : PURPLE,
-        start: i,
-        end: i,
+function computeLayout(entries: GitEntry[]): { lanes: number[]; extentTopRow: number[] } {
+  const n   = entries.length
+  const now = Date.now()
+
+  // extentTopRow[j] = the topmost row index where branch j's line is visible.
+  // Branch j is visible at row i (i < j, higher up / newer) when:
+  //   entries[j].endTs > entries[i].startTs
+  // i.e. j's role ended after i's role started → they were simultaneously active.
+  const extentTopRow = entries.map((e, j) => {
+    const endTs = e.endTs ?? now
+    let top = j
+    for (let i = 0; i < j; i++) {
+      if (endTs > entries[i].startTs) top = Math.min(top, i)
+    }
+    return top
+  })
+
+  // Greedy lane assignment: intervals are [extentTopRow[j], j].
+  // Two intervals conflict if they share at least one row index.
+  const lanes = new Array<number>(n).fill(0)
+  for (let j = 0; j < n; j++) {
+    const jTop = extentTopRow[j]
+    const jBot = j
+    const taken = new Set<number>()
+    for (let k = 0; k < j; k++) {
+      if (Math.max(jTop, extentTopRow[k]) <= Math.min(jBot, k)) {
+        taken.add(lanes[k])
       }
     }
+    let lane = 0
+    while (taken.has(lane)) lane++
+    lanes[j] = lane
   }
-  groups.push(cur)
-  return groups
+
+  return { lanes, extentTopRow }
 }
 
-export default function GitGraph({ segments, activeIdx, entryHeights, onNodeClick }: GitGraphProps) {
+// ─── component ────────────────────────────────────────────────────────────────
+
+export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick }: GitGraphProps) {
   const totalHeight = entryHeights.reduce((a, b) => a + b, 0)
 
   const yPos = useMemo(() => {
@@ -70,15 +90,18 @@ export default function GitGraph({ segments, activeIdx, entryHeights, onNodeClic
     return entryHeights.map(h => { const t = y; y += h; return t })
   }, [entryHeights])
 
-  const groups = useMemo(() => buildGroups(segments), [segments])
+  const { lanes, extentTopRow } = useMemo(() => computeLayout(entries), [entries])
 
-  if (totalHeight === 0 || segments.length === 0) {
+  const maxLane = lanes.length > 0 ? Math.max(...lanes) : 0
+  const SVG_W   = LANE_BASE + (maxLane + 1) * LANE_STEP + 2
+
+  if (totalHeight === 0 || entries.length === 0) {
     return <div style={{ width: SVG_W, flexShrink: 0 }} />
   }
 
   const elems: React.ReactNode[] = []
 
-  // ── Main vertical trunk (continuous, full height) ──────────────────────────
+  // ── Main trunk ─────────────────────────────────────────────────────────────
   elems.push(
     <line
       key="trunk"
@@ -89,105 +112,105 @@ export default function GitGraph({ segments, activeIdx, entryHeights, onNodeClic
     />
   )
 
-  // ── Per-group: branch line + fork/merge curves ─────────────────────────────
-  for (const group of groups) {
-    const { col, start, end } = group
+  // ── Per-branch rendering ───────────────────────────────────────────────────
+  for (let j = 0; j < entries.length; j++) {
+    const entry   = entries[j]
+    const lane    = lanes[j]
+    const extTop  = extentTopRow[j]
+    const LX      = LANE_BASE + lane * LANE_STEP
+    const col     = entry.type === 'experience' ? CYAN : PURPLE
 
-    const y0      = yPos[start] ?? 0
-    const y1      = (yPos[end] ?? 0) + (entryHeights[end] ?? 0)
-    const hFirst  = entryHeights[start] ?? 0
-    const hLast   = entryHeights[end] ?? 0
+    const mergeY  = yPos[extTop] ?? 0
+    const forkY   = (yPos[j] ?? 0) + (entryHeights[j] ?? 0)
+    const commitY = (yPos[j] ?? 0) + (entryHeights[j] ?? 0) / 2
 
-    // Is any entry in this group the active one?
-    const groupActive = activeIdx !== null && activeIdx >= start && activeIdx <= end
+    const isActive = j === activeIdx
+    const lineOp   = activeIdx === null ? 0.35 : isActive ? 0.85 : 0.12
+    const lineW    = activeIdx === null ? 1    : isActive ? 1.8  : 0.7
 
-    const branchOp = groupActive ? 0.9 : 0.3
-    const branchW  = groupActive ? 1.8 : 1
+    // Clamp curve radius to fit within the row height
+    const avail = entryHeights[j] ?? 0
+    const R     = Math.min(CURVE_R, avail * 0.38)
 
-    // Vertical branch line from group top to bottom
-    elems.push(
-      <line
-        key={`branch-${start}-${end}`}
-        x1={BRANCH_X} y1={y0 + hFirst * 0.45}
-        x2={BRANCH_X} y2={y1 - hLast * 0.45}
-        stroke={col}
-        strokeWidth={branchW}
-        strokeOpacity={branchOp}
-        style={{ transition: 'stroke-width 0.35s, stroke-opacity 0.35s' }}
-      />
-    )
+    // Merge curve: branch lane → main trunk (at top of extent)
+    // M LX,mergeY+R  C LX,mergeY  MAIN_X,mergeY+R  MAIN_X,mergeY
+    const mergeD = `M ${LX},${mergeY + R} C ${LX},${mergeY} ${MAIN_X},${mergeY + R} ${MAIN_X},${mergeY}`
 
-    // Fork curve: MAIN → BRANCH at group top
-    const forkD = [
-      `M ${MAIN_X},${y0}`,
-      `C ${MAIN_X},${y0 + hFirst * 0.45}`,
-      `  ${BRANCH_X},${y0}`,
-      `  ${BRANCH_X},${y0 + hFirst * 0.45}`,
-    ].join(' ')
+    // Fork curve: main trunk → branch lane (at bottom of commit row)
+    // M MAIN_X,forkY  C MAIN_X,forkY-R  LX,forkY  LX,forkY-R
+    const forkD = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
 
     elems.push(
-      <path
-        key={`fork-${start}`}
-        d={forkD}
-        fill="none"
-        stroke={col}
-        strokeWidth={1}
-        strokeOpacity={0.35}
-      />
-    )
+      <g key={`branch-${j}`} style={{ transition: 'opacity 0.35s' }}>
 
-    // Merge curve: BRANCH → MAIN at group bottom
-    const mergeD = [
-      `M ${BRANCH_X},${y1 - hLast * 0.45}`,
-      `C ${BRANCH_X},${y1}`,
-      `  ${MAIN_X},${y1 - hLast * 0.45}`,
-      `  ${MAIN_X},${y1}`,
-    ].join(' ')
+        {/* Vertical branch line (spans from merge+R down to fork-R) */}
+        <line
+          x1={LX} y1={mergeY + R}
+          x2={LX} y2={Math.max(mergeY + R, forkY - R)}
+          stroke={col}
+          strokeWidth={lineW}
+          strokeOpacity={lineOp}
+          style={{ transition: 'stroke-width 0.35s, stroke-opacity 0.35s' }}
+        />
 
-    elems.push(
-      <path
-        key={`merge-${end}`}
-        d={mergeD}
-        fill="none"
-        stroke={col}
-        strokeWidth={1}
-        strokeOpacity={0.35}
-      />
-    )
-
-    // ── Nodes for each entry in this group ──────────────────────────────────
-    for (let i = start; i <= end; i++) {
-      const midY  = (yPos[i] ?? 0) + (entryHeights[i] ?? 0) / 2
-      const active = i === activeIdx
-
-      elems.push(
-        <circle
-          key={`node-${i}`}
-          cx={BRANCH_X}
-          cy={midY}
-          r={active ? 5.5 : 4}
+        {/* Merge curve */}
+        <path
+          d={mergeD}
           fill="none"
           stroke={col}
-          strokeWidth={active ? 1.5 : 1}
-          strokeOpacity={active ? 1 : 0.5}
+          strokeWidth={lineW * 0.85}
+          strokeOpacity={lineOp * 0.85}
+        />
+
+        {/* Fork curve */}
+        <path
+          d={forkD}
+          fill="none"
+          stroke={col}
+          strokeWidth={lineW * 0.85}
+          strokeOpacity={lineOp * 0.85}
+        />
+
+        {/* Commit node */}
+        <circle
+          cx={LX}
+          cy={commitY}
+          r={isActive ? NODE_R_ACTIVE : NODE_R}
+          fill="none"
+          stroke={col}
+          strokeWidth={isActive ? 1.5 : 1}
+          strokeOpacity={activeIdx === null ? 0.6 : isActive ? 1 : 0.2}
           style={{
             cursor: 'pointer',
             transition: 'r 0.35s, stroke-opacity 0.35s',
-            filter: active ? `drop-shadow(0 0 5px ${col})` : 'none',
+            filter: isActive ? `drop-shadow(0 0 5px ${col})` : 'none',
           }}
-          onClick={() => onNodeClick?.(i)}
+          onClick={() => onNodeClick?.(j)}
         />
-      )
 
-      if (active) {
-        elems.push(
-          <circle key={`pulse-${i}`} cx={BRANCH_X} cy={midY} r={5.5} fill="none" stroke={col} strokeWidth={1}>
-            <animate attributeName="r"       from="5.5" to="14" dur="1.6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" from="0.7"  to="0"  dur="1.6s" repeatCount="indefinite" />
+        {/* Pulse ring when active */}
+        {isActive && (
+          <circle cx={LX} cy={commitY} r={NODE_R_ACTIVE} fill="none" stroke={col} strokeWidth={1}>
+            <animate attributeName="r"       from={String(NODE_R_ACTIVE)} to="14" dur="1.6s" repeatCount="indefinite" />
+            <animate attributeName="opacity" from="0.7" to="0"            dur="1.6s" repeatCount="indefinite" />
           </circle>
-        )
-      }
-    }
+        )}
+
+        {/* Branch label — small text at the merge point, extending into entry area */}
+        <text
+          x={LX + 4}
+          y={mergeY + 9}
+          fontSize={6.5}
+          fill={col}
+          fillOpacity={isActive ? 0.65 : 0.2}
+          fontFamily="var(--font-mono)"
+          style={{ userSelect: 'none', pointerEvents: 'none', transition: 'fill-opacity 0.35s' }}
+        >
+          {entry.branchLabel}
+        </text>
+
+      </g>
+    )
   }
 
   return (
