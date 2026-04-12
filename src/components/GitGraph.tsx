@@ -139,7 +139,10 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const avail = entryHeights[j] ?? 0
     const R     = Math.min(CURVE_R, avail * 0.38)
 
-    const lineTop = lineTopY
+    // Non-concurrent merged branch: line starts at mergeY+R (flush with merge curve).
+    // Concurrent merged branch: line extends up to lineTopY to show the overlap period.
+    // Ongoing branch: line extends up to lineTopY (the open tip).
+    const lineTop = (!isOngoing && extTop === j) ? mergeY + R : lineTopY
     const nodeY   = isOngoing ? lineTopY : commitY
 
     const forkD  = `M ${MAIN_X},${forkY} C ${MAIN_X},${forkY - R} ${LX},${forkY} ${LX},${forkY - R}`
