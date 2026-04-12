@@ -104,7 +104,7 @@ echo "<account-id>" | gh secret set CLOUDFLARE_ACCOUNT_ID --repo diogobaltazar/d
 
 ### 5. GitHub — branch protection (main)
 
-Applied via the GitHub REST API:
+Applied via the GitHub REST API (`enforce_admins: false` so the owner can push directly):
 
 ```bash
 gh api repos/diogobaltazar/diogopm-dev/branches/main/protection \
@@ -116,7 +116,7 @@ gh api repos/diogobaltazar/diogopm-dev/branches/main/protection \
     "strict": false,
     "contexts": ["CI / build"]
   },
-  "enforce_admins": true,
+  "enforce_admins": false,
   "required_pull_request_reviews": null,
   "restrictions": null,
   "allow_force_pushes": false,
@@ -128,35 +128,61 @@ EOF
 Rules in effect:
 - No force pushes
 - No branch deletion
-- `CI / build` must pass before any merge
+- `CI / build` must pass before any merge (PRs from others)
 
 ### 6. Cloudflare Pages — project creation
 
-Created via the Cloudflare API (the project did not exist beforehand):
+Created via the Cloudflare API (the project did not exist beforehand — `cloudflare/pages-action` requires a pre-existing project):
 
 ```bash
 curl -X POST \
   "https://api.cloudflare.com/client/v4/accounts/<account-id>/pages/projects" \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <pages-token>" \
   -H "Content-Type: application/json" \
   -d '{"name":"diogopm-dev","production_branch":"main"}'
 ```
 
 ### 7. Cloudflare Pages — custom domains
 
-Both domains attached via the Cloudflare API:
+Both domains attached via the Cloudflare Pages API:
 
 ```bash
 for domain in diogopm.dev pereiramarques.dev; do
   curl -X POST \
     "https://api.cloudflare.com/client/v4/accounts/<account-id>/pages/projects/diogopm-dev/domains" \
-    -H "Authorization: Bearer <token>" \
+    -H "Authorization: Bearer <pages-token>" \
     -H "Content-Type: application/json" \
     -d "{\"name\":\"$domain\"}"
 done
 ```
 
-Cloudflare provisions TLS certificates automatically (Google Trust Services). DNS is managed by Cloudflare nameservers.
+### 8. Cloudflare DNS — CNAME records
+
+The Pages domain attachment does not automatically create DNS records. Both zones had no records pointing to Pages, so CNAMEs were created via the DNS API (requires a separate token with **Zone › DNS › Edit** permission — named `diogopm-dev-dns`):
+
+```bash
+for zone_id in 69ce5da4d75b2bb35a79e54080460927 8483d1a46bb2041c583094fddfc55cf7; do
+  curl -X POST \
+    "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records" \
+    -H "Authorization: Bearer <dns-token>" \
+    -H "Content-Type: application/json" \
+    -d '{"type":"CNAME","name":"@","content":"diogopm-dev.pages.dev","proxied":true}'
+done
+```
+
+| Zone | Zone ID |
+|------|---------|
+| `diogopm.dev` | `69ce5da4d75b2bb35a79e54080460927` |
+| `pereiramarques.dev` | `8483d1a46bb2041c583094fddfc55cf7` |
+
+With the proxied CNAME in place, Cloudflare completes HTTP validation and issues TLS certificates via Google Trust Services automatically.
+
+**API tokens in use:**
+
+| Token name | Permission | Used for |
+|------------|-----------|---------|
+| `diogopm-dev-deploy` | Account › Cloudflare Pages › Edit | GitHub Actions deployment |
+| `diogopm-dev-dns` | Zone › DNS › Edit | Creating DNS records |
 
 ---
 
