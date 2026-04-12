@@ -163,7 +163,7 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
   return (
     <svg
       viewBox="0 0 500 500"
-      style={{ width: '100%', height: '100%', cursor }}
+      style={{ width: '100%', height: '100%', cursor, overflow: 'visible' }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
