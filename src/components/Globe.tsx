@@ -108,49 +108,56 @@ export default function Globe({ activeArc, activeLocation, onCityClick }: GlobeP
   const dragStart  = useRef<[number, number]>([0, 0])
   const rotAtDrag  = useRef<[number, number, number]>([...INITIAL])
   const rafId      = useRef<number>()
-  const targetRot  = useRef<[number, number, number] | null>(null)
+  const flyAnim = useRef<{ from: [number, number]; to: [number, number]; t0: number } | null>(null)
 
-  // When a city becomes active, animate the globe to centre on it
+  // When a city becomes active, start a timed ease-out fly-to
   useEffect(() => {
     if (!activeLocation) return
     const city = CITIES[activeLocation]
     if (!city) return
-    // Orthographic: to centre [lon, lat], rotate to [-lon, -lat, 0]
-    const tgt: [number, number, number] = [-city.coords[0], -city.coords[1], 0]
-    // Normalise current longitude so we take the shortest arc
+
+    // Normalise current longitude into [-180, 180] for shortest-arc math
     let cur0 = rotRef.current[0] % 360
-    if (cur0 > 180) cur0 -= 360
+    if (cur0 > 180)  cur0 -= 360
     if (cur0 < -180) cur0 += 360
     rotRef.current[0] = cur0
-    targetRot.current = tgt
+
+    // Target rotation that centres the city on screen
+    let tLon = -city.coords[0]
+    let tLat = -city.coords[1]
+
+    // Pick the shortest longitudinal path
+    let dLon = tLon - cur0
+    if (dLon > 180)  tLon -= 360
+    if (dLon < -180) tLon += 360
+
+    flyAnim.current = {
+      from: [cur0, rotRef.current[1]],
+      to:   [tLon, tLat],
+      t0:   performance.now(),
+    }
   }, [activeLocation])
 
   useEffect(() => {
     if (staticMode) return
     let prev = performance.now()
-    const SPEED = 0.001 // very slow — Europe stays visible a long time
+    const SPEED    = 0.001
+    const DURATION = 1400 // ms — full fly-to duration
+
+    function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3) }
 
     function tick(now: number) {
       const dt = Math.min(now - prev, 50)
       prev = now
+
       if (!isDragging.current) {
-        if (targetRot.current) {
-          const tgt = targetRot.current
-          const cur = rotRef.current
-          // Shortest-path longitude delta
-          let dLon = tgt[0] - cur[0]
-          if (dLon > 180) dLon -= 360
-          if (dLon < -180) dLon += 360
-          const dLat = tgt[1] - cur[1]
-          const ease = 1 - Math.pow(0.97, dt)
-          cur[0] += dLon * ease
-          cur[1] += dLat * ease
-          // Snap when close enough
-          if (Math.abs(dLon) < 0.05 && Math.abs(dLat) < 0.05) {
-            cur[0] = tgt[0]
-            cur[1] = tgt[1]
-            targetRot.current = null
-          }
+        if (flyAnim.current) {
+          const { from, to, t0 } = flyAnim.current
+          const t = Math.min((now - t0) / DURATION, 1)
+          const e = easeOutCubic(t)
+          rotRef.current[0] = from[0] + (to[0] - from[0]) * e
+          rotRef.current[1] = from[1] + (to[1] - from[1]) * e
+          if (t >= 1) flyAnim.current = null
         } else {
           rotRef.current[0] -= SPEED * dt
         }
