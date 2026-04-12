@@ -18,8 +18,7 @@ const MAIN_X    = 14
 const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
-const NODE_R        = 3    // matches globe city dot (inactive)
-const NODE_R_ACTIVE = 4.5  // matches globe city dot (active)
+const NODE_R = 3   // fixed size — active state shown via glow only
 
 const MAIN_COL = 'rgba(50,70,200,0.4)'
 const CYAN     = '#00e5ff'
@@ -127,8 +126,8 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
     const isActive  = j === activeIdx
     const isOngoing = entry.endTs === null
 
-    const lineOp = activeIdx === null ? 0.6  : isActive ? 0.9  : 0.2
-    const lineW  = activeIdx === null ? 1.1  : isActive ? 1.8  : 0.8
+    const lineOp = activeIdx === null ? 0.6  : isActive ? 0.9  : 0.4
+    const lineW  = activeIdx === null ? 1.1  : isActive ? 1.8  : 1.0
 
     // Clamp curve radius to fit within the row height
     const avail = entryHeights[j] ?? 0
@@ -186,18 +185,16 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
           />
         )}
 
-        {/* Commit node — solid fill */}
+        {/* Commit node — solid fill, fixed size */}
         <circle
           cx={LX}
           cy={commitY}
-          r={isActive ? NODE_R_ACTIVE : NODE_R}
+          r={NODE_R}
           fill={col}
-          fillOpacity={activeIdx === null ? 0.75 : isActive ? 1 : 0.25}
-          stroke={col}
-          strokeWidth={isActive ? 1.5 : 0}
+          fillOpacity={activeIdx === null ? 0.75 : isActive ? 1 : 0.45}
           style={{
             cursor: 'pointer',
-            transition: 'r 0.35s, fill-opacity 0.35s',
+            transition: 'fill-opacity 0.35s',
             filter: isActive ? `drop-shadow(0 0 6px ${col})` : 'none',
           }}
           onClick={() => onNodeClick?.(j)}
@@ -205,9 +202,9 @@ export default function GitGraph({ entries, activeIdx, entryHeights, onNodeClick
 
         {/* Pulse ring when active */}
         {isActive && (
-          <circle cx={LX} cy={commitY} r={NODE_R_ACTIVE} fill="none" stroke={col} strokeWidth={1}>
-            <animate attributeName="r"       from={String(NODE_R_ACTIVE)} to="14" dur="1.6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" from="0.6" to="0"            dur="1.6s" repeatCount="indefinite" />
+          <circle cx={LX} cy={commitY} r={NODE_R} fill="none" stroke={col} strokeWidth={1}>
+            <animate attributeName="r"       from={String(NODE_R)} to="14" dur="1.6s" repeatCount="indefinite" />
+            <animate attributeName="opacity" from="0.6" to="0"     dur="1.6s" repeatCount="indefinite" />
           </circle>
         )}
 
