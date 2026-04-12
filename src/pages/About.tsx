@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   Brain, Database, Cloud, Anchor, Plane, Briefcase,
@@ -276,27 +276,31 @@ const submitBtn: React.CSSProperties = {
 // ─── timeline entry ───────────────────────────────────────────────────────────
 
 function Entry({
-  entry, isActive, entryRef, idx,
+  entry, activeIdx, entryRef, idx, onClick,
 }: {
   entry: TimelineEntry
-  isActive: boolean
+  activeIdx: number | null
   entryRef: (el: HTMLDivElement | null) => void
   idx: number
+  onClick: () => void
 }) {
   const CYAN   = '#00e5ff'
   const PURPLE = '#cc44ff'
   const typeColor = entry.type === 'experience' ? CYAN : PURPLE
+  const isActive = activeIdx === idx
+  const opacity = activeIdx === null ? 0.8 : isActive ? 1 : 0.3
 
   return (
     <div
       ref={entryRef}
-      data-idx={idx}
       style={{
         padding: '1.5rem 0',
         borderTop: '1px solid var(--border)',
-        opacity: isActive ? 1 : 0.4,
-        transition: 'opacity 0.4s ease',
+        opacity,
+        transition: 'opacity 0.35s ease',
+        cursor: 'pointer',
       }}
+      onClick={onClick}
     >
       {/* Type badge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -358,24 +362,10 @@ function Entry({
 const GLOB_W = '44vw'  // width of the fixed globe panel
 
 export default function About() {
-  const [activeIdx, setActiveIdx]   = useState(0)
+  const [activeIdx, setActiveIdx]   = useState<number | null>(null)
   const [pdfOpen, setPdfOpen]       = useState(false)
   const [entryHeights, setEntryHeights] = useState<number[]>([])
   const refs = useRef<(HTMLDivElement | null)[]>([])
-
-  // Scroll detection
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting) setActiveIdx(Number((e.target as HTMLElement).dataset.idx))
-        })
-      },
-      { threshold: 0.45 },
-    )
-    refs.current.forEach(el => { if (el) obs.observe(el) })
-    return () => obs.disconnect()
-  }, [])
 
   // Measure entry heights for git graph alignment
   useLayoutEffect(() => {
@@ -386,12 +376,22 @@ export default function About() {
     return () => ro.disconnect()
   }, [])
 
-  const active = TIMELINE[activeIdx]
+  const active = activeIdx !== null ? TIMELINE[activeIdx] : null
 
-  // City click → scroll to first matching entry
+  function toggleEntry(idx: number) {
+    setActiveIdx(prev => prev === idx ? null : idx)
+  }
+
+  // Globe city click → scroll to entry + highlight it
   function handleCityClick(locationKey: string) {
     const idx = TIMELINE.findIndex(e => e.location === locationKey)
-    if (idx !== -1) refs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (idx === -1) return
+    setActiveIdx(prev => {
+      if (prev !== idx) {
+        setTimeout(() => refs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
+      }
+      return prev === idx ? null : idx
+    })
   }
 
   return (
@@ -534,7 +534,7 @@ export default function About() {
               activeIdx={activeIdx}
               entryHeights={entryHeights}
               onNodeClick={idx => {
-                setActiveIdx(idx)
+                toggleEntry(idx)
                 refs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
               }}
             />
@@ -545,9 +545,10 @@ export default function About() {
                 <Entry
                   key={entry.id}
                   entry={entry}
-                  isActive={activeIdx === idx}
+                  activeIdx={activeIdx}
                   idx={idx}
                   entryRef={el => { refs.current[idx] = el }}
+                  onClick={() => toggleEntry(idx)}
                 />
               ))}
             </div>

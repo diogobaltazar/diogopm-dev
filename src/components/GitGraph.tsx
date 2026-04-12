@@ -1,29 +1,40 @@
 /**
- * Git-log-style branch visualisation alongside the timeline.
- * – Industry entries on the right lane (cyan)
- * – Education entries on the left lane (purple)
- * – Curved bezier transitions at lane changes
- * – Active commit node glows and is filled
+ * Git-log-style branch visualisation.
+ * – Central main branch line (dark indigo)
+ * – Industry commits branch LEFT via S-curve (cyan)
+ * – Education commits branch RIGHT via S-curve (purple)
+ * – Hollow circle nodes; active node glows
+ * – Click a node to select/deselect the corresponding entry
  */
 
 import { useMemo } from 'react'
 
-const LANE_X: Record<0 | 1, number> = { 0: 16, 1: 44 }  // 0=education(left), 1=industry(right)
+const MAIN_X  = 30   // centre vertical main line
+const IND_X   = 6    // industry node (left of main)
+const EDU_X   = 54   // education node (right of main)
 const SVG_W   = 64
-const CYAN    = '#00e5ff'
-const PURPLE  = '#cc44ff'
-const COL: Record<0 | 1, string> = { 0: PURPLE, 1: CYAN }
+
+const MAIN_COL = 'rgba(60,80,200,0.45)'  // dark indigo for the trunk
+const CYAN     = '#00e5ff'
+const PURPLE   = '#cc44ff'
 
 export interface GitSegment {
-  lane: 0 | 1
+  lane: 0 | 1   // 0 = education (right, purple)  1 = industry (left, cyan)
   entryId: string
 }
 
 interface GitGraphProps {
   segments: GitSegment[]
-  activeIdx: number
+  activeIdx: number | null
   entryHeights: number[]
   onNodeClick?: (idx: number) => void
+}
+
+/** S-curve cubic bezier from (x1,y0) on the main line to (xN, midY) on the branch */
+function sCurve(x1: number, y0: number, xN: number, midY: number): string {
+  // M x1,y0  C x1,midY  xN,y0  xN,midY
+  // → starts going vertically along x1, swings horizontally to xN
+  return `M ${x1},${y0} C ${x1},${midY} ${xN},${y0} ${xN},${midY}`
 }
 
 export default function GitGraph({ segments, activeIdx, entryHeights, onNodeClick }: GitGraphProps) {
@@ -40,99 +51,73 @@ export default function GitGraph({ segments, activeIdx, entryHeights, onNodeClic
 
   const elems: React.ReactNode[] = []
 
+  // ── Main vertical trunk (continuous) ──────────────────────────────────────
+  elems.push(
+    <line
+      key="trunk"
+      x1={MAIN_X} y1={0}
+      x2={MAIN_X} y2={totalHeight}
+      stroke={MAIN_COL}
+      strokeWidth={1.2}
+    />
+  )
+
+  // ── Per-entry branch + node ────────────────────────────────────────────────
   for (let i = 0; i < segments.length; i++) {
     const seg    = segments[i]
     const h      = entryHeights[i] ?? 0
     const y0     = yPos[i] ?? 0
     const midY   = y0 + h / 2
-    const y1     = y0 + h
-    const x      = LANE_X[seg.lane]
-    const col    = COL[seg.lane]
+    const isInd  = seg.lane === 1
+    const nodeX  = isInd ? IND_X : EDU_X
+    const col    = isInd ? CYAN : PURPLE
     const active = i === activeIdx
-    const nextSeg = segments[i + 1]
 
-    // Line: top of segment → commit dot
+    const branchOp = active ? 0.9 : 0.3
+    const branchW  = active ? 1.4 : 0.8
+
+    // S-curve from main trunk to node
     elems.push(
-      <line
-        key={`top-${i}`}
-        x1={x} y1={y0}
-        x2={x} y2={midY}
+      <path
+        key={`branch-${i}`}
+        d={sCurve(MAIN_X, y0, nodeX, midY)}
+        fill="none"
         stroke={col}
-        strokeWidth={active ? 1.5 : 0.7}
-        strokeOpacity={active ? 0.9 : 0.25}
-        style={{ transition: 'stroke-width 0.4s, stroke-opacity 0.4s' }}
+        strokeWidth={branchW}
+        strokeOpacity={branchOp}
+        style={{ transition: 'stroke-width 0.35s, stroke-opacity 0.35s' }}
       />
     )
 
-    // Line/curve: commit dot → bottom of segment (connecting to next)
-    if (nextSeg) {
-      const nextX      = LANE_X[nextSeg.lane]
-      const nextActive = i + 1 === activeIdx
-
-      if (nextSeg.lane !== seg.lane) {
-        // Lane change: smooth cubic bezier curve
-        const nextMidY = (yPos[i + 1] ?? y1) + (entryHeights[i + 1] ?? h) / 2
-        const ctrl1Y   = y1 + (nextMidY - y1) * 0.3
-        const ctrl2Y   = y1 + (nextMidY - y1) * 0.7
-        elems.push(
-          <path
-            key={`curve-${i}`}
-            d={`M ${x},${midY} L ${x},${y1} C ${x},${ctrl1Y} ${nextX},${ctrl2Y} ${nextX},${nextMidY}`}
-            fill="none"
-            stroke={col}
-            strokeWidth={0.7}
-            strokeOpacity={0.25}
-          />
-        )
-      } else {
-        // Same lane: straight down
-        const lineActive = active || nextActive
-        elems.push(
-          <line
-            key={`bot-${i}`}
-            x1={x} y1={midY}
-            x2={nextX} y2={y1 + (entryHeights[i + 1] ?? h) / 2}
-            stroke={col}
-            strokeWidth={lineActive ? 1.5 : 0.7}
-            strokeOpacity={lineActive ? 0.9 : 0.25}
-            style={{ transition: 'stroke-width 0.4s, stroke-opacity 0.4s' }}
-          />
-        )
-      }
-    } else {
-      // Last entry — line from dot to bottom edge
-      elems.push(
-        <line
-          key={`bot-${i}`}
-          x1={x} y1={midY}
-          x2={x} y2={y1}
-          stroke={col}
-          strokeWidth={active ? 1.5 : 0.7}
-          strokeOpacity={active ? 0.9 : 0.25}
-          style={{ transition: 'stroke-width 0.4s, stroke-opacity 0.4s' }}
-        />
-      )
-    }
-
-    // Commit dot
+    // Outer hollow circle
     elems.push(
       <circle
-        key={`dot-${i}`}
-        cx={x}
+        key={`ring-${i}`}
+        cx={nodeX}
         cy={midY}
-        r={active ? 5 : 3}
-        fill={active ? col : '#0a0a0a'}
+        r={active ? 5.5 : 4}
+        fill="none"
         stroke={col}
-        strokeWidth={active ? 0 : 1.2}
-        strokeOpacity={active ? 1 : 0.55}
+        strokeWidth={active ? 1.5 : 1}
+        strokeOpacity={active ? 1 : 0.5}
         style={{
           cursor: 'pointer',
-          transition: 'r 0.4s, fill 0.4s',
+          transition: 'r 0.35s, stroke-opacity 0.35s',
           filter: active ? `drop-shadow(0 0 5px ${col})` : 'none',
         }}
         onClick={() => onNodeClick?.(i)}
       />
     )
+
+    // Pulse ring when active
+    if (active) {
+      elems.push(
+        <circle key={`pulse-${i}`} cx={nodeX} cy={midY} r={5.5} fill="none" stroke={col} strokeWidth={1}>
+          <animate attributeName="r"       from="5.5" to="14"  dur="1.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" from="0.7"  to="0"   dur="1.6s" repeatCount="indefinite" />
+        </circle>
+      )
+    }
   }
 
   return (
