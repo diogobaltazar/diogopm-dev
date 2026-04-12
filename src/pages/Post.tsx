@@ -20,36 +20,38 @@ export default function Post() {
 
   return (
     <PageTransition>
-      <article className="pt-16">
-        <Link
-          to="/blog"
-          className="inline-block text-xs tracking-widest uppercase mb-12 transition-opacity hover:opacity-60"
-          style={{ color: 'var(--muted)' }}
-        >
-          ← Writing
-        </Link>
-
-        <header className="mb-10">
-          <time className="text-xs" style={{ color: 'var(--muted)' }}>
-            {formatDate(frontmatter.date)}
-          </time>
-          <h1
-            className="mt-3 text-4xl font-semibold tracking-tight leading-tight"
-            style={{
-              background: 'linear-gradient(to bottom, #ffffff 50%, rgba(255,255,255,0.6))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
+      <div className="mx-auto max-w-[680px] px-6 pb-32">
+        <article className="pt-16">
+          <Link
+            to="/blog"
+            className="inline-block text-xs tracking-widest uppercase mb-12 transition-opacity hover:opacity-60"
+            style={{ color: 'var(--muted)' }}
           >
-            {frontmatter.title}
-          </h1>
-        </header>
+            ← Writing
+          </Link>
 
-        <div className="prose prose-sm prose-invert max-w-none">
-          <Component />
-        </div>
-      </article>
+          <header className="mb-10">
+            <time className="text-xs" style={{ color: 'var(--muted)' }}>
+              {formatDate(frontmatter.date)}
+            </time>
+            <h1
+              className="mt-3 text-4xl font-semibold tracking-tight leading-tight"
+              style={{
+                background: 'linear-gradient(to bottom, #ffffff 50%, rgba(255,255,255,0.6))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              {frontmatter.title}
+            </h1>
+          </header>
+
+          <div className="prose prose-sm prose-invert max-w-none">
+            <Component />
+          </div>
+        </article>
+      </div>
     </PageTransition>
   )
 }

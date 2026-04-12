@@ -18,7 +18,7 @@ export default function Nav() {
         borderBottom: '1px solid var(--border)',
       }}
     >
-      <div className="mx-auto max-w-[680px] px-6">
+      <div className="px-8">
         <nav className="flex items-center gap-6 h-12">
           {links.map(({ to, label }) => {
             const active =

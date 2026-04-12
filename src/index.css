@@ -73,3 +73,10 @@ body {
   font-family: var(--font-mono);
   font-size: 0.875em;
 }
+
+@media print {
+  .dot-grid,
+  .top-glow,
+  header,
+  footer { display: none !important; }
+}

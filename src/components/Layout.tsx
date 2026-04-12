@@ -1,19 +1,22 @@
 import type { ReactNode } from 'react'
 import Nav from './Nav'
+import Footer from './Footer'
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <div
+      className="relative min-h-screen"
+      style={{ backgroundColor: 'var(--bg)', display: 'flex', flexDirection: 'column' }}
+    >
       {/* Background effects */}
       <div className="dot-grid" />
       <div className="top-glow" />
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10" style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <Nav />
-        <div className="mx-auto max-w-[680px] px-6">
-          <main className="pb-32">{children}</main>
-        </div>
+        <main style={{ flex: 1 }}>{children}</main>
+        <Footer />
       </div>
     </div>
   )
