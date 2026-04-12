@@ -2,21 +2,21 @@
 
 Personal website — About page and blog.
 
-Domains: [diogopm.dev](https://diogopm.dev), [pereiramarques.dev](https://pereiramarques.dev)
+**Live:** [diogopm.dev](https://diogopm.dev) · [pereiramarques.dev](https://pereiramarques.dev) · [diogopm-dev.pages.dev](https://diogopm-dev.pages.dev)
 
 ---
 
 ## Stack
 
-| Concern    | Choice                              |
-|------------|-------------------------------------|
-| Bundler    | Vite 5                              |
-| Framework  | React 18 + TypeScript               |
-| Styling    | Tailwind CSS v4                     |
-| Animation  | Framer Motion                       |
-| Routing    | React Router v6                     |
-| Blog       | MDX files in `src/posts/`           |
-| Hosting    | Cloudflare Pages (free tier)        |
+| Concern    | Choice                        |
+|------------|-------------------------------|
+| Bundler    | Vite 5                        |
+| Framework  | React 18 + TypeScript         |
+| Styling    | Tailwind CSS v4               |
+| Animation  | Framer Motion                 |
+| Routing    | React Router v6               |
+| Blog       | MDX files in `src/posts/`     |
+| Hosting    | Cloudflare Pages (free tier)  |
 
 ---
 
@@ -45,15 +45,30 @@ description: One-line summary shown in the post list.
 Post body in Markdown here.
 ```
 
-The post is automatically picked up and listed at `/blog`. Slug is derived from the filename.
+The post is automatically picked up, sorted by date, and listed at `/blog`. The slug is derived from the filename.
 
 ---
 
-## GitHub configuration
+## Infrastructure setup (done — do not repeat)
 
-The following was set programmatically via the `gh` CLI:
+Everything below was configured programmatically. It is recorded here for reference.
 
-### Repository metadata
+### 1. Commit signing
+
+SSH signing configured locally in `.git/config`:
+
+```
+[user]
+  name = diogobaltazar
+  email = d.ogobaltazar+github@gmail.com
+  signingkey = /Users/pereid22/.ssh/gh_diogobaltazar_signing.pub
+[gpg]
+  format = ssh
+[commit]
+  gpgsign = true
+```
+
+### 2. GitHub — repository metadata
 
 ```bash
 gh repo edit diogobaltazar/diogopm-dev \
@@ -66,73 +81,91 @@ gh repo edit diogobaltazar/diogopm-dev \
   --add-topic cloudflare-pages
 ```
 
-### Branch protection (main)
+### 3. GitHub — Actions secrets
 
-Applied via the GitHub API after the first push:
+Set programmatically via the `gh` CLI:
 
-- No force pushes
-- No branch deletion
-- CI must pass before merge (`CI / build`)
+```bash
+echo "<token>" | gh secret set CLOUDFLARE_API_TOKEN --repo diogobaltazar/diogopm-dev
+echo "<account-id>" | gh secret set CLOUDFLARE_ACCOUNT_ID --repo diogobaltazar/diogopm-dev
+```
+
+| Secret | Value source |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens (custom token: Account › Cloudflare Pages › Edit) |
+| `CLOUDFLARE_ACCOUNT_ID` | `13187ee3...` — visible in the Cloudflare dashboard URL |
+
+### 4. GitHub — Actions workflows
+
+| Workflow | File | Trigger | What it does |
+|----------|------|---------|--------------|
+| CI | `.github/workflows/ci.yml` | Push & PR to `main` | `npm ci && npm run build` — must pass before merge |
+| Deploy | `.github/workflows/deploy.yml` | Push to `main` | Build + deploy to Cloudflare Pages via `cloudflare/pages-action@v1` |
+
+### 5. GitHub — branch protection (main)
+
+Applied via the GitHub REST API:
 
 ```bash
 gh api repos/diogobaltazar/diogopm-dev/branches/main/protection \
   --method PUT \
-  --field enforce_admins=true \
-  --field "required_status_checks[strict]=false" \
-  --field "required_status_checks[contexts][]=CI / build" \
-  --field "required_pull_request_reviews=null" \
-  --field "restrictions=null" \
-  --field allow_force_pushes=false \
-  --field allow_deletions=false
+  --header "Accept: application/vnd.github+json" \
+  --input - <<'EOF'
+{
+  "required_status_checks": {
+    "strict": false,
+    "contexts": ["CI / build"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": null,
+  "restrictions": null,
+  "allow_force_pushes": false,
+  "allow_deletions": false
+}
+EOF
 ```
 
-### GitHub Actions
+Rules in effect:
+- No force pushes
+- No branch deletion
+- `CI / build` must pass before any merge
 
-| Workflow | File | Trigger | What it does |
-|----------|------|---------|--------------|
-| CI | `.github/workflows/ci.yml` | Push & PR to `main` | `npm ci && npm run build` |
-| Deploy | `.github/workflows/deploy.yml` | Push to `main` | Build + deploy to Cloudflare Pages |
+### 6. Cloudflare Pages — project creation
 
-The deploy workflow uses `cloudflare/pages-action@v1` and posts deployment URLs as commit statuses.
+Created via the Cloudflare API (the project did not exist beforehand):
 
-**Required secrets** — add these in GitHub → Settings → Secrets → Actions:
+```bash
+curl -X POST \
+  "https://api.cloudflare.com/client/v4/accounts/<account-id>/pages/projects" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"diogopm-dev","production_branch":"main"}'
+```
 
-| Secret | Where to find it |
-|--------|-----------------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare Dashboard → My Profile → API Tokens → Create Token (use the *Edit Cloudflare Workers* template or create one with Pages write permission) |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Dashboard → right sidebar on any page |
+### 7. Cloudflare Pages — custom domains
+
+Both domains attached via the Cloudflare API:
+
+```bash
+for domain in diogopm.dev pereiramarques.dev; do
+  curl -X POST \
+    "https://api.cloudflare.com/client/v4/accounts/<account-id>/pages/projects/diogopm-dev/domains" \
+    -H "Authorization: Bearer <token>" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"$domain\"}"
+done
+```
+
+Cloudflare provisions TLS certificates automatically (Google Trust Services). DNS is managed by Cloudflare nameservers.
 
 ---
 
-## Cloudflare Pages setup
+## Deployment flow
 
-One-time manual step (done from Cloudflare, not GitHub):
+Every push to `main`:
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create**
-2. Connect to Git → select `diogobaltazar/diogopm-dev`
-3. Set **Build command**: `npm run build`
-4. Set **Build output directory**: `dist`
-5. Deploy
+1. GitHub Actions runs `CI` (build check) and `Deploy` in parallel
+2. `Deploy` builds the site and uploads `dist/` to Cloudflare Pages via Wrangler
+3. Cloudflare serves the new version globally within seconds
 
-Then add both custom domains under the project's **Custom Domains** tab:
-- `diogopm.dev`
-- `pereiramarques.dev`
-
-Cloudflare will issue TLS certificates and configure DNS automatically if your domains are on Cloudflare nameservers.
-
-After this one-time setup, all subsequent deployments happen automatically via the GitHub Actions deploy workflow on every push to `main`.
-
----
-
-## Commit signing
-
-Commits are signed with an SSH key. Configured in `.git/config`:
-
-```
-[user]
-  signingkey = /Users/pereid22/.ssh/gh_diogobaltazar_signing.pub
-[gpg]
-  format = ssh
-[commit]
-  gpgsign = true
-```
+No manual steps required after a push.
