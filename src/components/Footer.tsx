@@ -5,7 +5,7 @@ import { FaXTwitter } from 'react-icons/fa6'
 import { SiLeetcode } from 'react-icons/si'
 
 const EMAIL    = 'pereiramarques.diogo@ssl-mail.com'
-const SITE_YEAR = 2025
+const SITE_YEAR = 2026
 
 // ─── data ─────────────────────────────────────────────────────────────────────
 
@@ -22,6 +22,11 @@ const COMPANIES = [
   { label: 'A.P. Moller – Maersk', href: 'https://www.maersk.com'          },
   { label: 'Airbus',               href: 'https://www.airbus.com'          },
   { label: 'Accenture',            href: 'https://www.accenture.com'       },
+]
+
+const UNIVERSITIES = [
+  { label: 'University of Lisbon',     href: 'https://www.ulisboa.pt'  },
+  { label: 'University of Copenhagen', href: 'https://www.ku.dk'       },
 ]
 
 // ─── sub-components ───────────────────────────────────────────────────────────
@@ -143,6 +148,14 @@ export default function Footer() {
         <div style={{ flex: '1 1 110px' }}>
           <ColHead>Countries</ColHead>
           {COUNTRIES.map(c => <ColText key={c}>{c}</ColText>)}
+        </div>
+
+        {/* University */}
+        <div style={{ flex: '1 1 140px' }}>
+          <ColHead>University</ColHead>
+          {UNIVERSITIES.map(({ label, href }) => (
+            <ColLink key={label} href={href}>{label}</ColLink>
+          ))}
         </div>
 
         {/* Company */}
