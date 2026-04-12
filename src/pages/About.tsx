@@ -469,44 +469,53 @@ function Entry({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '1rem' }}>
         <span className="text-sm font-medium" style={{ color: 'var(--fg)' }}>
           {entry.title}
-          {entry.note && <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: '0.5rem', fontStyle: 'italic' }}>({entry.note})</span>}
         </span>
         <span style={{ fontSize: '0.68rem', color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>{entry.period}</span>
       </div>
 
-      {/* Organisation */}
+      {/* Location — always visible */}
       <div style={{ marginTop: '0.25rem' }}>
-        {entry.organizationUrl
-          ? <a href={entry.organizationUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.18)' }}>{entry.organization}</a>
-          : <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{entry.organization}</span>
-        }
-        <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.5, marginLeft: '0.5rem' }}>{entry.locationLabel}</span>
+        <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.6 }}>{entry.locationLabel}</span>
       </div>
 
-      {/* Team */}
-      {entry.team && (
-        <div style={{ marginTop: '0.3rem' }}>
-          {entry.teamUrl
-            ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.12)' }}>{entry.team}</a>
-            : <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{entry.team}</span>
-          }
-        </div>
-      )}
+      {/* ── Expanded content ── */}
+      {isActive && (
+        <>
+          {/* Organisation */}
+          <div style={{ marginTop: '0.5rem' }}>
+            {entry.organizationUrl
+              ? <a href={entry.organizationUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.18)' }}>{entry.organization}</a>
+              : <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{entry.organization}</span>
+            }
+            {entry.note && <span style={{ fontSize: '0.7rem', color: 'var(--muted)', marginLeft: '0.5rem', fontStyle: 'italic' }}>({entry.note})</span>}
+          </div>
 
-      {entry.description && <p style={{ marginTop: '0.6rem', fontSize: '0.8rem', lineHeight: 1.65, color: '#c8c8c8' }}>{entry.description}</p>}
-      {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
-      {entry.tags && <TechTags tags={entry.tags} />}
+          {/* Team */}
+          {entry.team && (
+            <div style={{ marginTop: '0.3rem' }}>
+              {entry.teamUrl
+                ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(255,255,255,0.12)' }}>{entry.team}</a>
+                : <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{entry.team}</span>
+              }
+            </div>
+          )}
 
-      {/* Domain tags */}
-      {entry.tags2 && (
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-          {entry.tags2.map(({ icon: Icon, label }) => (
-            <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.62rem', color: 'var(--muted)', opacity: 0.6 }}>
-              <Icon size={11} strokeWidth={1.5} />
-              {label}
-            </span>
-          ))}
-        </div>
+          {entry.description && <p style={{ marginTop: '0.6rem', fontSize: '0.8rem', lineHeight: 1.65, color: '#c8c8c8' }}>{entry.description}</p>}
+          {entry.thesis && <p style={{ marginTop: '0.4rem', fontSize: '0.7rem', fontStyle: 'italic', color: 'var(--muted)' }}>Thesis: {entry.thesis}</p>}
+          {entry.tags && <TechTags tags={entry.tags} />}
+
+          {/* Domain tags */}
+          {entry.tags2 && (
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+              {entry.tags2.map(({ icon: Icon, label }) => (
+                <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.62rem', color: 'var(--muted)', opacity: 0.6 }}>
+                  <Icon size={11} strokeWidth={1.5} />
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Closed Source — visible when expanded ── */}
