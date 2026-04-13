@@ -18,9 +18,9 @@ const MAIN_X    = 14
 const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
-const NODE_R = 4.5   // matches globe city dot size
-const TRUNK_W = 2     // main trunk stroke width
-const BRANCH_W = 2.6  // branch line stroke width
+const NODE_R = 5   // matches globe city dot size
+const TRUNK_W = 4     // main trunk stroke width
+const BRANCH_W = 4  // branch line stroke width
 
 const MAIN_COL = 'rgba(100,130,255,0.7)'
 const CYAN     = '#00e5ff'
@@ -156,9 +156,9 @@ export default function GitGraph({ entries, activeIndices, entryHeights, onNodeC
           strokeOpacity={lineOp}
           style={{ transition: 'stroke-width 0.35s, stroke-opacity 0.35s' }}
         />
-        <path d={forkD} fill="none" stroke={col} strokeWidth={lineW * 0.85} strokeOpacity={lineOp * 0.85} />
+        <path d={forkD} fill="none" stroke={col} strokeWidth={lineW} strokeOpacity={lineOp} />
         {!isOngoing && (
-          <path d={mergeD} fill="none" stroke={col} strokeWidth={lineW * 0.85} strokeOpacity={lineOp * 0.85} />
+          <path d={mergeD} fill="none" stroke={col} strokeWidth={lineW} strokeOpacity={lineOp} />
         )}
       </g>
     )

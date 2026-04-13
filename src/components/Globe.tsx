@@ -211,8 +211,8 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
   const DIM    = isDay ? 0.25 : 0.20
   const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
   const haloColor = isOrb
-    ? (isDay ? 'rgba(140,50,220,0.35)' : 'rgba(180,68,255,0.55)')
-    : (isDay ? 'rgba(0,160,190,0.4)'   : 'rgba(0,200,255,0.6)')
+    ? (isDay ? 'rgba(140,50,220,0.65)' : 'rgba(180,68,255,0.85)')
+    : (isDay ? 'rgba(0,160,190,0.7)'   : 'rgba(0,200,255,0.9)')
 
   // Day/night palette
   const sphereFill   = isDay ? '#e5e4e1' : '#040404'
@@ -234,10 +234,17 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
       aria-hidden="true"
     >
       <defs>
-        {/* Halo rim — pure diffuse glow */}
-        <filter id="rim" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="10" />
+        {/* Halo rim — outer glow (spreads outward) */}
+        <filter id="rim-outer" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="40" />
         </filter>
+        {/* Halo rim — inner glow (spreads inward) */}
+        <filter id="rim-inner" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="60" />
+        </filter>
+        <clipPath id="globe-clip">
+          <circle cx={CX} cy={CY} r={R} />
+        </clipPath>
 
         <filter id="arc-glow" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="2.5" result="b" />
@@ -356,12 +363,21 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
       })}
       </g> {/* end fading globe content group */}
 
-      {/* Rim halo — colour transitions cyan ↔ purple */}
+      {/* Rim halo — outer glow */}
       <circle
-        cx={CX} cy={CY} r={R}
+        cx={CX} cy={CY} r={R + 8}
         fill="none"
-        strokeWidth={2}
-        filter="url(#rim)"
+        strokeWidth={30}
+        filter="url(#rim-outer)"
+        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
+      />
+      {/* Rim halo — inner glow */}
+      <circle
+        cx={CX} cy={CY} r={R - 8}
+        fill="none"
+        strokeWidth={80}
+        filter="url(#rim-inner)"
+        clipPath="url(#globe-clip)"
         style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
       />
     </svg>

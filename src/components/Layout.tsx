@@ -34,9 +34,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         }}>
           <div style={{
             position: 'absolute',
-            left: '-10%', bottom: '-20%',
-            width: '65vw', height: '120%',
-            pointerEvents: isOrb ? 'none' : 'auto',
+            left: '-18%', bottom: '-12%',
+            width: '80vw', height: '120%',
+            pointerEvents: isOrb ? 'none' : 'auto'
           }}>
             <Globe
               mode={isOrb ? 'orb' : 'globe'}

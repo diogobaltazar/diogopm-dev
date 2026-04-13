@@ -267,9 +267,9 @@ function branchLabel(entry: { type: 'experience' | 'education'; title: string })
 
 const PROJECTS = [
   {
-    name: 'topgun',
+    name: 'TopGun',
     org: 'diogobaltazar',
-    url: 'https://github.com/diogobaltazar/topgun',
+    url: 'https://github.com/diogobaltazar/TopGun',
     description: 'End-to-end AI development flow — research, plan, implement, test, deploy.',
     tags: ['AI', 'Developer Tools'],
   },
@@ -292,13 +292,13 @@ const TIMELINE: TimelineEntry[] = [
     location: 'london', locationLabel: 'London · UK',
     period: 'Jan 2026 – Present', startYear: 2026,
     startTs: ts(2026, 1), endTs: null,
-    team: 'Lab-In-The-Loop @ gRED Computational Sciences',
-    teamUrl: 'https://www.roche.com/research_and_development/who_we_are_how_we_work/research/computational-sciences',
+    team: 'gRED Computational Sciences',
+    description: 'Lab-In-The-Loop / AI for Accelerated Drug Discovery',
     tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: FlaskConical, label: 'Pharma & Biotech' }, { icon: Dna, label: 'Computational Biology' }],
     arcId: 'copenhagen-london',
     closedSource: [
       {
-        name: 'epicshelter',
+        name: 'EpicShelter',
         description: 'Unveiling Roche\'s known systems\' dependencies to produce a Knowledge Base enabling assessment of pressing refactoring priorities, decommissions, and opportunities.',
         tags: ['python', 'claude api', 'aws'],
         status: 'ongoing',
@@ -348,10 +348,6 @@ const TIMELINE: TimelineEntry[] = [
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
     period: 'Jan 2023 – Oct 2023', startYear: 2023,
     startTs: ts(2023, 1), endTs: ts(2023, 10),
-    team: 'PS – Data Management & Analytics',
-    teamUrl: 'https://github.com/awslabs/aws-dataall',
-    description: 'Data mesh (event-driven) architecture in AWS.',
-    tags: 'ts, python, aws, docker, git, github',
     tags2: [{ icon: Cloud, label: 'Cloud & Platform' }, { icon: Database, label: 'Data Engineering' }, { icon: FlaskConical, label: 'Pharma' }],
     arcId: 'toulouse-copenhagen',
     closedSource: [
@@ -384,9 +380,7 @@ const TIMELINE: TimelineEntry[] = [
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
     period: 'Sep 2020 – Jan 2023', startYear: 2020,
     startTs: ts(2020, 9), endTs: ts(2023, 1),
-    team: 'CMC – Laboratory Digitalisation',
-    description: 'Visualisations, data products, data pipelines, APIs.',
-    tags: 'ts, js, python, aws, docker, git, github',
+    team: 'Chemistry, Manufacturing and Controls (CMC) – Lab Automation',
     tags2: [{ icon: Database, label: 'Data Engineering' }, { icon: Code, label: 'Software Engineering' }, { icon: FlaskConical, label: 'Pharma' }],
     arcId: 'toulouse-copenhagen',
     closedSource: [
@@ -413,22 +407,20 @@ const TIMELINE: TimelineEntry[] = [
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
     period: 'Oct 2019 – Sep 2020', startYear: 2019,
     startTs: ts(2019, 10), endTs: ts(2020, 9),
-    team: 'Inland Container Logistics',
-    description: 'Data pipelines and APIs.',
-    tags: 'azure, Palantir Foundry, python, pyspark, databricks, git, docker',
+    tags: '',
     tags2: [{ icon: Anchor, label: 'Shipping & Logistics' }, { icon: Database, label: 'Data Engineering' }],
     arcId: 'toulouse-copenhagen',
     closedSource: [
       {
-        name: 'Inland Logistics',
-        description: 'Inland container optimal paths and availability forecast: route optimisation and capacity prediction across intermodal networks.',
-        tags: ['python', 'pyspark', 'azure', 'databricks'],
+        name: 'InRoute',
+        description: 'Inland container router and container availability forecast: route optimisation and capacity prediction across intermodal networks.',
+        tags: ['python', 'pyspark', 'azure', 'databricks', 'azure', 'Palantir Foundry', 'python', 'pyspark', 'databricks', 'git', 'docker'],
         status: 'internal',
         source: 'closed',
       },
       {
-        name: 'Bookings Insurance Service',
-        description: 'API to manage booking\'s insurance: microservice handling insurance policy creation, validation, and claims integration for container bookings.',
+        name: 'Emma',
+        description: 'REST API + backend to manage booking\'s insurance: microservices handling insurance policy creation, validation, and claims integration for cancelled container bookings.',
         tags: ['python', 'Palantir Foundry', 'azure'],
         status: 'internal',
         source: 'closed',
@@ -442,16 +434,16 @@ const TIMELINE: TimelineEntry[] = [
     location: 'toulouse', locationLabel: 'Toulouse · France',
     period: 'Sep 2018 – Sep 2019', startYear: 2018,
     startTs: ts(2018, 9), endTs: ts(2019, 9),
-    description: 'Fleet Reliability – Skywise Core.',
-    tags: 'Palantir Foundry, js, python, pyspark, postgresql, git, docker, elasticsearch',
+    description: 'Skywise Core',
+    teamUrl: 'https://www.airbus.com/en/products-services/digital-services/skywise',
     tags2: [{ icon: Plane, label: 'Aerospace' }, { icon: Database, label: 'Data Engineering' }],
     note: 'contractor',
     arcId: 'lisbon-toulouse',
     closedSource: [
       {
-        name: 'Skywise Reliability',
+        name: 'Skywise / Fleet Reliability',
         description: 'Benchmarking fleet performance against Airbus Engineering standards: analytical pipelines for aircraft reliability KPIs across global operator fleets.',
-        tags: ['Palantir Foundry', 'python', 'pyspark', 'js'],
+        tags: ['Palantir Foundry', 'python', 'pyspark', 'js', 'Palantir Foundry', 'js', 'python', 'pyspark', 'postgresql', 'git', 'docker', 'elasticsearch'],
         status: 'shipped',
         source: 'closed',
       },
@@ -469,17 +461,15 @@ const TIMELINE: TimelineEntry[] = [
     title: 'Software Engineer',
     organization: 'Accenture', organizationUrl: 'https://www.accenture.com',
     location: 'lisbon', locationLabel: 'Lisbon Area · Portugal',
-    period: 'Mar 2018 – Aug 2018', startYear: 2018,
+    period: 'Sep 2017 – Aug 2018', startYear: 2018,
     startTs: ts(2018, 3), endTs: ts(2018, 8),
-    description: 'On-premises Cloudera Data Lake (telco).',
-    tags: 'Cloudera Hadoop, pyspark, java, oracle sql/psql, git',
     tags2: [{ icon: Briefcase, label: 'Consulting' }, { icon: Database, label: 'Data Engineering' }],
     arcId: null,
     closedSource: [
       {
         name: 'Client360',
         description: 'Unified 360° customer view for a major telco: integrating CRM, billing, and usage data into a consolidated analytics layer on Cloudera Hadoop.',
-        tags: ['Cloudera Hadoop', 'pyspark', 'java', 'oracle sql'],
+        tags: ['Cloudera Hadoop', 'pyspark', 'java', 'oracle sql', 'Cloudera Hadoop', 'pyspark', 'java', 'oracle sql/psql', 'git'],
         status: 'internal',
         source: 'closed',
       },
@@ -490,19 +480,6 @@ const TIMELINE: TimelineEntry[] = [
         status: 'deprecated',
         source: 'closed',
       },
-    ],
-  },
-  {
-    id: 'accenture-fsd', type: 'experience',
-    title: 'Full-stack Developer',
-    organization: 'Accenture', organizationUrl: 'https://www.accenture.com',
-    location: 'lisbon', locationLabel: 'Lisbon Area · Portugal',
-    period: 'Sep 2017 – Feb 2018', startYear: 2017,
-    startTs: ts(2017, 9), endTs: ts(2018, 2),
-    tags: 'C# ASP.NET, js, git',
-    tags2: [{ icon: Briefcase, label: 'Consulting' }, { icon: Code, label: 'Software Engineering' }],
-    arcId: null,
-    closedSource: [
       {
         name: 'ClinFlow',
         description: 'Clinical workflow automation platform for a hospital network: digitising patient-pathway orchestration, bed management, and inter-department handoffs.',
@@ -655,7 +632,7 @@ function Entry({
   const CYAN   = '#00e5ff'
   const PURPLE = '#cc44ff'
   const typeColor = entry.type === 'experience' ? CYAN : PURPLE
-  const opacity = isActive ? 1 : 0.58
+  const opacity = 1
 
   const statusColor: Record<string, string> = {
     shipped:    'rgba(0,229,255,0.55)',
@@ -677,12 +654,16 @@ function Entry({
     <div
       ref={entryRef}
       style={{
-        padding: '1.5rem 0',
+        padding: '1.5rem 1rem',
         borderTop: '1px solid var(--border)',
         opacity,
-        transition: 'opacity 0.35s ease',
+        background: isActive ? 'var(--card-bg-hover)' : 'transparent',
+        transition: 'opacity 0.35s ease, background 0.2s',
         cursor: 'pointer',
+        borderRadius: 6,
       }}
+      onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'var(--card-bg-hover)' }}
+      onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
       onClick={onClick}
     >
       {/* Type badge */}
@@ -719,15 +700,15 @@ function Entry({
         transition: 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
         <div style={{ marginTop: '0.4rem', display: 'flex', alignItems: 'baseline', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.55 }}>{entry.locationLabel}</span>
-          {entry.note && <span style={{ fontSize: '0.68rem', color: 'var(--muted)', opacity: 0.55, fontStyle: 'italic' }}>· {entry.note}</span>}
+          <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>{entry.locationLabel}</span>
+          {entry.note && <span style={{ fontSize: '0.78rem', color: 'var(--muted)', fontStyle: 'italic' }}>· {entry.note}</span>}
         </div>
 
         {entry.team && (
           <div style={{ marginTop: '0.3rem' }}>
             {entry.teamUrl
-              ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.7rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(128,128,128,0.3)' }}>{entry.team}</a>
-              : <span style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>{entry.team}</span>
+              ? <a href={entry.teamUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: 'var(--muted)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'rgba(128,128,128,0.3)' }}>{entry.team}</a>
+              : <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>{entry.team}</span>
             }
           </div>
         )}
@@ -742,7 +723,7 @@ function Entry({
         {entry.tags2 && (
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
             {entry.tags2.map(({ icon: Icon, label }) => (
-              <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.62rem', color: 'var(--muted)', opacity: 0.6 }}>
+              <span key={label} title={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: 'var(--muted)' }}>
                 <Icon size={11} strokeWidth={1.5} />
                 {label}
               </span>
@@ -753,7 +734,7 @@ function Entry({
         {/* Closed / Inner Source projects */}
         {entry.closedSource && entry.closedSource.length > 0 && (
           <div style={{ marginTop: '1.25rem' }} onClick={e => e.stopPropagation()}>
-            <p style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.7rem' }}>
+            <p style={{ fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.7rem' }}>
               {sectionLabel(entry.closedSource)}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
@@ -772,9 +753,9 @@ function Entry({
                       ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'var(--border)' }}>{p.name}</a>
                       : <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
                     }
-                    <span style={{ fontSize: '0.58rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
+                    <span style={{ fontSize: '0.7rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
                   </div>
-                  <p style={{ fontSize: '0.68rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
                   <TechTagList tags={p.tags} />
                 </div>
               ))}
