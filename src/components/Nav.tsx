@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { Sun, Moon } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
 
 const links = [
   { to: '/', label: 'About' },
@@ -8,12 +10,13 @@ const links = [
 
 export default function Nav() {
   const { pathname } = useLocation()
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <header
       className="sticky top-0 z-50"
       style={{
-        backgroundColor: 'rgba(8, 8, 8, 0.75)',
+        backgroundColor: 'var(--nav-bg)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid var(--border)',
       }}
@@ -42,6 +45,27 @@ export default function Nav() {
               </Link>
             )
           })}
+
+          <div style={{ marginLeft: 'auto' }}>
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'day' ? 'Switch to night' : 'Switch to day'}
+              title={theme === 'day' ? 'Night' : 'Day'}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--muted)', padding: '0.25rem',
+                display: 'flex', alignItems: 'center',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--fg)')}
+              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--muted)')}
+            >
+              {theme === 'day'
+                ? <Moon size={14} strokeWidth={1.5} />
+                : <Sun  size={14} strokeWidth={1.5} />
+              }
+            </button>
+          </div>
         </nav>
       </div>
     </header>

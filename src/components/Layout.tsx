@@ -4,14 +4,17 @@ import Nav from './Nav'
 import Footer from './Footer'
 import Globe from './Globe'
 import { useGlobeCtx } from '../context/GlobeContext'
+import { useTheme } from '../context/ThemeContext'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const { activeArc, activeLocation, onCityClick } = useGlobeCtx()
+  const { theme } = useTheme()
   const isOrb = pathname !== '/'
 
   return (
     <div
+      data-theme={theme}
       className="relative min-h-screen"
       style={{ backgroundColor: 'var(--bg)', display: 'flex', flexDirection: 'column' }}
     >

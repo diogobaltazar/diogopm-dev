@@ -13,6 +13,7 @@ import { geoOrthographic, geoPath, geoInterpolate } from 'd3-geo'
 import { feature } from 'topojson-client'
 import type { GeoPermissibleObjects, GeoProjection } from 'd3-geo'
 import worldData from 'world-atlas/countries-110m.json'
+import { useTheme } from '../context/ThemeContext'
 
 // ─── world geometry ───────────────────────────────────────────────────────────
 
@@ -103,6 +104,8 @@ interface GlobeProps {
 export default function Globe({ mode = 'globe', activeArc, activeLocation, onCityClick }: GlobeProps) {
   const isOrb = mode === 'orb'
   const staticMode = useMemo(detectStatic, [])
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
 
   // Stop rotation in orb mode so returning to About restores the original view
   const isOrbRef = useRef(isOrb)
@@ -205,9 +208,20 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
 
   const CYAN   = '#00e5ff'
   const PURPLE = '#cc44ff'
-  const DIM    = 0.20
+  const DIM    = isDay ? 0.25 : 0.20
   const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
-  const haloColor = isOrb ? 'rgba(180,68,255,0.55)' : 'rgba(0,200,255,0.6)'
+  const haloColor = isOrb
+    ? (isDay ? 'rgba(140,50,220,0.35)' : 'rgba(180,68,255,0.55)')
+    : (isDay ? 'rgba(0,160,190,0.4)'   : 'rgba(0,200,255,0.6)')
+
+  // Day/night palette
+  const sphereFill   = isDay ? '#e5e4e1' : '#040404'
+  const landFill     = isDay ? '#d8d7d3' : '#0e0e0e'
+  const outlineColor = isDay ? 'rgba(94,106,210,0.3)' : 'rgba(0,200,255,0.18)'
+  const dotInactive  = isDay ? 'rgba(30,50,130,0.55)' : 'rgba(180,230,255,0.7)'
+  const dotActive    = isDay ? '#111111' : '#ffffff'
+  const labelActive  = isDay ? 'rgba(10,10,30,0.9)'   : 'rgba(255,255,255,0.9)'
+  const labelInact   = isDay ? 'rgba(40,60,140,0.35)'  : 'rgba(150,210,255,0.35)'
 
   return (
     <svg
@@ -240,25 +254,27 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
         </clipPath>
       </defs>
 
-      {/* Sphere — flat black, no gradient */}
-      <circle cx={CX} cy={CY} r={R} fill="#040404" />
+      {/* Sphere */}
+      <circle cx={CX} cy={CY} r={R} fill={sphereFill} style={{ transition: 'fill 0.6s ease' }} />
 
       {/* Clipped globe content */}
       {/* Globe content — fades out in orb mode */}
       <g style={{ opacity: isOrb ? 0 : 1, transition: 'opacity 0.9s ease' }}>
       <g clipPath="url(#clip)">
-        {/* Land — slightly lighter black, no blue tint */}
+        {/* Land */}
         <path
           d={pathGen(land as GeoPermissibleObjects) ?? ''}
-          fill="#0e0e0e"
+          fill={landFill}
+          style={{ transition: 'fill 0.6s ease' }}
         />
 
         {/* Worked-in country outlines */}
         <path
           d={pathGen(workedInFeatures as GeoPermissibleObjects) ?? ''}
           fill="none"
-          stroke="rgba(0,200,255,0.18)"
+          stroke={outlineColor}
           strokeWidth={0.5}
+          style={{ transition: 'stroke 0.6s ease' }}
         />
 
         {/* City dots */}
@@ -281,7 +297,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
               <circle
                 cx={x} cy={y}
                 r={isActive ? 4.5 : 3}
-                fill={isActive ? '#ffffff' : 'rgba(180,230,255,0.7)'}
+                fill={isActive ? dotActive : dotInactive}
                 filter={isActive ? 'url(#dot-glow)' : undefined}
                 style={{ transition: 'r 0.4s, fill 0.4s' }}
               />
@@ -289,7 +305,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
                 x={x + dx} y={y + 4}
                 fontSize={10}
                 textAnchor={anchor}
-                fill={isActive ? 'rgba(255,255,255,0.9)' : 'rgba(150,210,255,0.35)'}
+                fill={isActive ? labelActive : labelInact}
                 fontFamily="var(--font-mono)"
                 style={{ userSelect: 'none', pointerEvents: 'none', transition: 'fill 0.4s' }}
               >

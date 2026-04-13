@@ -1,0 +1,22 @@
+---
+title: AIE 2026 Key Takeaways
+date: 2026-04-12
+description: Harness Engineering - The Shift in Software Engineering
+version: 0.1.0
+---
+
+The AI Engineering (AIE) 2026 conference in London made one thing abundantly clear: while artificial intelligence is profoundly changing how we build software, the role of the software engineer is far from becoming obsolete. Instead, the profession is evolving towards a higher level of abstraction where development can occur at the speed of thought, which come with an entirely new set of engineering challenges.
+
+## The Rise of Harness Engineering
+As foundational models became increasingly capable of few-shotting complex and high-quality solutions, the industry swiftly learnt to offload coding to these agentic assistants, effectively moving the primary bottleneck from coding to ensuring that these agentic assistants [code reliably](https://www.louisbouchard.ai/harness-engineering/), with the aims of mitigating against infinite loops, misalignment, context rot, poor architectural design propagation, etc. To address these new challenges, the industry has formalized **Harness Engineering**. 
+
+A harness operates on the fundamental equation that *[Agent = Model + Harness](https://martinfowler.com/articles/harness-engineering.html)*. While the AI model acts as a non-deterministic token generator, the harness provides the surrounding environment and guardrails, including [state management, tool execution capabilities, observability, feedback loops, and strict mechanical constraints](https://blog.langchain.com/the-anatomy-of-an-agent-harness/). Engineers now build feedforward controls in natural language and automated component evaluation and prompt fine-tuning frameworks to predictably steer the agent before it generates code, and feedback controls like custom linters and tests to help the agent accurately self-steer.
+
+## Why Software Engineers Are Not Obsolete
+Despite agents being able to write functional and high quality code autonomously, the human element remains necessary, effectively removing from it all the plumbing work and expecting of it an expert system's thinker ability - A Software Engineer's wildest dream. It is always on the flip-side of a revolution that you realise just how good you are. While the Software Engineer used to own end-to-end the Software Engineering Cycle, from domain understanding, to specs refinement, to infrastructure and code, to testing and deployment, to monitoring and maintenance, all of this entertwined and iterative, now the cycle is split between the human and the agent - And the agent is work endlessly on everything that the Software Engineer has the ability to realise can be automated once done once. This is indeed what Software Engineering offers that no other human activity offers to the same degree: the infinite automation possibility. Agents are here to fulfill that possibility, agents are here to complete the great scientific and technological revolution that started with the Universal Turing Machine and the first computer program ever written: The decoupling of thought from matter.
+
+The human is now fully autonomous with engaging with the high-level design and responsible for the system's orchestration, while the agent handles everything that is merely operational to the high-level design. Indeed, human engineers are now required to:
+
+*   **Steer the Agents:** As OpenAI's Ryan Lopopolo noted, the new paradigm is that "[humans steer](https://openai.com/index/harness-engineering/) and agents execute".[4] When an agent fails, engineers iterate on the harness to prevent the issue from recurring rather than manually fixing the code themselves.[4]
+*   **Enforce Architecture and Specifications:** The industry is moving rapidly toward "[post-code](https://tessl.io/devcon/)" or spec-first development.[5] Engineers must define rigorous boundaries, design highly testable "[deep modules](https://github.com/mattpocock/skills/blob/main/improve-codebase-architecture/SKILL.md)," and maintain the overall context and coherence of the system.[6] 
+*   **Provide Judgment and Taste:** As highlighted by Gergely Orosz, what still matters most is what AI cannot replicate: exercising [human judgment](https://andriybuday.com/category/opinion), understanding real-world business needs, and applying lived experience.[7] AI tools are giving teams superpowers, but software fundamentals, taste, and architectural discipline remain completely indispensable.[7]

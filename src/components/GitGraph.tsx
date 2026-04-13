@@ -19,6 +19,8 @@ const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
 const NODE_R = 4.5   // matches globe city dot size
+const TRUNK_W = 2     // main trunk stroke width
+const BRANCH_W = 2.6  // branch line stroke width
 
 const MAIN_COL = 'rgba(100,130,255,0.7)'
 const CYAN     = '#00e5ff'
@@ -109,7 +111,7 @@ export default function GitGraph({ entries, activeIndices, entryHeights, onNodeC
       x1={MAIN_X} y1={0}
       x2={MAIN_X} y2={totalHeight}
       stroke={MAIN_COL}
-      strokeWidth={1.2}
+      strokeWidth={TRUNK_W}
     />
   )
 
@@ -131,8 +133,8 @@ export default function GitGraph({ entries, activeIndices, entryHeights, onNodeC
     const isActive  = activeIndices.has(j)
     const isOngoing = entry.endTs === null
 
-    const lineOp = activeIndices.size === 0 ? 0.6  : isActive ? 0.9  : 0.4
-    const lineW  = 1.8
+    const lineOp = activeIndices.size === 0 ? 0.65 : isActive ? 1.0  : 0.45
+    const lineW  = BRANCH_W
 
     const avail = entryHeights[j] ?? 0
     const R     = Math.min(CURVE_R, avail * 0.38)
