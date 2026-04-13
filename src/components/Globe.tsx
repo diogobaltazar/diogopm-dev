@@ -213,10 +213,10 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
     <svg
       viewBox="0 0 500 500"
       style={{ width: '100%', height: '100%', cursor, overflow: 'visible' }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
+      onPointerDown={isOrb ? undefined : onPointerDown}
+      onPointerMove={isOrb ? undefined : onPointerMove}
+      onPointerUp={isOrb ? undefined : onPointerUp}
+      onPointerLeave={isOrb ? undefined : onPointerUp}
       aria-hidden="true"
     >
       <defs>
