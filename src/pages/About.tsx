@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Brain, Database, Cloud, Anchor, Plane, Briefcase,
   Code, BookOpen, Calculator, FlaskConical, Dna,
-  Download, Check,
+  Download, Check, Cpu,
 } from 'lucide-react'
 import { FaGithub as GithubIcon } from 'react-icons/fa'
 import {
@@ -12,13 +12,34 @@ import {
   SiPalantir, SiMlflow, SiDatabricks, SiCloudera, SiAnthropic,
   SiOpenjdk, SiDotnet, SiApachehadoop, SiKubernetes, SiTerraform,
   SiLangchain, SiOpenai, SiNodedotjs,
+  SiRedis, SiMongodb, SiMysql, SiSqlite, SiClickhouse, SiDuckdb,
+  SiSnowflake, SiOpensearch, SiPrometheus, SiGrafana,
+  SiApacheairflow, SiDbt, SiPolars, SiPandas, SiNumpy, SiScipy,
+  SiJupyter, SiFastapi, SiFlask, SiDjango, SiRust, SiScala,
+  SiApachekafka, SiRabbitmq, SiNginx, SiLinux, SiUbuntu,
+  SiVuedotjs, SiAngular, SiSvelte, SiAstro,
+  SiTailwindcss, SiWebpack, SiVite, SiVitest, SiFigma, SiFramer,
+  SiVercel, SiNetlify, SiHeroku, SiCloudflare, SiFirebase, SiSupabase,
+  SiPrisma, SiStreamlit, SiGradio, SiOllama, SiHuggingface,
+  SiMistralai, SiPydantic, SiSentry, SiDatadog, SiJira, SiNotion, SiSlack,
+  SiGooglecloud, SiPytest,
 } from 'react-icons/si'
 import GitGraph from '../components/GitGraph'
 import { useGlobeCtx } from '../context/GlobeContext'
+import { useTheme } from '../context/ThemeContext'
 
 // ─── tech icons ───────────────────────────────────────────────────────────────
 
 type IconComponent = React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+
+function AwsCdkIcon({ size = 16 }: { size?: number; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="16,1 29,8.5 29,23.5 16,31 3,23.5 3,8.5" fill="currentColor" />
+      <text x="16" y="20" textAnchor="middle" fontSize="9" fontWeight="700" fontFamily="monospace" fill="var(--bg)">CDK</text>
+    </svg>
+  )
+}
 
 const TECH_ICON_MAP: Record<string, IconComponent> = {
   python:            SiPython,
@@ -53,24 +74,97 @@ const TECH_ICON_MAP: Record<string, IconComponent> = {
   dotnet:            SiDotnet,
   kubernetes:        SiKubernetes,
   terraform:         SiTerraform,
+  cdk:               AwsCdkIcon,
+  'aws cdk':         AwsCdkIcon,
   langchain:         SiLangchain,
   openai:            SiOpenai,
   node:              SiNodedotjs,
   nodejs:            SiNodedotjs,
+  // databases
+  redis:             SiRedis,
+  mongodb:           SiMongodb,
+  mongo:             SiMongodb,
+  mysql:             SiMysql,
+  sqlite:            SiSqlite,
+  clickhouse:        SiClickhouse,
+  duckdb:            SiDuckdb,
+  snowflake:         SiSnowflake,
+  opensearch:        SiOpensearch,
+  // data / ml
+  airflow:           SiApacheairflow,
+  'apache airflow':  SiApacheairflow,
+  dbt:               SiDbt,
+  polars:            SiPolars,
+  pandas:            SiPandas,
+  numpy:             SiNumpy,
+  scipy:             SiScipy,
+  jupyter:           SiJupyter,
+  prometheus:        SiPrometheus,
+  grafana:           SiGrafana,
+  streamlit:         SiStreamlit,
+  gradio:            SiGradio,
+  ollama:            SiOllama,
+  huggingface:       SiHuggingface,
+  'hugging face':    SiHuggingface,
+  mistral:           SiMistralai,
+  mistralai:         SiMistralai,
+  pydantic:          SiPydantic,
+  pytest:            SiPytest,
+  // web / backend
+  fastapi:           SiFastapi,
+  flask:             SiFlask,
+  django:            SiDjango,
+  rust:              SiRust,
+  scala:             SiScala,
+  kafka:             SiApachekafka,
+  rabbitmq:          SiRabbitmq,
+  nginx:             SiNginx,
+  linux:             SiLinux,
+  ubuntu:            SiUbuntu,
+  prisma:            SiPrisma,
+  supabase:          SiSupabase,
+  firebase:          SiFirebase,
+  // frontend
+  vue:               SiVuedotjs,
+  angular:           SiAngular,
+  svelte:            SiSvelte,
+  astro:             SiAstro,
+  tailwind:          SiTailwindcss,
+  tailwindcss:       SiTailwindcss,
+  webpack:           SiWebpack,
+  vite:              SiVite,
+  vitest:            SiVitest,
+  figma:             SiFigma,
+  framer:            SiFramer,
+  // cloud / infra
+  gcp:               SiGooglecloud,
+  'google cloud':    SiGooglecloud,
+  vercel:            SiVercel,
+  netlify:           SiNetlify,
+  heroku:            SiHeroku,
+  cloudflare:        SiCloudflare,
+  // observability / tooling
+  sentry:            SiSentry,
+  datadog:           SiDatadog,
+  jira:              SiJira,
+  notion:            SiNotion,
+  slack:             SiSlack,
 }
 
 function TechTags({ tags }: { tags: string }) {
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
   const items = tags.split(',').map(t => t.trim()).filter(Boolean)
   return (
     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.6rem' }}>
       {items.map(t => {
         const Icon = TECH_ICON_MAP[t.toLowerCase()]
         return Icon ? (
-          <span key={t} title={t} style={{ color: 'var(--muted)', opacity: 0.55 }}>
-            <Icon size={13} />
+          <span key={t} className="tech-icon" data-label={t} style={{ color: isDay ? 'var(--fg)' : 'var(--muted)' }}>
+            <Icon size={16} />
           </span>
         ) : (
-          <span key={t} style={{ fontSize: '0.6rem', padding: '0.1rem 0.45rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)', opacity: 0.55 }}>
+          <span key={t} style={{ fontSize: '0.6rem', padding: '0.1rem 0.45rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)' }}>
             {t}
           </span>
         )
@@ -80,13 +174,15 @@ function TechTags({ tags }: { tags: string }) {
 }
 
 function TechTagList({ tags }: { tags: string[] }) {
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
   return (
     <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
       {tags.map(t => {
         const Icon = TECH_ICON_MAP[t.toLowerCase()]
         return Icon ? (
-          <span key={t} title={t} style={{ color: 'var(--muted)', opacity: 0.6 }}>
-            <Icon size={12} />
+          <span key={t} className="tech-icon" data-label={t} style={{ color: isDay ? 'var(--fg)' : 'var(--muted)' }}>
+            <Icon size={15} />
           </span>
         ) : (
           <span key={t} style={{ fontSize: '0.58rem', padding: '0.1rem 0.4rem', border: '1px solid var(--border)', borderRadius: 20, color: 'var(--muted)' }}>
@@ -215,7 +311,7 @@ interface ClosedSourceProject {
 
 interface TimelineEntry {
   id: string
-  type: 'experience' | 'education'
+  type: 'industry' | 'education'
   title: string
   organization: string
   organizationUrl?: string
@@ -257,8 +353,8 @@ const ORG_LOGO: Record<string, { src: string; height?: number }> = {
   'flul-phil':     { src: '/logos/ulisboa.svg'                  },
 }
 
-function branchLabel(entry: { type: 'experience' | 'education'; title: string }) {
-  const prefix = entry.type === 'experience' ? 'industry' : 'education'
+function branchLabel(entry: { type: 'industry' | 'education'; title: string }) {
+  const prefix = entry.type === 'industry' ? 'industry' : 'education'
   const slug   = entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   return `${prefix}/${slug}`
 }
@@ -270,15 +366,15 @@ const PROJECTS = [
     name: 'TopGun',
     org: 'diogobaltazar',
     url: 'https://github.com/diogobaltazar/TopGun',
-    description: 'End-to-end AI development flow — research, plan, implement, test, deploy.',
-    tags: ['AI', 'Developer Tools'],
+    description: 'Harness Engineering for High Performance Teams.',
+    tags: ['python', 'typescript', 'react', 'anthropic', 'langchain', 'fastapi', 'pydantic', 'docker', 'javascript', 'react', 'git', 'github', 'mlflow', 'grafana', 'kubernetes', 'aws'],
   },
   {
     name: 'Move37',
     org: 'Genentech',
     url: 'https://github.com/Genentech/Move37',
     description: 'AI-powered drug-target interaction and molecular movement analysis.',
-    tags: ['AI', 'Computational Biology', 'Drug Discovery'],
+    tags: ['python', 'numpy', 'pandas', 'fastapi', 'docker', 'java', 'javascript', 'react', 'git', 'github', 'mlflow', 'grafana', 'kubernetes', 'aws'],
   },
 ]
 
@@ -286,7 +382,7 @@ const PROJECTS = [
 
 const TIMELINE: TimelineEntry[] = [
   {
-    id: 'roche', type: 'experience',
+    id: 'roche', type: 'industry',
     title: 'Principal AI Engineer',
     organization: 'Roche', organizationUrl: 'https://www.roche.com',
     location: 'london', locationLabel: 'London · UK',
@@ -294,27 +390,27 @@ const TIMELINE: TimelineEntry[] = [
     startTs: ts(2026, 1), endTs: null,
     team: 'gRED Computational Sciences',
     description: 'Lab-In-The-Loop / AI for Accelerated Drug Discovery',
-    tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: FlaskConical, label: 'Pharma & Biotech' }, { icon: Dna, label: 'Computational Biology' }],
+    tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: FlaskConical, label: 'Target Discovery' }, { icon: Dna, label: 'Computational Biology' }],
     arcId: 'copenhagen-london',
     closedSource: [
       {
         name: 'EpicShelter',
         description: 'Unveiling Roche\'s known systems\' dependencies to produce a Knowledge Base enabling assessment of pressing refactoring priorities, decommissions, and opportunities.',
-        tags: ['python', 'claude api', 'aws'],
+        tags: ['python', 'huggingface', 'typescript', 'react', 'claude api', 'langchain', 'fastapi', 'pydantic', 'docker', 'kubernetes', 'git', 'github'],
         status: 'ongoing',
         source: 'inner',
       },
       {
         name: 'AutoLab',
         description: 'Oligonucleotide Workflow, Lab-In-The-Loop: autonomous agentic loop for experimental design and execution.',
-        tags: ['python', 'claude api', 'aws'],
+        tags: ['python', 'claude api', 'langchain', 'fastapi', 'pydantic', 'react', 'typescript', 'docker', 'aws'],
         status: 'ongoing',
         source: 'inner',
       },
     ],
   },
   {
-    id: 'nn-lead', type: 'experience',
+    id: 'nn-lead', type: 'industry',
     title: 'Lead Software Engineer',
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'london', locationLabel: 'Oxford and London · UK',
@@ -322,39 +418,39 @@ const TIMELINE: TimelineEntry[] = [
     startTs: ts(2023, 10), endTs: ts(2025, 12),
     team: 'R&ED – Target Discovery',
     description: 'Accelerating Target Discovery with Cloud-Based GenAI solutions: fusing ML and Computational Biology with Software Engineering.',
-    tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: Dna, label: 'Computational Biology' }, { icon: Cloud, label: 'Cloud & Platform' }, { icon: FlaskConical, label: 'Pharma' }],
+    tags2: [{ icon: Brain, label: 'AI / ML' }, { icon: FlaskConical, label: 'Target Discovery' }, { icon: Dna, label: 'Computational Biology' }],
     arcId: 'copenhagen-london',
     closedSource: [
       {
         name: 'Gennyx',
         description: 'Scientific Committee Assistant: GenAI system to streamline scientific committee workflows and decision support.',
-        tags: ['python', 'claude api', 'aws', 'react'],
+        tags: ['python', 'typescript', 'react', 'claude api', 'langchain', 'fastapi', 'pydantic', 'docker', 'aws'],
         status: 'shipped',
         source: 'inner',
       },
       {
         name: 'Bio Reasoning FM Training',
         description: 'Infrastructure for Foundation Model training with OMICS data: scalable pipelines for biological sequence pre-training.',
-        tags: ['python', 'pytorch', 'aws', 'kubernetes'],
+        tags: ['python', 'mlflow', 'numpy', 'jupyter', 'docker', 'kubernetes', 'aws'],
         status: 'ongoing',
         source: 'inner',
       },
     ],
   },
   {
-    id: 'nn-platform', type: 'experience',
+    id: 'nn-platform', type: 'industry',
     title: 'Senior Platform Engineer',
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
     period: 'Jan 2023 – Oct 2023', startYear: 2023,
     startTs: ts(2023, 1), endTs: ts(2023, 10),
-    tags2: [{ icon: Cloud, label: 'Cloud & Platform' }, { icon: Database, label: 'Data Engineering' }, { icon: FlaskConical, label: 'Pharma' }],
+    tags2: [{ icon: Cloud, label: 'Cloud & Platform' }, { icon: Database, label: 'Data Engineering' }],
     arcId: 'toulouse-copenhagen',
     closedSource: [
       {
         name: 'DataHub',
         description: 'DataAll — a fork of Novo Nordisk DataHub — an event-driven data mesh platform adapted for enterprise regulatory requirements.',
-        tags: ['python', 'ts', 'aws'],
+        tags: ['python', 'typescript', 'react', 'cdk', 'docker', 'postgresql', 'elasticsearch', 'aws'],
         status: 'internal',
         source: 'inner',
         url: 'https://github.com/awslabs/aws-dataall',
@@ -374,7 +470,7 @@ const TIMELINE: TimelineEntry[] = [
     arcId: 'lisbon-copenhagen-edu',
   },
   {
-    id: 'nn-senior', type: 'experience',
+    id: 'nn-senior', type: 'industry',
     title: 'Senior Software Engineer',
     organization: 'Novo Nordisk', organizationUrl: 'https://www.novonordisk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
@@ -387,21 +483,21 @@ const TIMELINE: TimelineEntry[] = [
       {
         name: 'CMC Campaign Cockpit',
         description: 'Monitoring toxicity and critical quality attributes in API campaigns: real-time visualisations and anomaly alerts for manufacturing batches.',
-        tags: ['ts', 'python', 'aws', 'react'],
+        tags: ['typescript', 'python', 'react', 'fastapi', 'postgresql', 'grafana', 'docker', 'aws'],
         status: 'shipped',
         source: 'inner',
       },
       {
         name: 'HPLC Performance',
         description: 'Forecasting Chemical Column Performance & Equipment Idle Time: predictive models for chromatography column degradation and maintenance scheduling.',
-        tags: ['python', 'mlflow', 'aws'],
+        tags: ['python', 'mlflow', 'pandas', 'numpy', 'scipy', 'jupyter', 'fastapi', 'docker', 'aws'],
         status: 'shipped',
         source: 'inner',
       },
     ],
   },
   {
-    id: 'maersk', type: 'experience',
+    id: 'maersk', type: 'industry',
     title: 'Software Engineer',
     organization: 'A.P. Moller – Maersk', organizationUrl: 'https://www.maersk.com',
     location: 'copenhagen', locationLabel: 'Copenhagen · Denmark',
@@ -414,21 +510,21 @@ const TIMELINE: TimelineEntry[] = [
       {
         name: 'InRoute',
         description: 'Inland container router and container availability forecast: route optimisation and capacity prediction across intermodal networks.',
-        tags: ['python', 'pyspark', 'azure', 'databricks', 'azure', 'Palantir Foundry', 'python', 'pyspark', 'databricks', 'git', 'docker'],
+        tags: ['python', 'pyspark', 'databricks', 'palantir foundry', 'docker', 'git'],
         status: 'internal',
         source: 'closed',
       },
       {
         name: 'Emma',
         description: 'REST API + backend to manage booking\'s insurance: microservices handling insurance policy creation, validation, and claims integration for cancelled container bookings.',
-        tags: ['python', 'Palantir Foundry', 'azure'],
+        tags: ['python', 'palantir foundry', 'fastapi', 'postgresql', 'docker', 'git'],
         status: 'internal',
         source: 'closed',
       },
     ],
   },
   {
-    id: 'airbus', type: 'experience',
+    id: 'airbus', type: 'industry',
     title: 'Software Engineer',
     organization: 'Airbus', organizationUrl: 'https://www.airbus.com',
     location: 'toulouse', locationLabel: 'Toulouse · France',
@@ -443,21 +539,21 @@ const TIMELINE: TimelineEntry[] = [
       {
         name: 'Skywise / Fleet Reliability',
         description: 'Benchmarking fleet performance against Airbus Engineering standards: analytical pipelines for aircraft reliability KPIs across global operator fleets.',
-        tags: ['Palantir Foundry', 'python', 'pyspark', 'js', 'Palantir Foundry', 'js', 'python', 'pyspark', 'postgresql', 'git', 'docker', 'elasticsearch'],
+        tags: ['python', 'pyspark', 'javascript', 'palantir foundry', 'postgresql', 'elasticsearch', 'docker', 'git'],
         status: 'shipped',
         source: 'closed',
       },
       {
         name: 'A350 Quality',
         description: 'Migration of the A350 quality platform to Palantir Foundry: full data model and workflow migration for Final Assembly Line quality assurance.',
-        tags: ['Palantir Foundry', 'python', 'pyspark', 'postgresql'],
+        tags: ['python', 'pyspark', 'palantir foundry', 'postgresql', 'docker', 'git'],
         status: 'shipped',
         source: 'closed',
       },
     ],
   },
   {
-    id: 'accenture-se', type: 'experience',
+    id: 'accenture-se', type: 'industry',
     title: 'Software Engineer',
     organization: 'Accenture', organizationUrl: 'https://www.accenture.com',
     location: 'lisbon', locationLabel: 'Lisbon Area · Portugal',
@@ -469,21 +565,21 @@ const TIMELINE: TimelineEntry[] = [
       {
         name: 'Client360',
         description: 'Unified 360° customer view for a major telco: integrating CRM, billing, and usage data into a consolidated analytics layer on Cloudera Hadoop.',
-        tags: ['Cloudera Hadoop', 'pyspark', 'java', 'oracle sql', 'Cloudera Hadoop', 'pyspark', 'java', 'oracle sql/psql', 'git'],
+        tags: ['python', 'pyspark', 'java', 'cloudera hadoop', 'postgresql', 'git'],
         status: 'internal',
         source: 'closed',
       },
       {
         name: 'In-Premises Cloudera Hadoop Datalake',
         description: 'On-premises Cloudera Hadoop data lake: ingestion, governance, and serving layers for structured and semi-structured telco data at petabyte scale.',
-        tags: ['Cloudera Hadoop', 'pyspark', 'java', 'psql'],
+        tags: ['python', 'pyspark', 'java', 'cloudera hadoop', 'kafka', 'docker', 'git'],
         status: 'deprecated',
         source: 'closed',
       },
       {
         name: 'ClinFlow',
         description: 'Clinical workflow automation platform for a hospital network: digitising patient-pathway orchestration, bed management, and inter-department handoffs.',
-        tags: ['C# ASP.NET', 'js', 'sql server'],
+        tags: ['C# ASP.NET', 'js', 'mysql', 'docker', 'git'],
         status: 'shipped',
         source: 'closed',
       },
@@ -523,7 +619,7 @@ const TIMELINE: TimelineEntry[] = [
     startTs: ts(2011, 9), endTs: ts(2014, 6),
     description: 'Logic, Philosophy of Mathematics, Mathematical Logic, and Philosophy of Language.',
     thesis: 'The Logicist Program of Arithmetic: Frege and Russell',
-    tags2: [{ icon: BookOpen, label: 'Philosophy' }, { icon: Calculator, label: 'Mathematics' }],
+    tags2: [{ icon: BookOpen, label: 'Philosophy' }, { icon: Calculator, label: 'Mathematics' }, { icon: Calculator, label: 'Logic' }],
     arcId: null,
   },
 ]
@@ -617,6 +713,66 @@ function ThesisDownload({ title }: { title: string }) {
   )
 }
 
+// ─── project cards ────────────────────────────────────────────────────────────
+
+function ClosedSourceCard({ p, statusColor }: { p: ClosedSourceProject; statusColor: Record<string, string> }) {
+  const [showTech, setShowTech] = useState(false)
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
+  return (
+    <div style={{ padding: '0.75rem 0.9rem', border: '1px solid var(--border)', borderRadius: 5, background: 'var(--card-bg)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.35rem' }}>
+        {p.url
+          ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'var(--border)' }}>{p.name}</a>
+          : <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
+        }
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.7rem', color: statusColor[p.status] ?? 'var(--muted)' }}>{p.status}</span>
+          <button
+            onClick={e => { e.stopPropagation(); setShowTech(v => !v) }}
+            title={showTech ? 'Hide technologies' : 'Show technologies'}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: showTech ? 'var(--accent)' : 'var(--muted)', transition: 'color 0.2s', display: 'flex', opacity: 0.7 }}
+          >
+            <Cpu size={11} strokeWidth={1.5} />
+          </button>
+        </div>
+      </div>
+      <p style={{ fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: showTech ? '0.5rem' : 0 }}>{p.description}</p>
+      {showTech && <TechTagList tags={p.tags} />}
+    </div>
+  )
+}
+
+function OpenSourceCard({ p, desc }: { p: typeof PROJECTS[number]; desc: string }) {
+  const [showTech, setShowTech] = useState(false)
+  return (
+    <div
+      style={{ border: '1px solid var(--border)', borderRadius: 6, background: 'transparent', transition: 'border-color 0.2s, background 0.2s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--card-bg-hover)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+    >
+      <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', padding: '1rem 1.1rem', textDecoration: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
+          <GithubIcon size={13} style={{ color: 'var(--muted)', flexShrink: 0 }} />
+          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
+          <span style={{ fontSize: '0.65rem', color: 'var(--muted)', opacity: 0.6 }}>{p.org}</span>
+          <button
+            onClick={e => { e.preventDefault(); e.stopPropagation(); setShowTech(v => !v) }}
+            title={showTech ? 'Hide technologies' : 'Show technologies'}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: showTech ? 'var(--accent)' : 'var(--muted)', transition: 'color 0.2s', display: 'flex', opacity: 0.7 }}
+          >
+            <Cpu size={11} strokeWidth={1.5} />
+          </button>
+        </div>
+        <p style={{ fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: showTech ? '0.65rem' : 0 }}>
+          {desc || p.description}
+        </p>
+        {showTech && <TechTagList tags={p.tags} />}
+      </a>
+    </div>
+  )
+}
+
 // ─── timeline entry ───────────────────────────────────────────────────────────
 
 function Entry({
@@ -629,9 +785,11 @@ function Entry({
 }) {
   const orgLogo = ORG_LOGO[entry.id]
   const logoHeight = orgLogo?.height ?? 26
-  const CYAN   = '#00e5ff'
-  const PURPLE = '#cc44ff'
-  const typeColor = entry.type === 'experience' ? CYAN : PURPLE
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
+  const CYAN   = isDay ? '#00c4a3' : '#00e5ff'
+  const PURPLE = isDay ? '#7c3aed' : '#cc44ff'
+  const typeColor = entry.type === 'industry' ? CYAN : PURPLE
   const opacity = 1
 
   const statusColor: Record<string, string> = {
@@ -688,7 +846,7 @@ function Entry({
           <img
             src={orgLogo.src}
             alt={entry.organization}
-            style={{ height: logoHeight, width: 'auto', maxWidth: 100, objectFit: 'contain', opacity: 0.5, flexShrink: 0, display: 'block' }}
+            style={{ height: logoHeight, width: 'auto', maxWidth: 100, objectFit: 'contain', opacity: isDay ? 0.7 : 0.5, filter: isDay ? 'invert(1)' : 'none', flexShrink: 0, display: 'block' }}
           />
         </div>
       )}
@@ -739,25 +897,7 @@ function Entry({
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
               {entry.closedSource.map(p => (
-                <div
-                  key={p.name}
-                  style={{
-                    padding: '0.75rem 0.9rem',
-                    border: '1px solid var(--border)',
-                    borderRadius: 5,
-                    background: 'var(--card-bg)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                    {p.url
-                      ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'var(--border)' }}>{p.name}</a>
-                      : <span style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
-                    }
-                    <span style={{ fontSize: '0.7rem', color: statusColor[p.status] ?? 'var(--muted)', flexShrink: 0 }}>{p.status}</span>
-                  </div>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.5rem' }}>{p.description}</p>
-                  <TechTagList tags={p.tags} />
-                </div>
+                <ClosedSourceCard key={p.name} p={p} statusColor={statusColor} />
               ))}
             </div>
           </div>
@@ -775,6 +915,8 @@ export default function About() {
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
   const [entryHeights, setEntryHeights] = useState<number[]>([])
   const [githubDescs, setGithubDescs] = useState<Record<string, string>>({})
+  // TODO: git tree hidden until visual polish is complete — re-enable showGitGraph toggle to restore it
+  const showGitGraph = false
   const refs = useRef<(HTMLDivElement | null)[]>([])
 
   // Stable key that changes whenever the selected set changes
@@ -845,6 +987,7 @@ export default function About() {
     _setGlobeState({
       activeArc: primaryActiveEntry?.arcId ?? null,
       activeLocation: activeGlobeLocation,
+      activeType: primaryActiveEntry?.type ?? null,
     })
   }, [activeIndexKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -874,6 +1017,11 @@ export default function About() {
             <EmailCapture />
           </div>
           <p style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>Principal AI Engineer · London, UK</p>
+          <p style={{ marginTop: '1.25rem', fontSize: '0.82rem', lineHeight: 1.75, color: 'var(--desc)' }}>
+            I build AI systems at the boundary of software engineering and science — currently at Roche, designing
+            agentic loops for autonomous drug discovery. Other than assisting our scientists, my main endeavour goes towards <em>Harness Engineering</em>: the architecture of guardrails, feedback controls, and
+            observability that makes agents reliable rather than just extraordinary.
+          </p>
         </div>
 
         <div style={{ padding: '0 3.5rem 8rem' }}>
@@ -884,59 +1032,22 @@ export default function About() {
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem', marginBottom: '3.5rem' }}>
             {PROJECTS.map(p => (
-              <a
-                key={p.name}
-                href={p.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block',
-                  padding: '1rem 1.1rem',
-                  border: '1px solid var(--border)',
-                  borderRadius: 6,
-                  textDecoration: 'none',
-                  background: 'transparent',
-                  transition: 'border-color 0.2s, background 0.2s',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(128,128,128,0.35)'
-                  ;(e.currentTarget as HTMLElement).style.background = 'var(--card-bg-hover)'
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'
-                  ;(e.currentTarget as HTMLElement).style.background = 'transparent'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
-                  <GithubIcon size={13} style={{ color: 'var(--muted)', flexShrink: 0 }} />
-                  <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--fg)' }}>{p.name}</span>
-                  <span style={{ fontSize: '0.65rem', color: 'var(--muted)', opacity: 0.6 }}>{p.org}</span>
-                </div>
-                <p style={{ fontSize: '0.72rem', color: 'var(--muted)', lineHeight: 1.55, marginBottom: '0.65rem' }}>
-                  {githubDescs[p.name] || p.description}
-                </p>
-                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {p.tags.map(t => (
-                    <span key={t} style={{
-                      fontSize: '0.6rem', padding: '0.15rem 0.5rem',
-                      border: '1px solid var(--border)', borderRadius: 20,
-                      color: 'var(--muted)',
-                    }}>{t}</span>
-                  ))}
-                </div>
-              </a>
+              <OpenSourceCard key={p.name} p={p} desc={githubDescs[p.name]} />
             ))}
           </div>
 
-          {/* ── Experience & Education ── */}
-          <p style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.2rem' }}>
-            Experience & Education
-          </p>
+          {/* ── Industry & Education ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.2rem' }}>
+            <p style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+              Industry & Education
+            </p>
+          </div>
           <p style={{ fontSize: '0.7rem', color: 'var(--hint)', marginBottom: '0.5rem' }}>
             scroll to explore · select to expand
           </p>
 
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
+            <div style={{ maxWidth: showGitGraph ? 200 : 0, opacity: showGitGraph ? 1 : 0, overflow: 'hidden', transition: 'max-width 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease', flexShrink: 0, background: 'rgba(0,0,0,0.18)', borderRadius: 8 }}>
             <GitGraph
               entries={TIMELINE.map(e => ({
                 type: e.type,
@@ -951,6 +1062,7 @@ export default function About() {
                 refs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
               }}
             />
+            </div>
 
             {/* Timeline entries */}
             <div style={{ flex: 1 }}>

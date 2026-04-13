@@ -11,6 +11,7 @@
  */
 
 import { useMemo } from 'react'
+import { useTheme } from '../context/ThemeContext'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -18,18 +19,16 @@ const MAIN_X    = 14
 const LANE_BASE = 40   // x of lane 0
 const LANE_STEP = 26   // px between lanes
 const CURVE_R   = 14   // bezier curve arm length
-const NODE_R = 5   // matches globe city dot size
+const NODE_R = 8   // matches globe city dot size
 const TRUNK_W = 4     // main trunk stroke width
 const BRANCH_W = 4  // branch line stroke width
 
 const MAIN_COL = 'rgba(100,130,255,0.7)'
-const CYAN     = '#00e5ff'
-const PURPLE   = '#cc44ff'
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
 export interface GitEntry {
-  type: 'experience' | 'education'
+  type: 'industry' | 'education'
   branchLabel: string   // e.g. "industry/principal-ai-engineer"
   startTs: number       // Date.UTC timestamp
   endTs: number | null  // null = ongoing / present
@@ -84,6 +83,11 @@ function computeLayout(entries: GitEntry[]): { lanes: number[]; extentTopRow: nu
 // ─── component ────────────────────────────────────────────────────────────────
 
 export default function GitGraph({ entries, activeIndices, entryHeights, onNodeClick }: GitGraphProps) {
+  const { theme } = useTheme()
+  const isDay = theme === 'day'
+  const CYAN   = isDay ? '#00c4a3' : '#00e5ff'
+  const PURPLE = isDay ? '#7c3aed' : '#cc44ff'
+
   const totalHeight = entryHeights.reduce((a, b) => a + b, 0)
 
   const yPos = useMemo(() => {
@@ -121,7 +125,7 @@ export default function GitGraph({ entries, activeIndices, entryHeights, onNodeC
     const lane    = lanes[j]
     const extTop  = extentTopRow[j]
     const LX      = LANE_BASE + lane * LANE_STEP
-    const col     = entry.type === 'experience' ? CYAN : PURPLE
+    const col     = entry.type === 'industry' ? CYAN : PURPLE
 
     // mergeY is always the topmost row the branch reaches — the merge curve must sit
     // at the TOP of the branch line. Moving it to yPos[j] instead would put the merge

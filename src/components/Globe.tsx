@@ -98,10 +98,11 @@ interface GlobeProps {
   mode?: 'globe' | 'orb'
   activeArc: string | null
   activeLocation: string | null
+  activeType: 'industry' | 'education' | null
   onCityClick?: (key: string) => void
 }
 
-export default function Globe({ mode = 'globe', activeArc, activeLocation, onCityClick }: GlobeProps) {
+export default function Globe({ mode = 'globe', activeArc, activeLocation, activeType, onCityClick }: GlobeProps) {
   const isOrb = mode === 'orb'
   const staticMode = useMemo(detectStatic, [])
   const { theme } = useTheme()
@@ -206,20 +207,22 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
     return { proj: p, pathGen: geoPath(p) }
   }, [rotation])
 
-  const CYAN   = '#00e5ff'
-  const PURPLE = '#cc44ff'
+  const CYAN   = isDay ? '#00c4a3' : '#00e5ff'
+  const PURPLE = isDay ? '#7c3aed' : '#cc44ff'
   const DIM    = isDay ? 0.25 : 0.20
   const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
   const haloColor = isOrb
     ? (isDay ? 'rgba(140,50,220,0.65)' : 'rgba(180,68,255,0.85)')
-    : (isDay ? 'rgba(0,160,190,0.7)'   : 'rgba(0,200,255,0.9)')
+    : (isDay ? 'rgba(0,200,255,0.9)'   : 'rgba(0,200,255,0.9)')
+  const haloInnerDay  = 'rgba(60,35,15,0.75)'   // warm dark brown
+  const haloOuterDay  = 'rgba(15,10,5,0.85)'     // near-black
 
   // Day/night palette
   const sphereFill   = isDay ? '#e5e4e1' : '#040404'
   const landFill     = isDay ? '#d8d7d3' : '#0e0e0e'
   const outlineColor = isDay ? 'rgba(94,106,210,0.3)' : 'rgba(0,200,255,0.18)'
   const dotInactive  = isDay ? 'rgba(30,50,130,0.55)' : 'rgba(180,230,255,0.7)'
-  const dotActive    = isDay ? '#111111' : '#ffffff'
+  const dotActive    = activeType === 'education' ? PURPLE : (isDay ? CYAN : '#ffffff')
   const labelActive  = isDay ? 'rgba(10,10,30,0.9)'   : 'rgba(255,255,255,0.9)'
   const labelInact   = isDay ? 'rgba(40,60,140,0.35)'  : 'rgba(150,210,255,0.35)'
 
@@ -296,7 +299,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
             <g key={key} onClick={() => onCityClick?.(key)} style={{ cursor: 'pointer' }}>
               {/* Pulse ring — only when active */}
               {isActive && (
-                <circle cx={x} cy={y} r={5} fill="none" stroke={CYAN} strokeWidth={1}>
+                <circle cx={x} cy={y} r={5} fill="none" stroke={activeType === 'education' ? PURPLE : CYAN} strokeWidth={1}>
                   <animate attributeName="r" from="5" to="20" dur="1.8s" repeatCount="indefinite" />
                   <animate attributeName="opacity" from="0.7" to="0" dur="1.8s" repeatCount="indefinite" />
                 </circle>
@@ -369,7 +372,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
         fill="none"
         strokeWidth={30}
         filter="url(#rim-outer)"
-        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
+        style={{ stroke: isDay ? haloOuterDay : 'rgba(200,225,255,0.9)', transition: 'stroke 1.1s ease' }}
       />
       {/* Rim halo — inner glow */}
       <circle
@@ -378,7 +381,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, onCit
         strokeWidth={80}
         filter="url(#rim-inner)"
         clipPath="url(#globe-clip)"
-        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
+        style={{ stroke: isDay ? haloInnerDay : haloColor, transition: 'stroke 1.1s ease' }}
       />
     </svg>
   )

@@ -3,6 +3,7 @@ import { createContext, useContext, useRef, useState, useCallback, useMemo, type
 interface GlobeState {
   activeArc: string | null
   activeLocation: string | null
+  activeType: 'industry' | 'education' | null
 }
 
 interface GlobeCtxValue extends GlobeState {
@@ -12,12 +13,12 @@ interface GlobeCtxValue extends GlobeState {
 }
 
 const Ctx = createContext<GlobeCtxValue>({
-  activeArc: null, activeLocation: null,
+  activeArc: null, activeLocation: null, activeType: null,
   onCityClick: () => {}, _setOnCityClick: () => {}, _setGlobeState: () => {},
 })
 
 export function GlobeProvider({ children }: { children: ReactNode }) {
-  const [state, setGlobeState] = useState<GlobeState>({ activeArc: null, activeLocation: null })
+  const [state, setGlobeState] = useState<GlobeState>({ activeArc: null, activeLocation: null, activeType: null })
   const cityClickRef = useRef<(key: string) => void>(() => {})
 
   const onCityClick       = useCallback((key: string) => cityClickRef.current(key), [])

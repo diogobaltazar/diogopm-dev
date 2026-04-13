@@ -8,7 +8,7 @@ import { useTheme } from '../context/ThemeContext'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
-  const { activeArc, activeLocation, onCityClick } = useGlobeCtx()
+  const { activeArc, activeLocation, activeType, onCityClick } = useGlobeCtx()
   const { theme } = useTheme()
   const isOrb = pathname !== '/'
 
@@ -42,6 +42,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               mode={isOrb ? 'orb' : 'globe'}
               activeArc={activeArc}
               activeLocation={activeLocation}
+              activeType={activeType}
               onCityClick={onCityClick}
             />
           </div>

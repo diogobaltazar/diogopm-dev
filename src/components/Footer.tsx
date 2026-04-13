@@ -10,7 +10,7 @@ const SITE_YEAR = 2026
 // ─── data ─────────────────────────────────────────────────────────────────────
 
 const OPEN_SOURCE = [
-  { label: 'topgun',  href: 'https://github.com/diogobaltazar/topgun' },
+  { label: 'TopGun',  href: 'https://github.com/diogobaltazar/TopGun' },
   { label: 'Move37',  href: 'https://github.com/Genentech/Move37'     },
 ]
 
