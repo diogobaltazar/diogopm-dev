@@ -5,8 +5,7 @@ type Theme = 'day' | 'night'
 function detectTheme(): Theme {
   const stored = localStorage.getItem('theme') as Theme | null
   if (stored === 'day' || stored === 'night') return stored
-  const hour = new Date().getHours()
-  return hour >= 7 && hour < 19 ? 'day' : 'night'
+  return 'night'
 }
 
 interface ThemeCtxValue {
