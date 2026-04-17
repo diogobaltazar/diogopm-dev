@@ -5,18 +5,16 @@ import { posts } from '../lib/posts'
 export default function Blog() {
   return (
     <PageTransition>
-      <div className="mx-auto max-w-[680px] px-6 pb-32">
-        <h1
-          className="pt-20 text-5xl font-semibold tracking-tight mb-12"
-          style={{
-            background: 'linear-gradient(to bottom, #ffffff 50%, rgba(255,255,255,0.5))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          writing
-        </h1>
+      <div className="mx-auto max-w-[760px] px-6 pb-32">
+        <section style={{ paddingTop: '5rem', marginBottom: '3rem' }}>
+          <p style={{ fontSize: '0.68rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: '0.9rem' }}>
+            Blog
+          </p>
+          <p style={{ maxWidth: 620, marginTop: '1.1rem', fontSize: '0.96rem', lineHeight: 1.75, color: 'var(--desc)' }}>
+            This blog is where the author&apos;s views on technology take shape in public:
+            practical, opinionated notes on software, AI, systems, and the trade-offs behind building them well.
+          </p>
+        </section>
         <div style={{ borderTop: '1px solid var(--border)' }}>
           {posts.map(({ slug, frontmatter }) => (
             <PostCard

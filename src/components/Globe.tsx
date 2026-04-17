@@ -8,7 +8,7 @@
  * – Pulse animation on active city dot
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, type PointerEvent } from 'react'
 import { geoOrthographic, geoPath, geoInterpolate } from 'd3-geo'
 import { feature } from 'topojson-client'
 import type { GeoPermissibleObjects, GeoProjection } from 'd3-geo'
@@ -99,7 +99,7 @@ interface GlobeProps {
   activeArc: string | null
   activeLocation: string | null
   activeType: 'industry' | 'education' | null
-  onCityClick?: (key: string) => void
+  onCityClick?: (key: string, anchor?: { x: number; y: number }) => void
 }
 
 export default function Globe({ mode = 'globe', activeArc, activeLocation, activeType, onCityClick }: GlobeProps) {
@@ -152,9 +152,11 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
     if (staticMode) return
     let prev = performance.now()
     const SPEED    = 0.001
-    const DURATION = 1400 // ms — full fly-to duration
+    const DURATION = 1700 // ms — full fly-to duration
 
-    function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3) }
+    function easeInOutCubic(t: number) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+    }
 
     function tick(now: number) {
       const dt = Math.min(now - prev, 50)
@@ -164,7 +166,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         if (flyAnim.current) {
           const { from, to, t0 } = flyAnim.current
           const t = Math.min((now - t0) / DURATION, 1)
-          const e = easeOutCubic(t)
+          const e = easeInOutCubic(t)
           rotRef.current[0] = from[0] + (to[0] - from[0]) * e
           rotRef.current[1] = from[1] + (to[1] - from[1]) * e
           if (t >= 1) flyAnim.current = null
@@ -179,14 +181,14 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
     return () => { if (rafId.current) cancelAnimationFrame(rafId.current) }
   }, [staticMode])
 
-  function onPointerDown(e: React.PointerEvent<SVGSVGElement>) {
+  function onPointerDown(e: PointerEvent<SVGSVGElement>) {
     e.currentTarget.setPointerCapture(e.pointerId)
     isDragging.current = true
     dragStart.current  = [e.clientX, e.clientY]
     rotAtDrag.current  = [...rotRef.current] as [number, number, number]
   }
 
-  function onPointerMove(e: React.PointerEvent<SVGSVGElement>) {
+  function onPointerMove(e: PointerEvent<SVGSVGElement>) {
     if (!isDragging.current) return
     const k  = 0.25
     const dx = e.clientX - dragStart.current[0]
@@ -207,24 +209,28 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
     return { proj: p, pathGen: geoPath(p) }
   }, [rotation])
 
-  const CYAN   = isDay ? '#00c4a3' : '#00e5ff'
-  const PURPLE = isDay ? '#7c3aed' : '#cc44ff'
+  const CYAN   = isDay ? '#17786f' : '#4ad7c0'
+  const PURPLE = isDay ? '#6a56d7' : '#b196ff'
   const DIM    = isDay ? 0.25 : 0.20
   const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
   const haloColor = isOrb
-    ? (isDay ? 'rgba(140,50,220,0.65)' : 'rgba(180,68,255,0.85)')
-    : (isDay ? 'rgba(0,200,255,0.9)'   : 'rgba(0,200,255,0.9)')
-  const haloInnerDay  = 'rgba(60,35,15,0.75)'   // warm dark brown
-  const haloOuterDay  = 'rgba(15,10,5,0.85)'     // near-black
+    ? (isDay ? 'rgba(106,86,215,0.46)' : 'rgba(177,150,255,0.8)')
+    : (isDay ? 'rgba(23,120,111,0.54)' : 'rgba(74,215,192,0.82)')
 
   // Day/night palette
-  const sphereFill   = isDay ? '#e5e4e1' : '#040404'
-  const landFill     = isDay ? '#d8d7d3' : '#0e0e0e'
-  const outlineColor = isDay ? 'rgba(94,106,210,0.3)' : 'rgba(0,200,255,0.18)'
-  const dotInactive  = isDay ? 'rgba(30,50,130,0.55)' : 'rgba(180,230,255,0.7)'
+  const sphereFill   = isOrb ? 'transparent' : (isDay ? '#e8e3da' : '#06080d')
+  const sphereStroke = isOrb
+    ? (isDay ? 'rgba(92, 102, 140, 0.24)' : 'rgba(188, 210, 255, 0.24)')
+    : 'none'
+  const sphereStrokeWidth = isOrb ? 1.25 : 0
+  const landFill     = isDay ? '#ddd7cd' : '#10151d'
+  const outlineColor = isDay ? 'rgba(63,103,214,0.22)' : 'rgba(107,130,255,0.22)'
+  const dotInactive  = isDay ? 'rgba(70,84,130,0.46)' : 'rgba(196,216,255,0.7)'
   const dotActive    = activeType === 'education' ? PURPLE : (isDay ? CYAN : '#ffffff')
-  const labelActive  = isDay ? 'rgba(10,10,30,0.9)'   : 'rgba(255,255,255,0.9)'
-  const labelInact   = isDay ? 'rgba(40,60,140,0.35)'  : 'rgba(150,210,255,0.35)'
+  const labelActive  = isDay ? 'rgba(25,28,42,0.92)' : 'rgba(255,255,255,0.92)'
+  const labelInact   = isDay ? 'rgba(78,86,118,0.5)' : 'rgba(162,197,255,0.38)'
+  const outerHaloStroke = isOrb ? 10 : 30
+  const innerHaloStroke = isOrb ? 12 : 80
 
   return (
     <svg
@@ -265,7 +271,15 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       </defs>
 
       {/* Sphere */}
-      <circle cx={CX} cy={CY} r={R} fill={sphereFill} style={{ transition: 'fill 0.6s ease' }} />
+      <circle
+        cx={CX}
+        cy={CY}
+        r={R}
+        fill={sphereFill}
+        stroke={sphereStroke}
+        strokeWidth={sphereStrokeWidth}
+        style={{ transition: 'fill 0.6s ease, stroke 0.6s ease, stroke-width 0.6s ease' }}
+      />
 
       {/* Clipped globe content */}
       {/* Globe content — fades out in orb mode */}
@@ -296,7 +310,27 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
           const dx = anchor === 'end' ? -9 : 9
 
           return (
-            <g key={key} onClick={() => onCityClick?.(key)} style={{ cursor: 'pointer' }}>
+            <g
+              key={key}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                const rect = event.currentTarget.ownerSVGElement?.getBoundingClientRect()
+                const clickAnchor = rect
+                  ? {
+                      x: rect.left + (x / 500) * rect.width,
+                      y: rect.top + (y / 500) * rect.height,
+                    }
+                  : undefined
+                onCityClick?.(key, clickAnchor)
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <circle
+                cx={x}
+                cy={y}
+                r={12}
+                fill="transparent"
+              />
               {/* Pulse ring — only when active */}
               {isActive && (
                 <circle cx={x} cy={y} r={5} fill="none" stroke={activeType === 'education' ? PURPLE : CYAN} strokeWidth={1}>
@@ -370,18 +404,18 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       <circle
         cx={CX} cy={CY} r={R + 8}
         fill="none"
-        strokeWidth={30}
+        strokeWidth={outerHaloStroke}
         filter="url(#rim-outer)"
-        style={{ stroke: isDay ? haloOuterDay : 'rgba(200,225,255,0.9)', transition: 'stroke 1.1s ease' }}
+        style={{ stroke: isDay ? 'rgba(75,84,115,0.34)' : 'rgba(183,205,255,0.88)', transition: 'stroke 1.1s ease' }}
       />
       {/* Rim halo — inner glow */}
       <circle
         cx={CX} cy={CY} r={R - 8}
         fill="none"
-        strokeWidth={80}
+        strokeWidth={innerHaloStroke}
         filter="url(#rim-inner)"
         clipPath="url(#globe-clip)"
-        style={{ stroke: isDay ? haloInnerDay : haloColor, transition: 'stroke 1.1s ease' }}
+        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
       />
     </svg>
   )

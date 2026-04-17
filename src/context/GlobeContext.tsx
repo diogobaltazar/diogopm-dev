@@ -6,9 +6,14 @@ interface GlobeState {
   activeType: 'industry' | 'education' | null
 }
 
+export interface CityClickAnchor {
+  x: number
+  y: number
+}
+
 interface GlobeCtxValue extends GlobeState {
-  onCityClick: (key: string) => void
-  _setOnCityClick: (fn: (key: string) => void) => void
+  onCityClick: (key: string, anchor?: CityClickAnchor) => void
+  _setOnCityClick: (fn: (key: string, anchor?: CityClickAnchor) => void) => void
   _setGlobeState: (state: GlobeState) => void
 }
 
@@ -19,10 +24,10 @@ const Ctx = createContext<GlobeCtxValue>({
 
 export function GlobeProvider({ children }: { children: ReactNode }) {
   const [state, setGlobeState] = useState<GlobeState>({ activeArc: null, activeLocation: null, activeType: null })
-  const cityClickRef = useRef<(key: string) => void>(() => {})
+  const cityClickRef = useRef<(key: string, anchor?: CityClickAnchor) => void>(() => {})
 
-  const onCityClick       = useCallback((key: string) => cityClickRef.current(key), [])
-  const _setOnCityClick   = useCallback((fn: (key: string) => void) => { cityClickRef.current = fn }, [])
+  const onCityClick       = useCallback((key: string, anchor?: CityClickAnchor) => cityClickRef.current(key, anchor), [])
+  const _setOnCityClick   = useCallback((fn: (key: string, anchor?: CityClickAnchor) => void) => { cityClickRef.current = fn }, [])
   const _setGlobeState    = useCallback((s: GlobeState) => setGlobeState(s), [])
 
   const value = useMemo(

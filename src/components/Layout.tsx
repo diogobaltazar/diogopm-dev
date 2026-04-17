@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 import Nav from './Nav'
@@ -11,6 +12,22 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { activeArc, activeLocation, activeType, onCityClick } = useGlobeCtx()
   const { theme } = useTheme()
   const isOrb = pathname !== '/'
+  const isHome = pathname === '/'
+  const globeFrame = isHome
+    ? {
+        left: '38%',
+        bottom: '-12%',
+        width: '80vw',
+        height: '120%',
+        transform: 'translateX(0)',
+      }
+    : {
+        left: '50%',
+        bottom: '6%',
+        width: 'min(62vw, 780px)',
+        height: '82%',
+        transform: 'translateX(-50%)',
+      }
 
   return (
     <div
@@ -32,12 +49,15 @@ export default function Layout({ children }: { children: ReactNode }) {
           zIndex: 1,
           pointerEvents: 'none',
         }}>
-          <div style={{
+          <motion.div
+            animate={globeFrame}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            style={{
             position: 'absolute',
-            left: '-18%', bottom: '-12%',
-            width: '80vw', height: '120%',
-            pointerEvents: isOrb ? 'none' : 'auto'
-          }}>
+            pointerEvents: isOrb ? 'none' : 'auto',
+            willChange: 'left, bottom, width, height, transform',
+          }}
+          >
             <Globe
               mode={isOrb ? 'orb' : 'globe'}
               activeArc={activeArc}
@@ -45,11 +65,11 @@ export default function Layout({ children }: { children: ReactNode }) {
               activeType={activeType}
               onCityClick={onCityClick}
             />
-          </div>
+          </motion.div>
         </div>
 
         <Nav />
-        <main style={{ flex: 1 }}>{children}</main>
+        <main style={{ flex: 1, pointerEvents: 'none' }}>{children}</main>
         <Footer />
       </div>
     </div>
