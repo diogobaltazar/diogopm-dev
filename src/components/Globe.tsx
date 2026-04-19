@@ -217,38 +217,42 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
   const haloColor = isOrb
     ? (isDay ? 'rgba(106,86,215,0.46)' : 'rgba(177,150,255,0.8)')
     : isHero
-      ? (isDay ? 'rgba(63,103,214,0.24)' : 'rgba(107,130,255,0.34)')
+      ? (isDay ? 'rgba(92,126,183,0.26)' : 'rgba(124,150,224,0.36)')
     : (isDay ? 'rgba(23,120,111,0.54)' : 'rgba(74,215,192,0.82)')
 
   // Day/night palette
-  const sphereFill   = isOrb ? 'transparent' : (isDay ? '#e8e3da' : '#06080d')
+  const sphereFill   = isOrb
+    ? 'transparent'
+    : isHero
+      ? (isDay ? '#ebe6dc' : '#141d2b')
+      : (isDay ? '#e8e3da' : '#06080d')
   const sphereStroke = isOrb
     ? (isDay ? 'rgba(92, 102, 140, 0.24)' : 'rgba(188, 210, 255, 0.24)')
     : isHero
-      ? (isDay ? 'rgba(92, 102, 140, 0.14)' : 'rgba(188, 210, 255, 0.12)')
-    : 'none'
-  const sphereStrokeWidth = isOrb ? 1.25 : isHero ? 0.8 : 0
+      ? (isDay ? 'rgba(104, 116, 142, 0.14)' : 'rgba(188, 206, 255, 0.16)')
+      : 'none'
+  const sphereStrokeWidth = isOrb ? 1.25 : isHero ? 1.3 : 0
   const landFill     = isDay ? '#ddd7cd' : '#10151d'
   const outlineColor = isDay ? 'rgba(63,103,214,0.22)' : 'rgba(107,130,255,0.22)'
   const dotInactive  = isDay ? 'rgba(70,84,130,0.46)' : 'rgba(196,216,255,0.7)'
   const dotActive    = activeType === 'education' ? PURPLE : (isDay ? CYAN : '#ffffff')
   const labelActive  = isDay ? 'rgba(25,28,42,0.92)' : 'rgba(255,255,255,0.92)'
   const labelInact   = isDay ? 'rgba(78,86,118,0.5)' : 'rgba(162,197,255,0.38)'
-  const outerHaloStroke = isOrb ? 10 : isHero ? 18 : 30
-  const innerHaloStroke = isOrb ? 12 : isHero ? 42 : 80
-  const contentOpacity = isOrb ? 0 : isHero ? 0.26 : 1
+  const outerHaloStroke = isOrb ? 10 : isHero ? 22 : 30
+  const innerHaloStroke = isOrb ? 12 : isHero ? 34 : 80
+  const contentOpacity = isOrb || isHero ? 0 : 1
   const heroSphereFillValues = isDay
-    ? '#e8e3da;#e4ddd1;#ece6de;#e7e1d7;#e8e3da'
-    : '#06080d;#09101a;#101528;#0a0d16;#06080d'
+    ? '#ebe6dc;#e1e6ec;#e9dfd2;#dfe7e3;#ebe6dc'
+    : '#141d2b;#1b2638;#162233;#201d34;#141d2b'
   const heroSphereStrokeValues = isDay
-    ? 'rgba(92,102,140,0.14);rgba(70,118,130,0.18);rgba(106,86,215,0.18);rgba(92,102,140,0.14)'
-    : 'rgba(188,210,255,0.12);rgba(74,215,192,0.16);rgba(177,150,255,0.16);rgba(188,210,255,0.12)'
+    ? 'rgba(104,116,142,0.14);rgba(92,126,183,0.18);rgba(56,130,121,0.16);rgba(104,116,142,0.14)'
+    : 'rgba(188,206,255,0.16);rgba(124,150,224,0.2);rgba(90,182,205,0.18);rgba(188,206,255,0.16)'
   const heroOuterGlowValues = isDay
-    ? 'rgba(75,84,115,0.34);rgba(63,103,214,0.24);rgba(23,120,111,0.24);rgba(75,84,115,0.34)'
-    : 'rgba(183,205,255,0.88);rgba(107,130,255,0.7);rgba(74,215,192,0.62);rgba(183,205,255,0.88)'
+    ? 'rgba(82,90,116,0.34);rgba(92,126,183,0.26);rgba(77,147,138,0.24);rgba(82,90,116,0.34)'
+    : 'rgba(164,184,238,0.72);rgba(124,150,224,0.56);rgba(90,182,205,0.48);rgba(164,184,238,0.72)'
   const heroInnerGlowValues = isDay
-    ? 'rgba(63,103,214,0.24);rgba(23,120,111,0.22);rgba(106,86,215,0.22);rgba(63,103,214,0.24)'
-    : 'rgba(107,130,255,0.34);rgba(74,215,192,0.32);rgba(177,150,255,0.32);rgba(107,130,255,0.34)'
+    ? 'rgba(92,126,183,0.22);rgba(77,147,138,0.2);rgba(120,111,171,0.18);rgba(92,126,183,0.22)'
+    : 'rgba(124,150,224,0.32);rgba(90,182,205,0.28);rgba(152,144,210,0.24);rgba(124,150,224,0.32)'
 
   return (
     <svg

@@ -25,7 +25,7 @@
   --card-bg-hover:   rgba(255, 255, 255, 0.035);
   --desc:            #ccd3de;
   --hint:            rgba(255, 255, 255, 0.2);
-  --dot-color:       rgba(255, 255, 255, 0.09);
+  --dot-color:       rgba(255, 255, 255, 0.24);
   --hero-gradient:   linear-gradient(to bottom, #ffffff 50%, rgba(255, 255, 255, 0.45));
   --entry-inactive:  0.58;
 }
@@ -72,7 +72,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background-image: radial-gradient(circle, var(--dot-color) 1.15px, transparent 1.15px);
+  background-image: radial-gradient(circle, var(--dot-color) 1.25px, transparent 1.25px);
   background-size: 26px 26px;
   pointer-events: none;
 }
