@@ -150,7 +150,7 @@ export default function Landing() {
                     color: 'var(--accent)',
                   }}
                 >
-                  /TECHNICAL REVIEW
+                  /TECHNOLOGY REVIEW
                 </p>
                 <p
                   style={{
