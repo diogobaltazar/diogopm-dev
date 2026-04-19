@@ -141,6 +141,7 @@ export default function Footer() {
   const { theme } = useTheme()
   const [copied, setCopied] = useState(false)
   const isCv = pathname.startsWith('/cv') || pathname.startsWith('/about')
+  const isEssay = pathname.startsWith('/blog/')
   const isDay = theme === 'day'
 
   function copyEmail() {
@@ -172,10 +173,14 @@ export default function Footer() {
   return (
     <footer
       style={{
-        backgroundColor: 'var(--bg)',
+        backgroundColor: isEssay ? 'var(--nav-bg)' : 'var(--bg)',
         borderTop: '1px solid var(--border)',
-        position: 'relative',
-        zIndex: 30,
+        position: isEssay ? 'fixed' : 'relative',
+        left: isEssay ? 0 : undefined,
+        right: isEssay ? 0 : undefined,
+        bottom: isEssay ? 0 : undefined,
+        zIndex: isEssay ? 40 : 30,
+        backdropFilter: isEssay ? 'blur(16px)' : undefined,
       }}
     >
       {isCv && (
@@ -239,7 +244,7 @@ export default function Footer() {
       {/* ── Bottom bar ── */}
       <div
         style={{
-          padding: '0.7rem 2rem',
+          padding: isEssay ? '0.7rem 1.5rem calc(0.7rem + env(safe-area-inset-bottom, 0px))' : '0.7rem 2rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',

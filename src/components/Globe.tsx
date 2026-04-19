@@ -225,7 +225,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
   const sphereFill   = isOrb
     ? 'transparent'
     : isHero
-      ? (isDay ? 'rgba(236,233,226,0.52)' : 'rgba(20,29,43,0.44)')
+      ? (isDay ? 'rgba(232,226,216,0.5)' : 'rgba(18,34,54,0.44)')
       : isGlobe
         ? 'transparent'
         : (isDay ? '#e8e3da' : '#06080d')
@@ -250,19 +250,20 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
   const innerHaloStroke = isOrb ? 12 : isHero ? 34 : isGlobe ? 0 : 80
   const contentOpacity = isOrb || isHero ? 0 : 1
   const heroSphereFillValues = isDay
-    ? 'rgba(236,233,226,0.52);rgba(242,239,233,0.48);rgba(231,227,220,0.54);rgba(244,242,238,0.46);rgba(236,233,226,0.52)'
-    : 'rgba(20,29,43,0.44);rgba(27,38,56,0.40);rgba(22,34,51,0.46);rgba(32,29,52,0.38);rgba(20,29,43,0.44)'
+    ? 'rgba(232,226,216,0.50);rgba(206,192,171,0.46);rgba(170,120,103,0.44);rgba(123,91,74,0.42);rgba(108,114,93,0.42);rgba(138,79,95,0.44);rgba(232,226,216,0.50)'
+    : 'rgba(18,34,54,0.44);rgba(17,63,89,0.42);rgba(11,97,122,0.40);rgba(35,110,100,0.42);rgba(74,93,186,0.40);rgba(89,56,142,0.38);rgba(18,34,54,0.44)'
   const heroSphereStrokeValues = isDay
-    ? 'rgba(28,28,28,0.14);rgba(54,54,54,0.18);rgba(96,96,96,0.16);rgba(28,28,28,0.14)'
-    : 'rgba(188,206,255,0.16);rgba(124,150,224,0.2);rgba(90,182,205,0.18);rgba(188,206,255,0.16)'
+    ? 'rgba(38,34,31,0.14);rgba(112,95,72,0.18);rgba(128,83,66,0.18);rgba(87,93,73,0.16);rgba(112,61,74,0.18);rgba(38,34,31,0.14)'
+    : 'rgba(188,206,255,0.16);rgba(92,162,232,0.2);rgba(74,215,192,0.18);rgba(109,132,255,0.2);rgba(163,124,255,0.18);rgba(188,206,255,0.16)'
   const heroOuterGlowValues = isDay
-    ? 'rgba(34,34,34,0.18);rgba(76,76,76,0.14);rgba(110,110,110,0.12);rgba(34,34,34,0.18)'
-    : 'rgba(164,184,238,0.72);rgba(124,150,224,0.56);rgba(90,182,205,0.48);rgba(164,184,238,0.72)'
+    ? 'rgba(44,40,36,0.18);rgba(128,104,78,0.16);rgba(150,97,78,0.14);rgba(99,112,86,0.14);rgba(122,72,86,0.14);rgba(44,40,36,0.18)'
+    : 'rgba(164,184,238,0.72);rgba(92,162,232,0.54);rgba(74,215,192,0.48);rgba(109,132,255,0.52);rgba(163,124,255,0.42);rgba(164,184,238,0.72)'
   const heroInnerGlowValues = isDay
-    ? 'rgba(34,34,34,0.12);rgba(62,62,62,0.1);rgba(92,92,92,0.08);rgba(34,34,34,0.12)'
-    : 'rgba(124,150,224,0.32);rgba(90,182,205,0.28);rgba(152,144,210,0.24);rgba(124,150,224,0.32)'
-  const heroFogTone = isDay ? 'rgba(255,255,255,0.42)' : 'rgba(214,226,255,0.16)'
-  const heroFogToneSoft = isDay ? 'rgba(255,255,255,0.22)' : 'rgba(166,188,236,0.1)'
+    ? 'rgba(40,36,33,0.12);rgba(112,95,72,0.1);rgba(128,83,66,0.1);rgba(87,93,73,0.08);rgba(112,61,74,0.1);rgba(40,36,33,0.12)'
+    : 'rgba(124,150,224,0.32);rgba(92,162,232,0.28);rgba(74,215,192,0.26);rgba(109,132,255,0.28);rgba(163,124,255,0.22);rgba(124,150,224,0.32)'
+  const orbStrokeValues = isDay
+    ? 'rgba(38,34,31,0.18);rgba(112,95,72,0.22);rgba(128,83,66,0.22);rgba(87,93,73,0.2);rgba(112,61,74,0.22);rgba(38,34,31,0.18)'
+    : 'rgba(188,206,255,0.28);rgba(92,162,232,0.3);rgba(74,215,192,0.28);rgba(109,132,255,0.3);rgba(163,124,255,0.26);rgba(188,206,255,0.28)'
   return (
     <svg
       viewBox="0 0 500 500"
@@ -296,21 +297,6 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
 
-        <filter id="hero-fog-flow" x="-50%" y="-50%" width="200%" height="200%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" seed="7" result="noise">
-            <animate
-              attributeName="baseFrequency"
-              values="0.012 0.03;0.018 0.022;0.01 0.034;0.012 0.03"
-              dur="26s"
-              repeatCount="indefinite"
-            />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="34" xChannelSelector="R" yChannelSelector="G">
-            <animate attributeName="scale" values="22;38;28;22" dur="18s" repeatCount="indefinite" />
-          </feDisplacementMap>
-          <feGaussianBlur stdDeviation="20" />
-        </filter>
-
         <clipPath id="clip">
           <circle cx={CX} cy={CY} r={R} />
         </clipPath>
@@ -328,89 +314,8 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       >
         {isHero && <animate attributeName="fill" values={heroSphereFillValues} dur="34s" repeatCount="indefinite" />}
         {isHero && <animate attributeName="stroke" values={heroSphereStrokeValues} dur="34s" repeatCount="indefinite" />}
+        {isOrb && <animate attributeName="stroke" values={orbStrokeValues} dur="30s" repeatCount="indefinite" />}
       </circle>
-
-      {isHero && (
-        <g clipPath="url(#clip)" opacity={0.92}>
-          <g filter="url(#hero-fog-flow)">
-            <ellipse cx={132} cy={188} rx={176} ry={78} fill={heroFogTone}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values="-18 -10; 24 14; -18 -10"
-                dur="20s"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                additive="sum"
-                type="rotate"
-                values="-4 132 188;3 132 188;-4 132 188"
-                dur="22s"
-                repeatCount="indefinite"
-              />
-              <animate attributeName="opacity" values="0.42;0.72;0.42" dur="16s" repeatCount="indefinite" />
-            </ellipse>
-
-            <ellipse cx={338} cy={226} rx={194} ry={86} fill={heroFogToneSoft}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values="18 -10; -22 18; 18 -10"
-                dur="27s"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                additive="sum"
-                type="rotate"
-                values="3 338 226;-5 338 226;3 338 226"
-                dur="24s"
-                repeatCount="indefinite"
-              />
-              <animate attributeName="opacity" values="0.28;0.56;0.28" dur="19s" repeatCount="indefinite" />
-            </ellipse>
-
-            <ellipse cx={214} cy={336} rx={182} ry={92} fill={heroFogToneSoft}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values="-24 14; 20 -12; -24 14"
-                dur="23s"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                additive="sum"
-                type="rotate"
-                values="-6 214 336;4 214 336;-6 214 336"
-                dur="18s"
-                repeatCount="indefinite"
-              />
-              <animate attributeName="opacity" values="0.22;0.48;0.22" dur="17s" repeatCount="indefinite" />
-            </ellipse>
-
-            <ellipse cx={360} cy={356} rx={168} ry={74} fill={heroFogTone}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values="14 10; -18 -12; 14 10"
-                dur="21s"
-                repeatCount="indefinite"
-              />
-              <animateTransform
-                attributeName="transform"
-                additive="sum"
-                type="rotate"
-                values="5 360 356;-4 360 356;5 360 356"
-                dur="20s"
-                repeatCount="indefinite"
-              />
-              <animate attributeName="opacity" values="0.24;0.52;0.24" dur="15s" repeatCount="indefinite" />
-            </ellipse>
-          </g>
-        </g>
-      )}
 
       {/* Clipped globe content */}
       {/* Globe content — fades out in orb mode */}

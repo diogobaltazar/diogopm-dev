@@ -2,6 +2,9 @@ import { useParams, Navigate, Link } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import { getPost } from '../lib/posts'
 
+const TOP_BAR_HEIGHT = 48
+const ESSAY_FOOTER_HEIGHT = 60
+
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -20,14 +23,15 @@ export default function Post() {
 
   return (
     <PageTransition>
-      <div className="mx-auto max-w-[680px] px-6 pb-32">
-        <article className="pt-16">
+      <>
+        <div className="mx-auto max-w-[680px] px-6" style={{ paddingTop: 'calc(5.75rem + 4vh)', paddingBottom: `calc(11rem + ${ESSAY_FOOTER_HEIGHT}px)` }}>
+          <article>
           <Link
             to="/blog"
             className="inline-block text-xs tracking-widest uppercase mb-12 transition-opacity hover:opacity-60"
             style={{ color: 'var(--muted)' }}
           >
-            ← Writing
+            ← /ESSAY
           </Link>
 
           <header className="mb-10">
@@ -57,8 +61,9 @@ export default function Post() {
           <div className="prose prose-sm prose-invert max-w-none">
             <Component />
           </div>
-        </article>
-      </div>
+          </article>
+        </div>
+      </>
     </PageTransition>
   )
 }

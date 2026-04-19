@@ -16,8 +16,6 @@ export default function Layout({ children }: { children: ReactNode }) {
     : pathname.startsWith('/cv') || pathname.startsWith('/about')
       ? 'cv'
       : 'blog'
-  const globeMode = scene === 'landing' ? 'hero' : scene === 'cv' ? 'globe' : 'orb'
-  const isInteractive = scene === 'cv'
   const globeFrame = scene === 'landing'
     ? {
         left: '50%',
@@ -65,26 +63,62 @@ export default function Layout({ children }: { children: ReactNode }) {
           <motion.div
             initial={false}
             animate={globeFrame}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
             style={{
               position: 'absolute',
-              pointerEvents: isInteractive ? 'auto' : 'none',
+              pointerEvents: 'none',
               willChange: 'left, top, width, height, transform',
+              transformOrigin: '50% 50%',
             }}
           >
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.65, ease: 'easeOut' }}
-              style={{ width: '100%', height: '100%' }}
+              style={{ position: 'relative', width: '100%', height: '100%' }}
             >
-              <Globe
-                mode={globeMode}
-                activeArc={activeArc}
-                activeLocation={activeLocation}
-                activeType={activeType}
-                onCityClick={onCityClick}
-              />
+              <motion.div
+                initial={false}
+                animate={{ opacity: scene === 'landing' ? 1 : 0 }}
+                transition={{ duration: 0.45, ease: 'easeInOut' }}
+                style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+              >
+                <Globe
+                  mode="hero"
+                  activeArc={activeArc}
+                  activeLocation={activeLocation}
+                  activeType={activeType}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={false}
+                animate={{ opacity: scene === 'cv' ? 1 : 0 }}
+                transition={{ duration: 0.45, ease: 'easeInOut' }}
+                style={{ position: 'absolute', inset: 0, pointerEvents: scene === 'cv' ? 'auto' : 'none' }}
+              >
+                <Globe
+                  mode="globe"
+                  activeArc={activeArc}
+                  activeLocation={activeLocation}
+                  activeType={activeType}
+                  onCityClick={onCityClick}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={false}
+                animate={{ opacity: scene === 'blog' ? 1 : 0 }}
+                transition={{ duration: 0.45, ease: 'easeInOut' }}
+                style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+              >
+                <Globe
+                  mode="orb"
+                  activeArc={activeArc}
+                  activeLocation={activeLocation}
+                  activeType={activeType}
+                />
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
