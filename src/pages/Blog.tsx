@@ -117,7 +117,7 @@ export default function Blog() {
   const sections: ThoughtSection[] = [
     {
       title: 'Technology Review',
-      intro: 'Reviews, essays, and field notes on software engineering, AI systems, developer tools, and the trade-offs behind modern technical work.',
+      intro: 'Essays on software engineering and the industry.',
       cards: technologyCards.length > 0 ? technologyCards : [
         {
           title: 'Forthcoming Review',
@@ -142,7 +142,7 @@ export default function Blog() {
               marginBottom: '0.9rem',
             }}
           >
-            Thought
+            /ESSAY
           </p>
           <h1
             style={{
@@ -157,7 +157,7 @@ export default function Blog() {
             Archive of essays.
           </h1>
           <p style={{ maxWidth: 680, marginTop: '1.25rem', fontSize: '0.98rem', lineHeight: 1.8, color: 'var(--desc)' }}>
-            Technology Review et al.
+            Technology Review, Philosophy et al.
           </p>
         </section>
 

@@ -110,7 +110,7 @@ export default function Landing() {
                     color: 'var(--industry-accent)',
                   }}
                 >
-                  CV
+                  /WORK
                 </p>
                 <p
                   style={{
@@ -120,7 +120,7 @@ export default function Landing() {
                     color: 'var(--desc)',
                   }}
                 >
-                  Experience, projects, and the places that shaped the work.
+                  curriculum vitae
                 </p>
               </div>
               <ArrowRight size={16} strokeWidth={1.7} />
@@ -150,7 +150,7 @@ export default function Landing() {
                     color: 'var(--accent)',
                   }}
                 >
-                  Blog
+                  /TECHNICAL REVIEW
                 </p>
                 <p
                   style={{
@@ -160,7 +160,7 @@ export default function Landing() {
                     color: 'var(--desc)',
                   }}
                 >
-                  Essays and notes where technology becomes a personal point of view.
+                  Essays on technology and software engineering
                 </p>
               </div>
               <ArrowRight size={16} strokeWidth={1.7} />

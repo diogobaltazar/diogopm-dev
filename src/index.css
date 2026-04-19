@@ -25,28 +25,28 @@
   --card-bg-hover:   rgba(255, 255, 255, 0.035);
   --desc:            #ccd3de;
   --hint:            rgba(255, 255, 255, 0.2);
-  --dot-color:       rgba(255, 255, 255, 0.24);
+  --dot-color:       rgba(172, 184, 214, 0.2);
   --hero-gradient:   linear-gradient(to bottom, #ffffff 50%, rgba(255, 255, 255, 0.45));
   --entry-inactive:  0.58;
 }
 
 /* ── Day theme ───────────────────────────────────────────────────────────── */
 [data-theme="day"] {
-  --bg:              #f5f2eb;
-  --fg:              #171717;
-  --muted:           #5d6171;
-  --accent:          #3f67d6;
-  --accent-strong:   #284bb2;
-  --industry-accent: #17786f;
-  --education-accent:#6a56d7;
-  --border:          rgba(0, 0, 0, 0.1);
-  --nav-bg:          rgba(245, 242, 235, 0.9);
-  --card-bg:         rgba(0, 0, 0, 0.03);
-  --card-bg-hover:   rgba(0, 0, 0, 0.06);
-  --desc:            #343845;
-  --hint:            rgba(0, 0, 0, 0.3);
-  --dot-color:       rgba(0, 0, 0, 0.12);
-  --hero-gradient:   linear-gradient(to bottom, #0a0a0a 60%, rgba(10, 10, 10, 0.55));
+  --bg:              #f6f4ef;
+  --fg:              #111111;
+  --muted:           #6b675f;
+  --accent:          #1b1b1b;
+  --accent-strong:   #050505;
+  --industry-accent: #0f6b60;
+  --education-accent:#8a4d5f;
+  --border:          rgba(0, 0, 0, 0.12);
+  --nav-bg:          rgba(246, 244, 239, 0.92);
+  --card-bg:         rgba(0, 0, 0, 0.025);
+  --card-bg-hover:   rgba(0, 0, 0, 0.05);
+  --desc:            #2f2c28;
+  --hint:            rgba(0, 0, 0, 0.28);
+  --dot-color:       rgba(0, 0, 0, 0.14);
+  --hero-gradient:   linear-gradient(to bottom, #0f0f0f 60%, rgba(15, 15, 15, 0.6));
   --entry-inactive:  0.5;
 }
 

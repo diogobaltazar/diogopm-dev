@@ -103,6 +103,7 @@ interface GlobeProps {
 }
 
 export default function Globe({ mode = 'globe', activeArc, activeLocation, activeType, onCityClick }: GlobeProps) {
+  const isGlobe = mode === 'globe'
   const isOrb = mode === 'orb'
   const isHero = mode === 'hero'
   const staticMode = useMemo(detectStatic, [])
@@ -217,43 +218,51 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
   const haloColor = isOrb
     ? (isDay ? 'rgba(106,86,215,0.46)' : 'rgba(177,150,255,0.8)')
     : isHero
-      ? (isDay ? 'rgba(92,126,183,0.26)' : 'rgba(124,150,224,0.36)')
+      ? (isDay ? 'rgba(42,42,42,0.16)' : 'rgba(124,150,224,0.36)')
     : (isDay ? 'rgba(23,120,111,0.54)' : 'rgba(74,215,192,0.82)')
 
   // Day/night palette
   const sphereFill   = isOrb
     ? 'transparent'
     : isHero
-      ? (isDay ? '#ebe6dc' : '#141d2b')
-      : (isDay ? '#e8e3da' : '#06080d')
+      ? (isDay ? 'rgba(236,233,226,0.52)' : 'rgba(20,29,43,0.44)')
+      : isGlobe
+        ? 'transparent'
+        : (isDay ? '#e8e3da' : '#06080d')
   const sphereStroke = isOrb
     ? (isDay ? 'rgba(92, 102, 140, 0.24)' : 'rgba(188, 210, 255, 0.24)')
     : isHero
-      ? (isDay ? 'rgba(104, 116, 142, 0.14)' : 'rgba(188, 206, 255, 0.16)')
-      : 'none'
-  const sphereStrokeWidth = isOrb ? 1.25 : isHero ? 1.3 : 0
-  const landFill     = isDay ? '#ddd7cd' : '#10151d'
-  const outlineColor = isDay ? 'rgba(63,103,214,0.22)' : 'rgba(107,130,255,0.22)'
+      ? (isDay ? 'rgba(28, 28, 28, 0.14)' : 'rgba(188, 206, 255, 0.16)')
+      : isGlobe
+        ? (isDay ? 'rgba(22, 22, 22, 0.16)' : 'rgba(206, 220, 255, 0.16)')
+        : 'none'
+  const sphereStrokeWidth = isOrb ? 1.25 : isHero ? 1.3 : isGlobe ? 1.15 : 0
+  const landFill     = isGlobe ? 'none' : (isDay ? '#ddd7cd' : '#10151d')
+  const landStroke   = isGlobe ? (isDay ? 'rgba(24, 24, 24, 0.18)' : 'rgba(212, 226, 255, 0.18)') : 'none'
+  const outlineColor = isGlobe
+    ? (isDay ? 'rgba(18,18,18,0.3)' : 'rgba(224,236,255,0.26)')
+    : (isDay ? 'rgba(63,103,214,0.22)' : 'rgba(107,130,255,0.22)')
   const dotInactive  = isDay ? 'rgba(70,84,130,0.46)' : 'rgba(196,216,255,0.7)'
   const dotActive    = activeType === 'education' ? PURPLE : (isDay ? CYAN : '#ffffff')
   const labelActive  = isDay ? 'rgba(25,28,42,0.92)' : 'rgba(255,255,255,0.92)'
   const labelInact   = isDay ? 'rgba(78,86,118,0.5)' : 'rgba(162,197,255,0.38)'
   const outerHaloStroke = isOrb ? 10 : isHero ? 22 : 30
-  const innerHaloStroke = isOrb ? 12 : isHero ? 34 : 80
+  const innerHaloStroke = isOrb ? 12 : isHero ? 34 : isGlobe ? 0 : 80
   const contentOpacity = isOrb || isHero ? 0 : 1
   const heroSphereFillValues = isDay
-    ? '#ebe6dc;#e1e6ec;#e9dfd2;#dfe7e3;#ebe6dc'
-    : '#141d2b;#1b2638;#162233;#201d34;#141d2b'
+    ? 'rgba(236,233,226,0.52);rgba(242,239,233,0.48);rgba(231,227,220,0.54);rgba(244,242,238,0.46);rgba(236,233,226,0.52)'
+    : 'rgba(20,29,43,0.44);rgba(27,38,56,0.40);rgba(22,34,51,0.46);rgba(32,29,52,0.38);rgba(20,29,43,0.44)'
   const heroSphereStrokeValues = isDay
-    ? 'rgba(104,116,142,0.14);rgba(92,126,183,0.18);rgba(56,130,121,0.16);rgba(104,116,142,0.14)'
+    ? 'rgba(28,28,28,0.14);rgba(54,54,54,0.18);rgba(96,96,96,0.16);rgba(28,28,28,0.14)'
     : 'rgba(188,206,255,0.16);rgba(124,150,224,0.2);rgba(90,182,205,0.18);rgba(188,206,255,0.16)'
   const heroOuterGlowValues = isDay
-    ? 'rgba(82,90,116,0.34);rgba(92,126,183,0.26);rgba(77,147,138,0.24);rgba(82,90,116,0.34)'
+    ? 'rgba(34,34,34,0.18);rgba(76,76,76,0.14);rgba(110,110,110,0.12);rgba(34,34,34,0.18)'
     : 'rgba(164,184,238,0.72);rgba(124,150,224,0.56);rgba(90,182,205,0.48);rgba(164,184,238,0.72)'
   const heroInnerGlowValues = isDay
-    ? 'rgba(92,126,183,0.22);rgba(77,147,138,0.2);rgba(120,111,171,0.18);rgba(92,126,183,0.22)'
+    ? 'rgba(34,34,34,0.12);rgba(62,62,62,0.1);rgba(92,92,92,0.08);rgba(34,34,34,0.12)'
     : 'rgba(124,150,224,0.32);rgba(90,182,205,0.28);rgba(152,144,210,0.24);rgba(124,150,224,0.32)'
-
+  const heroFogTone = isDay ? 'rgba(255,255,255,0.42)' : 'rgba(214,226,255,0.16)'
+  const heroFogToneSoft = isDay ? 'rgba(255,255,255,0.22)' : 'rgba(166,188,236,0.1)'
   return (
     <svg
       viewBox="0 0 500 500"
@@ -287,6 +296,21 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
 
+        <filter id="hero-fog-flow" x="-50%" y="-50%" width="200%" height="200%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="3" seed="7" result="noise">
+            <animate
+              attributeName="baseFrequency"
+              values="0.012 0.03;0.018 0.022;0.01 0.034;0.012 0.03"
+              dur="26s"
+              repeatCount="indefinite"
+            />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="34" xChannelSelector="R" yChannelSelector="G">
+            <animate attributeName="scale" values="22;38;28;22" dur="18s" repeatCount="indefinite" />
+          </feDisplacementMap>
+          <feGaussianBlur stdDeviation="20" />
+        </filter>
+
         <clipPath id="clip">
           <circle cx={CX} cy={CY} r={R} />
         </clipPath>
@@ -306,6 +330,88 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         {isHero && <animate attributeName="stroke" values={heroSphereStrokeValues} dur="34s" repeatCount="indefinite" />}
       </circle>
 
+      {isHero && (
+        <g clipPath="url(#clip)" opacity={0.92}>
+          <g filter="url(#hero-fog-flow)">
+            <ellipse cx={132} cy={188} rx={176} ry={78} fill={heroFogTone}>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="-18 -10; 24 14; -18 -10"
+                dur="20s"
+                repeatCount="indefinite"
+              />
+              <animateTransform
+                attributeName="transform"
+                additive="sum"
+                type="rotate"
+                values="-4 132 188;3 132 188;-4 132 188"
+                dur="22s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0.42;0.72;0.42" dur="16s" repeatCount="indefinite" />
+            </ellipse>
+
+            <ellipse cx={338} cy={226} rx={194} ry={86} fill={heroFogToneSoft}>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="18 -10; -22 18; 18 -10"
+                dur="27s"
+                repeatCount="indefinite"
+              />
+              <animateTransform
+                attributeName="transform"
+                additive="sum"
+                type="rotate"
+                values="3 338 226;-5 338 226;3 338 226"
+                dur="24s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0.28;0.56;0.28" dur="19s" repeatCount="indefinite" />
+            </ellipse>
+
+            <ellipse cx={214} cy={336} rx={182} ry={92} fill={heroFogToneSoft}>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="-24 14; 20 -12; -24 14"
+                dur="23s"
+                repeatCount="indefinite"
+              />
+              <animateTransform
+                attributeName="transform"
+                additive="sum"
+                type="rotate"
+                values="-6 214 336;4 214 336;-6 214 336"
+                dur="18s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0.22;0.48;0.22" dur="17s" repeatCount="indefinite" />
+            </ellipse>
+
+            <ellipse cx={360} cy={356} rx={168} ry={74} fill={heroFogTone}>
+              <animateTransform
+                attributeName="transform"
+                type="translate"
+                values="14 10; -18 -12; 14 10"
+                dur="21s"
+                repeatCount="indefinite"
+              />
+              <animateTransform
+                attributeName="transform"
+                additive="sum"
+                type="rotate"
+                values="5 360 356;-4 360 356;5 360 356"
+                dur="20s"
+                repeatCount="indefinite"
+              />
+              <animate attributeName="opacity" values="0.24;0.52;0.24" dur="15s" repeatCount="indefinite" />
+            </ellipse>
+          </g>
+        </g>
+      )}
+
       {/* Clipped globe content */}
       {/* Globe content — fades out in orb mode */}
       <g style={{ opacity: contentOpacity, transition: 'opacity 0.9s ease' }}>
@@ -314,7 +420,9 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         <path
           d={pathGen(land as GeoPermissibleObjects) ?? ''}
           fill={landFill}
-          style={{ transition: 'fill 0.6s ease' }}
+          stroke={landStroke}
+          strokeWidth={isGlobe ? 0.65 : 0}
+          style={{ transition: 'fill 0.6s ease, stroke 0.6s ease' }}
         />
 
         {/* Worked-in country outlines */}
@@ -425,29 +533,20 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       })}
       </g> {/* end fading globe content group */}
 
-      {/* Rim halo — outer glow */}
-      <circle
-        cx={CX} cy={CY} r={R + 8}
-        fill="none"
-        stroke={isDay ? 'rgba(75,84,115,0.34)' : 'rgba(183,205,255,0.88)'}
-        strokeWidth={outerHaloStroke}
-        filter="url(#rim-outer)"
-        style={{ transition: 'stroke 1.1s ease' }}
-      >
-        {isHero && <animate attributeName="stroke" values={heroOuterGlowValues} dur="30s" repeatCount="indefinite" />}
-      </circle>
       {/* Rim halo — inner glow */}
-      <circle
-        cx={CX} cy={CY} r={R - 8}
-        fill="none"
-        stroke={haloColor}
-        strokeWidth={innerHaloStroke}
-        filter="url(#rim-inner)"
-        clipPath="url(#globe-clip)"
-        style={{ transition: 'stroke 1.1s ease' }}
-      >
-        {isHero && <animate attributeName="stroke" values={heroInnerGlowValues} dur="28s" repeatCount="indefinite" />}
-      </circle>
+      {innerHaloStroke > 0 && (
+        <circle
+          cx={CX} cy={CY} r={R - 8}
+          fill="none"
+          stroke={haloColor}
+          strokeWidth={innerHaloStroke}
+          filter="url(#rim-inner)"
+          clipPath="url(#globe-clip)"
+          style={{ transition: 'stroke 1.1s ease' }}
+        >
+          {isHero && <animate attributeName="stroke" values={heroInnerGlowValues} dur="28s" repeatCount="indefinite" />}
+        </circle>
+      )}
     </svg>
   )
 }
