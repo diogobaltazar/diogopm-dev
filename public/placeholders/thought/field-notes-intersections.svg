@@ -1,0 +1,9 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#111318"/>
+  <rect x="86" y="86" width="1428" height="828" rx="40" fill="#191D26" stroke="#303949"/>
+  <path d="M404 258L1188 742" stroke="#6E87FF" stroke-width="14" stroke-linecap="round"/>
+  <path d="M1194 264L420 754" stroke="#4AD7C0" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="804" cy="504" r="172" fill="#D8E0FF" fill-opacity="0.08"/>
+  <circle cx="804" cy="504" r="74" fill="#D8E0FF" fill-opacity="0.12"/>
+  <text x="216" y="812" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="70" letter-spacing="8">INTERSECTIONS</text>
+</svg>

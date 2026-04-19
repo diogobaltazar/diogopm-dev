@@ -1,0 +1,11 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#13100F"/>
+  <rect x="88" y="88" width="1424" height="824" rx="40" fill="#1A1715" stroke="#342E2B"/>
+  <path d="M350 236H1212" stroke="#EBDCC8" stroke-width="10" stroke-linecap="round"/>
+  <path d="M348 332H1120" stroke="#8F7B67" stroke-width="6" stroke-linecap="round"/>
+  <path d="M348 420H1188" stroke="#8F7B67" stroke-width="6" stroke-linecap="round"/>
+  <path d="M348 508H1084" stroke="#8F7B67" stroke-width="6" stroke-linecap="round"/>
+  <path d="M348 596H1224" stroke="#8F7B67" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="1190" cy="492" r="142" fill="#B97857" fill-opacity="0.26"/>
+  <text x="214" y="796" fill="#FBF0E2" font-family="Geist, Arial, sans-serif" font-size="74" letter-spacing="8">RE-READINGS</text>
+</svg>

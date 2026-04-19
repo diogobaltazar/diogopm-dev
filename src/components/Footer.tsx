@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Mail, Check } from 'lucide-react'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { SiLeetcode } from 'react-icons/si'
+import { useTheme } from '../context/ThemeContext'
 
 const EMAIL    = 'pereiramarques.diogo@ssl-mail.com'
 const SITE_YEAR = 2026
@@ -25,9 +27,17 @@ const COMPANIES = [
 ]
 
 const UNIVERSITIES = [
-  { label: 'University of Lisbon',     href: 'https://www.ulisboa.pt'  },
-  { label: 'University of Copenhagen', href: 'https://www.ku.dk'       },
+  { label: 'University of Lisbon',     href: 'https://www.ulisboa.pt', icon: '/logos/ulisboa.svg' },
+  { label: 'University of Copenhagen', href: 'https://www.ku.dk',      icon: '/logos/ku.svg' },
 ]
+
+const COMPANY_LOGOS: Record<string, { src: string; height?: number }> = {
+  Roche: { src: '/logos/roche.svg', height: 24 },
+  'Novo Nordisk': { src: '/logos/novo-nordisk.svg', height: 38 },
+  'A.P. Moller – Maersk': { src: '/logos/maersk.svg', height: 38 },
+  Airbus: { src: '/logos/airbus.svg', height: 38 },
+  Accenture: { src: '/logos/accenture.svg', height: 24 },
+}
 
 // ─── sub-components ───────────────────────────────────────────────────────────
 
@@ -74,10 +84,64 @@ function ColText({ children }: { children: string }) {
   return <p style={{ ...linkStyle, cursor: 'default' }}>{children}</p>
 }
 
+function IconOnlyLink({
+  href,
+  label,
+  icon,
+  height = 38,
+  darkOnLight = false,
+}: {
+  href: string
+  label: string
+  icon: string
+  height?: number
+  darkOnLight?: boolean
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="tech-icon tech-link"
+      data-label={label}
+      aria-label={label}
+      title={label}
+      style={{
+        color: 'var(--muted)',
+        minHeight: 42,
+        minWidth: 42,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.color = 'var(--fg)')}
+      onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}
+    >
+      <img
+        src={icon}
+        alt=""
+        aria-hidden="true"
+        style={{
+          height,
+          width: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+          opacity: 0.98,
+          filter: darkOnLight ? 'invert(1)' : 'none',
+        }}
+      />
+    </a>
+  )
+}
+
 // ─── main component ───────────────────────────────────────────────────────────
 
 export default function Footer() {
+  const { pathname } = useLocation()
+  const { theme } = useTheme()
   const [copied, setCopied] = useState(false)
+  const isCv = pathname.startsWith('/cv') || pathname.startsWith('/about')
+  const isDay = theme === 'day'
 
   function copyEmail() {
     navigator.clipboard.writeText(EMAIL).then(() => {
@@ -114,66 +178,63 @@ export default function Footer() {
         zIndex: 30,
       }}
     >
-      {/* ── Columns ── */}
-      <div
-        style={{
-          padding: '2.5rem 2rem 2rem',
-          display: 'flex',
-          gap: '3.5rem',
-          flexWrap: 'wrap',
-          alignItems: 'flex-start',
-        }}
-      >
-        {/* Brand */}
-        <div style={{ flex: '0 0 auto' }}>
-          <p style={{
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            color: 'var(--fg)',
-          }}>
-            dpm
-          </p>
-        </div>
+      {isCv && (
+        <div
+          style={{
+            padding: '2.5rem 2rem 2rem',
+            display: 'flex',
+            gap: '3.5rem',
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+          }}
+        >
+          <div style={{ flex: '1 1 110px' }}>
+            <ColHead>Open Source</ColHead>
+            {OPEN_SOURCE.map(({ label, href }) => (
+              <ColLink key={label} href={href}>{label}</ColLink>
+            ))}
+          </div>
 
-        {/* Open Source */}
-        <div style={{ flex: '1 1 110px' }}>
-          <ColHead>Open Source</ColHead>
-          {OPEN_SOURCE.map(({ label, href }) => (
-            <ColLink key={label} href={href}>{label}</ColLink>
-          ))}
-        </div>
+          <div style={{ flex: '1 1 110px' }}>
+            <ColHead>Countries</ColHead>
+            {COUNTRIES.map(c => <ColText key={c}>{c}</ColText>)}
+          </div>
 
-        {/* Countries */}
-        <div style={{ flex: '1 1 110px' }}>
-          <ColHead>Countries</ColHead>
-          {COUNTRIES.map(c => <ColText key={c}>{c}</ColText>)}
-        </div>
+          <div style={{ flex: '1 1 180px' }}>
+            <ColHead>University</ColHead>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.95rem', flexWrap: 'wrap' }}>
+              {UNIVERSITIES.map(({ label, href, icon }) => (
+                <IconOnlyLink key={label} href={href} label={label} icon={icon} height={38} darkOnLight={isDay} />
+              ))}
+            </div>
+          </div>
 
-        {/* University */}
-        <div style={{ flex: '1 1 140px' }}>
-          <ColHead>University</ColHead>
-          {UNIVERSITIES.map(({ label, href }) => (
-            <ColLink key={label} href={href}>{label}</ColLink>
-          ))}
-        </div>
+          <div style={{ flex: '1 1 180px' }}>
+            <ColHead>Company</ColHead>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+              {COMPANIES.map(({ label, href }) => {
+              const logo = COMPANY_LOGOS[label]
+              return (
+                <IconOnlyLink
+                  key={label}
+                  href={href}
+                  label={label}
+                  icon={logo.src}
+                  height={logo.height ?? 30}
+                  darkOnLight={isDay}
+                />
+              )
+            })}
+            </div>
+          </div>
 
-        {/* Company */}
-        <div style={{ flex: '1 1 140px' }}>
-          <ColHead>Company</ColHead>
-          {COMPANIES.map(({ label, href }) => (
-            <ColLink key={label} href={href}>{label}</ColLink>
-          ))}
-        </div>
+          <div style={{ flex: 1 }} />
 
-        {/* Spacer pushes year to far right */}
-        <div style={{ flex: 1 }} />
-
-        {/* Year — far right */}
-        <div style={{ alignSelf: 'flex-start' }}>
-          <p style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>© {SITE_YEAR}</p>
+          <div style={{ alignSelf: 'flex-start' }}>
+            <p style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>© {SITE_YEAR}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Bottom bar ── */}
       <div

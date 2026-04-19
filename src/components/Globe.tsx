@@ -95,7 +95,7 @@ function detectStatic() {
 // ─── component ────────────────────────────────────────────────────────────────
 
 interface GlobeProps {
-  mode?: 'globe' | 'orb'
+  mode?: 'globe' | 'orb' | 'hero'
   activeArc: string | null
   activeLocation: string | null
   activeType: 'industry' | 'education' | null
@@ -104,13 +104,14 @@ interface GlobeProps {
 
 export default function Globe({ mode = 'globe', activeArc, activeLocation, activeType, onCityClick }: GlobeProps) {
   const isOrb = mode === 'orb'
+  const isHero = mode === 'hero'
   const staticMode = useMemo(detectStatic, [])
   const { theme } = useTheme()
   const isDay = theme === 'day'
 
-  // Stop rotation in orb mode so returning to About restores the original view
-  const isOrbRef = useRef(isOrb)
-  useEffect(() => { isOrbRef.current = isOrb }, [isOrb])
+  // Keep the animation loop reading the latest mode without needing to recreate it.
+  const modeRef = useRef(mode)
+  useEffect(() => { modeRef.current = mode }, [mode])
 
   const [rotation, setRotation] = useState<[number, number, number]>([...INITIAL])
   const rotRef     = useRef<[number, number, number]>([...INITIAL])
@@ -162,7 +163,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       const dt = Math.min(now - prev, 50)
       prev = now
 
-      if (!isDragging.current && !isOrbRef.current) {
+      if (!isDragging.current && modeRef.current === 'globe') {
         if (flyAnim.current) {
           const { from, to, t0 } = flyAnim.current
           const t = Math.min((now - t0) / DURATION, 1)
@@ -212,34 +213,51 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
   const CYAN   = isDay ? '#17786f' : '#4ad7c0'
   const PURPLE = isDay ? '#6a56d7' : '#b196ff'
   const DIM    = isDay ? 0.25 : 0.20
-  const cursor = isOrb ? 'default' : isDragging.current ? 'grabbing' : 'grab'
+  const cursor = isOrb || isHero ? 'default' : isDragging.current ? 'grabbing' : 'grab'
   const haloColor = isOrb
     ? (isDay ? 'rgba(106,86,215,0.46)' : 'rgba(177,150,255,0.8)')
+    : isHero
+      ? (isDay ? 'rgba(63,103,214,0.24)' : 'rgba(107,130,255,0.34)')
     : (isDay ? 'rgba(23,120,111,0.54)' : 'rgba(74,215,192,0.82)')
 
   // Day/night palette
   const sphereFill   = isOrb ? 'transparent' : (isDay ? '#e8e3da' : '#06080d')
   const sphereStroke = isOrb
     ? (isDay ? 'rgba(92, 102, 140, 0.24)' : 'rgba(188, 210, 255, 0.24)')
+    : isHero
+      ? (isDay ? 'rgba(92, 102, 140, 0.14)' : 'rgba(188, 210, 255, 0.12)')
     : 'none'
-  const sphereStrokeWidth = isOrb ? 1.25 : 0
+  const sphereStrokeWidth = isOrb ? 1.25 : isHero ? 0.8 : 0
   const landFill     = isDay ? '#ddd7cd' : '#10151d'
   const outlineColor = isDay ? 'rgba(63,103,214,0.22)' : 'rgba(107,130,255,0.22)'
   const dotInactive  = isDay ? 'rgba(70,84,130,0.46)' : 'rgba(196,216,255,0.7)'
   const dotActive    = activeType === 'education' ? PURPLE : (isDay ? CYAN : '#ffffff')
   const labelActive  = isDay ? 'rgba(25,28,42,0.92)' : 'rgba(255,255,255,0.92)'
   const labelInact   = isDay ? 'rgba(78,86,118,0.5)' : 'rgba(162,197,255,0.38)'
-  const outerHaloStroke = isOrb ? 10 : 30
-  const innerHaloStroke = isOrb ? 12 : 80
+  const outerHaloStroke = isOrb ? 10 : isHero ? 18 : 30
+  const innerHaloStroke = isOrb ? 12 : isHero ? 42 : 80
+  const contentOpacity = isOrb ? 0 : isHero ? 0.26 : 1
+  const heroSphereFillValues = isDay
+    ? '#e8e3da;#e4ddd1;#ece6de;#e7e1d7;#e8e3da'
+    : '#06080d;#09101a;#101528;#0a0d16;#06080d'
+  const heroSphereStrokeValues = isDay
+    ? 'rgba(92,102,140,0.14);rgba(70,118,130,0.18);rgba(106,86,215,0.18);rgba(92,102,140,0.14)'
+    : 'rgba(188,210,255,0.12);rgba(74,215,192,0.16);rgba(177,150,255,0.16);rgba(188,210,255,0.12)'
+  const heroOuterGlowValues = isDay
+    ? 'rgba(75,84,115,0.34);rgba(63,103,214,0.24);rgba(23,120,111,0.24);rgba(75,84,115,0.34)'
+    : 'rgba(183,205,255,0.88);rgba(107,130,255,0.7);rgba(74,215,192,0.62);rgba(183,205,255,0.88)'
+  const heroInnerGlowValues = isDay
+    ? 'rgba(63,103,214,0.24);rgba(23,120,111,0.22);rgba(106,86,215,0.22);rgba(63,103,214,0.24)'
+    : 'rgba(107,130,255,0.34);rgba(74,215,192,0.32);rgba(177,150,255,0.32);rgba(107,130,255,0.34)'
 
   return (
     <svg
       viewBox="0 0 500 500"
       style={{ width: '100%', height: '100%', cursor, overflow: 'visible' }}
-      onPointerDown={isOrb ? undefined : onPointerDown}
-      onPointerMove={isOrb ? undefined : onPointerMove}
-      onPointerUp={isOrb ? undefined : onPointerUp}
-      onPointerLeave={isOrb ? undefined : onPointerUp}
+      onPointerDown={isOrb || isHero ? undefined : onPointerDown}
+      onPointerMove={isOrb || isHero ? undefined : onPointerMove}
+      onPointerUp={isOrb || isHero ? undefined : onPointerUp}
+      onPointerLeave={isOrb || isHero ? undefined : onPointerUp}
       aria-hidden="true"
     >
       <defs>
@@ -279,11 +297,14 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         stroke={sphereStroke}
         strokeWidth={sphereStrokeWidth}
         style={{ transition: 'fill 0.6s ease, stroke 0.6s ease, stroke-width 0.6s ease' }}
-      />
+      >
+        {isHero && <animate attributeName="fill" values={heroSphereFillValues} dur="34s" repeatCount="indefinite" />}
+        {isHero && <animate attributeName="stroke" values={heroSphereStrokeValues} dur="34s" repeatCount="indefinite" />}
+      </circle>
 
       {/* Clipped globe content */}
       {/* Globe content — fades out in orb mode */}
-      <g style={{ opacity: isOrb ? 0 : 1, transition: 'opacity 0.9s ease' }}>
+      <g style={{ opacity: contentOpacity, transition: 'opacity 0.9s ease' }}>
       <g clipPath="url(#clip)">
         {/* Land */}
         <path
@@ -302,7 +323,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         />
 
         {/* City dots */}
-        {Object.entries(CITIES).map(([key, { coords, label, anchor }]) => {
+        {!isHero && Object.entries(CITIES).map(([key, { coords, label, anchor }]) => {
           const pt = proj(coords)
           if (!pt) return null
           const [x, y] = pt
@@ -361,7 +382,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       </g>
 
       {/* Elevated arcs — inside the fading group */}
-      {CAREER_ARCS.map(({ id, from, to }) => {
+      {!isHero && CAREER_ARCS.map(({ id, from, to }) => {
         const active = activeArc === id
         const d = elevatedArcPath(CITIES[from].coords, CITIES[to].coords, proj, 50)
         if (!d) return null
@@ -380,7 +401,7 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
         )
       })}
 
-      {EDU_ARCS.map(({ id, from, to }) => {
+      {!isHero && EDU_ARCS.map(({ id, from, to }) => {
         const active = activeArc === id
         const d = elevatedArcPath(CITIES[from].coords, CITIES[to].coords, proj, 50)
         if (!d) return null
@@ -404,19 +425,25 @@ export default function Globe({ mode = 'globe', activeArc, activeLocation, activ
       <circle
         cx={CX} cy={CY} r={R + 8}
         fill="none"
+        stroke={isDay ? 'rgba(75,84,115,0.34)' : 'rgba(183,205,255,0.88)'}
         strokeWidth={outerHaloStroke}
         filter="url(#rim-outer)"
-        style={{ stroke: isDay ? 'rgba(75,84,115,0.34)' : 'rgba(183,205,255,0.88)', transition: 'stroke 1.1s ease' }}
-      />
+        style={{ transition: 'stroke 1.1s ease' }}
+      >
+        {isHero && <animate attributeName="stroke" values={heroOuterGlowValues} dur="30s" repeatCount="indefinite" />}
+      </circle>
       {/* Rim halo — inner glow */}
       <circle
         cx={CX} cy={CY} r={R - 8}
         fill="none"
+        stroke={haloColor}
         strokeWidth={innerHaloStroke}
         filter="url(#rim-inner)"
         clipPath="url(#globe-clip)"
-        style={{ stroke: haloColor, transition: 'stroke 1.1s ease' }}
-      />
+        style={{ transition: 'stroke 1.1s ease' }}
+      >
+        {isHero && <animate attributeName="stroke" values={heroInnerGlowValues} dur="28s" repeatCount="indefinite" />}
+      </circle>
     </svg>
   )
 }

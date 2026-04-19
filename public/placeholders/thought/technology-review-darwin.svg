@@ -1,0 +1,14 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#F1ECE2"/>
+  <rect x="88" y="88" width="1424" height="824" rx="40" fill="#F7F2E9" stroke="#D9D0C2"/>
+  <circle cx="1258" cy="248" r="188" fill="#5270D8" fill-opacity="0.16"/>
+  <circle cx="1154" cy="642" r="246" fill="#2E8D83" fill-opacity="0.12"/>
+  <path d="M210 668C362 494 536 430 694 450C860 472 986 572 1186 542" stroke="#2B3654" stroke-width="12" stroke-linecap="round"/>
+  <path d="M214 738H972" stroke="#B8B0A4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M214 782H694" stroke="#B8B0A4" stroke-width="6" stroke-linecap="round"/>
+  <text x="210" y="238" fill="#181B22" font-family="Geist, Arial, sans-serif" font-size="78" letter-spacing="10">TECH</text>
+  <text x="534" y="344" fill="#5C6790" fill-opacity="0.82" font-family="Geist Mono, monospace" font-size="28" letter-spacing="8">TOOLS</text>
+  <text x="986" y="248" fill="#2E8D83" fill-opacity="0.7" font-family="Geist Mono, monospace" font-size="24" letter-spacing="7">SYSTEMS</text>
+  <text x="220" y="756" fill="#3B4355" fill-opacity="0.78" font-family="Geist Mono, monospace" font-size="26" letter-spacing="8">JUDGMENT</text>
+  <text x="1096" y="716" fill="#181B22" font-family="Geist, Arial, sans-serif" font-size="56" letter-spacing="8">REVIEW</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#0E1015"/>
+  <rect x="86" y="86" width="1428" height="828" rx="40" fill="#171B23" stroke="#2D3443"/>
+  <circle cx="520" cy="374" r="84" fill="#5673DB" fill-opacity="0.22"/>
+  <circle cx="808" cy="374" r="84" fill="#48C8B0" fill-opacity="0.2"/>
+  <circle cx="1096" cy="374" r="84" fill="#8F79FF" fill-opacity="0.18"/>
+  <circle cx="520" cy="374" r="46" fill="#6A84FF"/>
+  <circle cx="808" cy="374" r="46" fill="#48D2BB"/>
+  <circle cx="1096" cy="374" r="46" fill="#B196FF"/>
+  <path d="M566 410C640 486 700 526 808 526C916 526 984 482 1050 410" stroke="#F4F6FB" stroke-width="10" stroke-linecap="round"/>
+  <path d="M520 460V676" stroke="#434C5F" stroke-width="10" stroke-linecap="round"/>
+  <path d="M808 460V676" stroke="#434C5F" stroke-width="10" stroke-linecap="round"/>
+  <path d="M1096 460V676" stroke="#434C5F" stroke-width="10" stroke-linecap="round"/>
+  <text x="222" y="260" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="60" letter-spacing="8">TRUST</text>
+  <text x="726" y="242" fill="#6A84FF" fill-opacity="0.8" font-family="Geist Mono, monospace" font-size="24" letter-spacing="8">TEAM</text>
+  <text x="726" y="564" fill="#48D2BB" fill-opacity="0.84" font-family="Geist Mono, monospace" font-size="26" letter-spacing="8">STANDARDS</text>
+  <text x="1050" y="734" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="46" letter-spacing="7">MOMENTUM</text>
+  <text x="246" y="760" fill="#AAB5D0" fill-opacity="0.72" font-family="Geist Mono, monospace" font-size="22" letter-spacing="7">ALIGNMENT</text>
+</svg>

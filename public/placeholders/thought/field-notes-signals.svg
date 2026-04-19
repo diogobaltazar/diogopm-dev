@@ -1,0 +1,11 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#0F1116"/>
+  <rect x="88" y="88" width="1424" height="824" rx="42" fill="#171A21" stroke="#2E3441"/>
+  <path d="M182 666C324 534 468 436 610 430C790 422 840 640 1038 628C1168 620 1278 548 1416 400" stroke="#B39AFF" stroke-width="12" stroke-linecap="round"/>
+  <path d="M194 742C324 642 474 574 620 572C798 570 874 740 1044 742C1182 744 1298 700 1414 620" stroke="#53D5BF" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="610" cy="430" r="18" fill="#F4F6FB"/>
+  <circle cx="1038" cy="628" r="18" fill="#F4F6FB"/>
+  <circle cx="620" cy="572" r="18" fill="#F4F6FB"/>
+  <circle cx="1044" cy="742" r="18" fill="#F4F6FB"/>
+  <text x="214" y="262" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="78" letter-spacing="8">SIGNALS</text>
+</svg>

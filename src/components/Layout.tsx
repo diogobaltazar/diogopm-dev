@@ -11,22 +11,35 @@ export default function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const { activeArc, activeLocation, activeType, onCityClick } = useGlobeCtx()
   const { theme } = useTheme()
-  const isOrb = pathname !== '/'
-  const isHome = pathname === '/'
-  const globeFrame = isHome
+  const scene = pathname === '/'
+    ? 'landing'
+    : pathname.startsWith('/cv') || pathname.startsWith('/about')
+      ? 'cv'
+      : 'blog'
+  const globeMode = scene === 'landing' ? 'hero' : scene === 'cv' ? 'globe' : 'orb'
+  const isInteractive = scene === 'cv'
+  const globeFrame = scene === 'landing'
     ? {
-        left: '38%',
-        bottom: '-12%',
-        width: '80vw',
-        height: '120%',
-        transform: 'translateX(0)',
-      }
-    : {
         left: '50%',
-        bottom: '6%',
+        top: '50%',
+        width: 'min(82vw, 980px)',
+        height: 'min(82vw, 980px)',
+        transform: 'translate(-50%, -46%)',
+      }
+    : scene === 'cv'
+      ? {
+        left: '72%',
+        top: '52%',
+        width: 'min(76vw, 960px)',
+        height: 'min(108vh, 1120px)',
+        transform: 'translate(-50%, -44%)',
+      }
+      : {
+        left: '50%',
+        top: '52%',
         width: 'min(62vw, 780px)',
         height: '82%',
-        transform: 'translateX(-50%)',
+        transform: 'translate(-50%, -50%)',
       }
 
   return (
@@ -50,21 +63,29 @@ export default function Layout({ children }: { children: ReactNode }) {
           pointerEvents: 'none',
         }}>
           <motion.div
+            initial={false}
             animate={globeFrame}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             style={{
-            position: 'absolute',
-            pointerEvents: isOrb ? 'none' : 'auto',
-            willChange: 'left, bottom, width, height, transform',
-          }}
+              position: 'absolute',
+              pointerEvents: isInteractive ? 'auto' : 'none',
+              willChange: 'left, top, width, height, transform',
+            }}
           >
-            <Globe
-              mode={isOrb ? 'orb' : 'globe'}
-              activeArc={activeArc}
-              activeLocation={activeLocation}
-              activeType={activeType}
-              onCityClick={onCityClick}
-            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.65, ease: 'easeOut' }}
+              style={{ width: '100%', height: '100%' }}
+            >
+              <Globe
+                mode={globeMode}
+                activeArc={activeArc}
+                activeLocation={activeLocation}
+                activeType={activeType}
+                onCityClick={onCityClick}
+              />
+            </motion.div>
           </motion.div>
         </div>
 

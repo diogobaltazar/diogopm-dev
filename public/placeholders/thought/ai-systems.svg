@@ -1,0 +1,14 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#0D1016"/>
+  <rect x="78" y="78" width="1444" height="844" rx="38" fill="#151A22" stroke="#2C3443"/>
+  <rect x="232" y="220" width="286" height="178" rx="24" fill="#1D2430"/>
+  <rect x="642" y="162" width="332" height="226" rx="24" fill="#1C2230"/>
+  <rect x="1102" y="262" width="248" height="164" rx="24" fill="#202838"/>
+  <path d="M518 308H642" stroke="#6A84FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M974 278H1102" stroke="#6A84FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M518 308C620 464 748 540 924 566C1036 582 1144 556 1250 512" stroke="#48D2BB" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="518" cy="308" r="18" fill="#48D2BB"/>
+  <circle cx="974" cy="278" r="18" fill="#6A84FF"/>
+  <circle cx="1250" cy="512" r="18" fill="#F1F5FF"/>
+  <text x="214" y="756" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="80" letter-spacing="8">AI SYSTEMS</text>
+</svg>

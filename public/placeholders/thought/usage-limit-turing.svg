@@ -1,0 +1,16 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#0E1117"/>
+  <rect x="84" y="84" width="1432" height="832" rx="40" fill="#171C24" stroke="#2B3241"/>
+  <path d="M220 252H574" stroke="#F2F5FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M220 308H706" stroke="#8E99B1" stroke-width="6" stroke-linecap="round"/>
+  <path d="M220 364H612" stroke="#8E99B1" stroke-width="6" stroke-linecap="round"/>
+  <rect x="948" y="212" width="258" height="402" rx="26" fill="#11161E" stroke="#353E50"/>
+  <rect x="1018" y="286" width="118" height="252" rx="12" fill="#232A35"/>
+  <path d="M640 650C748 560 850 504 944 502C1026 500 1088 544 1180 620" stroke="#6A84FF" stroke-width="12" stroke-linecap="round"/>
+  <path d="M632 720C760 616 892 574 1006 582C1084 588 1148 632 1228 704" stroke="#48D2BB" stroke-width="12" stroke-linecap="round"/>
+  <text x="214" y="230" fill="#F4F6FB" font-family="Geist, Arial, sans-serif" font-size="64" letter-spacing="8">LIMIT</text>
+  <text x="924" y="250" fill="#9AA7C6" fill-opacity="0.76" font-family="Geist Mono, monospace" font-size="24" letter-spacing="7">USAGE</text>
+  <text x="720" y="612" fill="#6A84FF" fill-opacity="0.88" font-family="Geist Mono, monospace" font-size="28" letter-spacing="8">TOKENS</text>
+  <text x="1108" y="690" fill="#48D2BB" fill-opacity="0.84" font-family="Geist Mono, monospace" font-size="26" letter-spacing="8">BRAIN</text>
+  <text x="226" y="780" fill="#AAB6D2" fill-opacity="0.7" font-family="Geist Mono, monospace" font-size="22" letter-spacing="7">ECONOMY</text>
+</svg>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 
-type Theme = 'day' | 'night'
+export type Theme = 'day' | 'night'
 
 function detectTheme(): Theme {
   const stored = localStorage.getItem('theme') as Theme | null
@@ -10,10 +10,10 @@ function detectTheme(): Theme {
 
 interface ThemeCtxValue {
   theme: Theme
-  toggleTheme: () => void
+  setTheme: (theme: Theme) => void
 }
 
-const ThemeContext = createContext<ThemeCtxValue>({ theme: 'night', toggleTheme: () => {} })
+const ThemeContext = createContext<ThemeCtxValue>({ theme: 'night', setTheme: () => {} })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(detectTheme)
@@ -23,12 +23,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('theme', theme)
   }, [theme])
 
-  function toggleTheme() {
-    setTheme(t => (t === 'day' ? 'night' : 'day'))
-  }
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   )

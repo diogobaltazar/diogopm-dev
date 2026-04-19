@@ -1,0 +1,10 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#16120F"/>
+  <rect x="92" y="92" width="1416" height="816" rx="42" fill="#1D1714" stroke="#3B2E29"/>
+  <circle cx="496" cy="470" r="250" fill="#D27D53" fill-opacity="0.42"/>
+  <circle cx="786" cy="392" r="180" fill="#F0D0A4" fill-opacity="0.3"/>
+  <circle cx="1088" cy="554" r="212" fill="#8A4348" fill-opacity="0.34"/>
+  <path d="M250 264C372 182 522 176 644 242" stroke="#F3E8D7" stroke-width="14" stroke-linecap="round"/>
+  <path d="M902 286C1034 222 1176 242 1328 382" stroke="#F3E8D7" stroke-width="14" stroke-linecap="round"/>
+  <text x="216" y="780" fill="#FFF1E1" font-family="Geist, Arial, sans-serif" font-size="82" letter-spacing="8">ART / STUDIO</text>
+</svg>

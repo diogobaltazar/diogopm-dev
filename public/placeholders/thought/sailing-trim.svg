@@ -1,0 +1,11 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#0E1A1E"/>
+  <rect x="84" y="84" width="1432" height="832" rx="40" fill="#15262C" stroke="#2A4A51"/>
+  <circle cx="1242" cy="262" r="108" fill="#F1DD9E" fill-opacity="0.88"/>
+  <path d="M0 714C184 654 366 640 542 690C748 748 914 804 1098 772C1266 744 1392 664 1600 672V1000H0V714Z" fill="#2A616B"/>
+  <path d="M762 270V648" stroke="#F5FBFC" stroke-width="10" stroke-linecap="round"/>
+  <path d="M768 286L566 590H768V286Z" fill="#F7FAFB"/>
+  <path d="M774 354L1014 560H774V354Z" fill="#56CBB6"/>
+  <path d="M600 666H1038" stroke="#F5FBFC" stroke-width="12" stroke-linecap="round"/>
+  <text x="214" y="262" fill="#F3FBFF" font-family="Geist, Arial, sans-serif" font-size="80" letter-spacing="8">WIND / TRIM</text>
+</svg>

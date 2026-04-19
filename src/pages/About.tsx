@@ -756,99 +756,26 @@ function InfoToggleButton({ open, onClick }: { open: boolean; onClick: (event: M
 }
 
 function EmailCapture() {
-  const [phase, setPhase] = useState<CapturePhase>('idle')
-  const [email, setEmail] = useState('')
-
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    if (!email) return
-    setPhase('done')
-    setTimeout(() => {
-      setPhase('idle')
-      setEmail('')
-    }, 2200)
-  }
-
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <button
-        onClick={() => phase === 'idle' && setPhase('open')}
-        aria-label={phase === 'done' ? 'Sent' : 'Download CV'}
-        title={phase === 'done' ? 'Sent' : 'Download CV'}
+        disabled
+        aria-label="Download CV unavailable"
+        title="Download CV unavailable"
         style={{
           background: 'none',
           border: 'none',
           padding: '0.2rem',
-          cursor: phase === 'done' ? 'default' : 'pointer',
-          color: phase === 'done' ? 'var(--accent)' : 'var(--muted)',
+          cursor: 'not-allowed',
+          color: 'var(--muted)',
           display: 'flex',
           alignItems: 'center',
-          transition: 'color 0.2s ease',
+          opacity: 0.38,
           flexShrink: 0,
         }}
-        onMouseEnter={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--fg)' }}
-        onMouseLeave={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--muted)' }}
       >
-        {phase === 'done'
-          ? <Check size={15} strokeWidth={1.5} />
-          : <Download size={15} strokeWidth={1.5} />
-        }
+        <Download size={15} strokeWidth={1.5} />
       </button>
-
-      <AnimatePresence>
-        {phase === 'open' && (
-          <motion.form
-            key="cv-email"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 'auto', opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-            onSubmit={handleSubmit}
-            style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-          >
-            <input
-              autoFocus
-              type="email"
-              required
-              placeholder="your@email.com"
-              value={email}
-              onChange={event => setEmail(event.target.value)}
-              onKeyDown={event => event.key === 'Escape' && setPhase('idle')}
-              style={{
-                background: 'none',
-                border: 'none',
-                borderBottom: '1px solid var(--border)',
-                color: 'var(--fg)',
-                fontSize: FONT.micro,
-                padding: '0.1rem 0.2rem',
-                outline: 'none',
-                fontFamily: 'var(--font-sans)',
-                width: 158,
-                whiteSpace: 'nowrap',
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--muted)',
-                fontSize: FONT.meta,
-                padding: '0.1rem 0.2rem',
-                display: 'flex',
-                alignItems: 'center',
-                flexShrink: 0,
-                transition: 'color 0.15s ease',
-              }}
-              onMouseEnter={event => { event.currentTarget.style.color = 'var(--fg)' }}
-              onMouseLeave={event => { event.currentTarget.style.color = 'var(--muted)' }}
-            >
-              →
-            </button>
-          </motion.form>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
@@ -967,11 +894,24 @@ function sectionLabel(projects: ClosedSourceProject[]) {
 
 function ClosedSourceCard({ project, statusColor }: { project: ClosedSourceProject; statusColor: Record<string, string> }) {
   const [open, setOpen] = useState(false)
+  const toggleOpen = () => setOpen(value => !value)
 
   return (
     <div style={CARD_STYLE}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
-        <div style={{ minWidth: 0 }}>
+        <div
+          style={{ minWidth: 0, cursor: 'pointer', flex: 1 }}
+          onClick={toggleOpen}
+          role="button"
+          tabIndex={0}
+          aria-expanded={open}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              toggleOpen()
+            }
+          }}
+        >
           {project.url
             ? (
               <a
@@ -979,6 +919,7 @@ function ClosedSourceCard({ project, statusColor }: { project: ClosedSourceProje
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ fontSize: FONT.meta, fontWeight: 600, color: 'var(--fg)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationColor: 'var(--border)' }}
+                onClick={event => event.stopPropagation()}
               >
                 {project.name}
               </a>
@@ -995,7 +936,7 @@ function ClosedSourceCard({ project, statusColor }: { project: ClosedSourceProje
           open={open}
           onClick={event => {
             event.stopPropagation()
-            setOpen(value => !value)
+            toggleOpen()
           }}
         />
       </div>
@@ -1024,6 +965,7 @@ function ClosedSourceCard({ project, statusColor }: { project: ClosedSourceProje
 
 function OpenSourceCard({ project, description }: { project: typeof PROJECTS[number]; description: string }) {
   const [open, setOpen] = useState(false)
+  const toggleOpen = () => setOpen(value => !value)
 
   return (
     <div
@@ -1032,10 +974,28 @@ function OpenSourceCard({ project, description }: { project: typeof PROJECTS[num
       onMouseLeave={event => { event.currentTarget.style.background = 'transparent' }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
-        <div style={{ minWidth: 0 }}>
+        <div
+          style={{ minWidth: 0, cursor: 'pointer', flex: 1 }}
+          onClick={toggleOpen}
+          role="button"
+          tabIndex={0}
+          aria-expanded={open}
+          onKeyDown={event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              toggleOpen()
+            }
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
             <GithubIcon size={13} style={{ color: 'var(--muted)', flexShrink: 0 }} />
-            <a href={project.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: FONT.meta, fontWeight: 600, color: 'var(--fg)', textDecoration: 'none' }}>
+            <a
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: FONT.meta, fontWeight: 600, color: 'var(--fg)', textDecoration: 'none' }}
+              onClick={event => event.stopPropagation()}
+            >
               {project.name}
             </a>
             <span style={{ fontSize: FONT.micro, color: 'var(--muted)' }}>{project.org}</span>
@@ -1048,7 +1008,7 @@ function OpenSourceCard({ project, description }: { project: typeof PROJECTS[num
           onClick={event => {
             event.preventDefault()
             event.stopPropagation()
-            setOpen(value => !value)
+            toggleOpen()
           }}
         />
       </div>

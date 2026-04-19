@@ -1,0 +1,18 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#F2EEE6"/>
+  <rect x="84" y="84" width="1432" height="832" rx="40" fill="#F8F4EC" stroke="#D8D0C6"/>
+  <rect x="242" y="214" width="286" height="178" rx="24" fill="#E9E1D4"/>
+  <rect x="650" y="168" width="332" height="226" rx="24" fill="#EEE7DA"/>
+  <rect x="1106" y="268" width="244" height="164" rx="24" fill="#ECE3D7"/>
+  <path d="M528 304H650" stroke="#3E5DC5" stroke-width="10" stroke-linecap="round"/>
+  <path d="M982 280H1106" stroke="#3E5DC5" stroke-width="10" stroke-linecap="round"/>
+  <path d="M528 304C636 454 756 530 928 556C1042 572 1152 552 1260 510" stroke="#2C8B7E" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="528" cy="304" r="18" fill="#2C8B7E"/>
+  <circle cx="982" cy="280" r="18" fill="#3E5DC5"/>
+  <circle cx="1260" cy="510" r="18" fill="#181B22"/>
+  <text x="214" y="242" fill="#181B22" font-family="Geist, Arial, sans-serif" font-size="62" letter-spacing="8">HARNESS</text>
+  <text x="720" y="232" fill="#3E5DC5" fill-opacity="0.76" font-family="Geist Mono, monospace" font-size="24" letter-spacing="8">AIE 2026</text>
+  <text x="872" y="566" fill="#2C8B7E" fill-opacity="0.82" font-family="Geist Mono, monospace" font-size="26" letter-spacing="8">AGENCY</text>
+  <text x="1128" y="714" fill="#181B22" font-family="Geist, Arial, sans-serif" font-size="48" letter-spacing="7">DESIGN</text>
+  <text x="246" y="742" fill="#6D665D" fill-opacity="0.74" font-family="Geist Mono, monospace" font-size="22" letter-spacing="7">SHIFT</text>
+</svg>
