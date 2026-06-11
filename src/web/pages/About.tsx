@@ -431,11 +431,11 @@ const ORG_LOGO: Record<string, { src: string; height?: number }> = {
 
 const PROJECTS = [
   {
-    name: 'TopGun',
-    org: 'diogobaltazar',
-    url: 'https://github.com/diogobaltazar/TopGun',
-    description: 'Harness Engineering for high-performance teams.',
-    tags: ['python', 'typescript', 'react', 'anthropic', 'langchain', 'fastapi', 'pydantic', 'docker', 'javascript', 'git', 'github', 'mlflow', 'grafana', 'kubernetes', 'aws'],
+    name: 'Replicable',
+    org: 'replicablelabs',
+    url: 'https://github.com/replicablelabs',
+    description: 'Tools and research for orchestrating reliable AI agents.',
+    tags: ['python', 'typescript', 'react', 'fastapi', 'docker', 'anthropic', 'redis'],
   },
   {
     name: 'Move37',
