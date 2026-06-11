@@ -758,10 +758,14 @@ function InfoToggleButton({ open, onClick }: { open: boolean; onClick: (event: M
 }
 
 function EmailCapture() {
-  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0()
+  const { isAuthenticated, user, loginWithRedirect, getAccessTokenSilently } = useAuth0()
   const [phase, setPhase] = useState<CapturePhase>('idle')
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (user?.email && !email) setEmail(user.email)
+  }, [user?.email])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -814,16 +818,17 @@ function EmailCapture() {
           border: 'none',
           padding: '0.2rem',
           cursor: phase === 'done' ? 'default' : 'pointer',
-          color: phase === 'done' ? 'var(--accent)' : 'var(--muted)',
+          color: phase === 'done' ? 'var(--accent)' : 'var(--fg)',
           display: 'flex',
           alignItems: 'center',
           flexShrink: 0,
-          transition: 'color 0.2s ease',
+          opacity: phase === 'done' ? 1 : 0.85,
+          transition: 'color 0.2s ease, opacity 0.2s ease',
         }}
-        onMouseEnter={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--fg)' }}
-        onMouseLeave={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--muted)' }}
+        onMouseEnter={event => { if (phase !== 'done') event.currentTarget.style.opacity = '1' }}
+        onMouseLeave={event => { if (phase !== 'done') event.currentTarget.style.opacity = '0.85' }}
       >
-        {phase === 'done' ? <Check size={15} strokeWidth={1.5} /> : <Download size={15} strokeWidth={1.5} />}
+        {phase === 'done' ? <Check size={17} strokeWidth={1.8} /> : <Download size={17} strokeWidth={1.8} />}
       </button>
 
       <AnimatePresence>
@@ -854,7 +859,7 @@ function EmailCapture() {
                 padding: '0.1rem 0.2rem',
                 outline: 'none',
                 fontFamily: 'var(--font-sans)',
-                width: 160,
+                width: 220,
               }}
             />
             <button
