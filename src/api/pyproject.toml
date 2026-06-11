@@ -1,0 +1,17 @@
+[project]
+name = "diogopm-api"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.34,<1",
+    "redis>=5.2,<6",
+    "python-jose[cryptography]>=3.3,<4",
+    "httpx>=0.28,<1",
+    "pydantic>=2.10,<3",
+    "email-validator>=2.2,<3",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"

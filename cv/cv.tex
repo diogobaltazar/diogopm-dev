@@ -1,0 +1,300 @@
+%==============================================================
+%  Diogo Pereira-Marques — Curriculum Vitae
+%  tectonic cv.tex
+%==============================================================
+\documentclass[10pt,a4paper]{article}
+
+%--- Layout ---------------------------------------------------
+\usepackage[a4paper, top=1.7cm, bottom=1.7cm,
+            left=2.0cm, right=2.0cm]{geometry}
+
+%--- Font: Latin Modern Sans ----------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+
+%--- Core packages --------------------------------------------
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{calc}
+
+%--- Colours --------------------------------------------------
+\definecolor{accent}{HTML}{14213D}   % dark navy  — name, section labels
+\definecolor{brand}{HTML}{3D5AF1}    % indigo     — titles, rules, pills, links
+\definecolor{mid}{HTML}{333344}      % near-black — body text
+\definecolor{light}{HTML}{72728A}    % slate grey — company, dates, location
+\definecolor{tagbg}{HTML}{EDF0FF}    % pale indigo — pill backgrounds
+\definecolor{divider}{HTML}{D8DCEE}  % hairline
+
+%--- Hyperref -------------------------------------------------
+\hypersetup{colorlinks=true, urlcolor=brand, linkcolor=brand}
+
+%--- Section headings -----------------------------------------
+%   ▌ SECTION NAME  (3pt left accent bar, no underrule)
+\titleformat{\section}
+  {\small\bfseries\color{accent}\sffamily}
+  {\color{brand}\rule[-2.5pt]{3pt}{13pt}\hspace{8pt}}{0em}{\MakeUppercase}
+  []
+\titlespacing*{\section}{0pt}{16pt}{6pt}
+
+%--- Components -----------------------------------------------
+% Tech pill
+\newcommand{\tech}[1]{%
+  {\setlength{\fboxsep}{2.2pt}%
+   \colorbox{tagbg}{\textcolor{brand}{\fontsize{6.5}{8}\selectfont\bfseries\sffamily #1}}}%
+  \hspace{1pt}%
+}
+
+% Date badge (right-aligned in entries)
+\newcommand{\datebadge}[1]{%
+  {\setlength{\fboxsep}{2.5pt}%
+   \colorbox{tagbg}{\textcolor{light}{\fontsize{7.5}{9}\selectfont\sffamily #1}}}%
+}
+
+% Experience entry
+%   #1 role  #2 company  #3 dates  #4 location
+\newcommand{\cventry}[4]{%
+  \noindent
+  \begin{tabularx}{\linewidth}{@{}X r@{}}
+    \textcolor{brand}{\textbf{#1}}\enspace\textcolor{light}{\small#2} &
+    \datebadge{#3}
+  \end{tabularx}\\[-2pt]
+  {\small\itshape\color{light} #4}\\[3pt]
+}
+
+% Education entry
+%   #1 degree  #2 institution  #3 dates  #4 description
+\newcommand{\cvedu}[4]{%
+  \noindent
+  \begin{tabularx}{\linewidth}{@{}X r@{}}
+    \textbf{#1}\enspace\textcolor{light}{\small\itshape #2} &
+    \datebadge{#3}
+  \end{tabularx}\\[-2pt]
+  {\small\color{light} #4}\\[5pt]
+}
+
+% List: coloured bullet, tighter spacing
+\setlist[itemize]{
+  leftmargin=1.1em,
+  itemsep=3pt,
+  parsep=0pt,
+  topsep=3pt,
+  label={\color{brand}\small\textbullet}
+}
+
+%==============================================================
+\begin{document}
+\pagestyle{empty}
+\color{mid}
+
+%--- Header ---------------------------------------------------
+% Bold brand rule across the top
+\noindent{\color{brand}\rule{\linewidth}{3.5pt}}
+
+\vspace{8pt}
+
+% Name + title (left) | contacts (right)
+\noindent
+\hbox to \linewidth{%
+  \parbox{0.55\linewidth}{%
+    {\fontsize{21}{25}\selectfont\bfseries\color{accent} Diogo Pereira-Marques}\\[3pt]
+    {\large\color{brand} Principal AI Engineer}%
+  }%
+  \hfill
+  \parbox[t]{0.42\linewidth}{\raggedleft\small\color{light}%
+    London, UK\\[2pt]
+    \href{mailto:pereiramarques.diogo@ssl-mail.com}{pereiramarques.diogo@ssl-mail.com}\\[2pt]
+    \href{https://github.com/diogobaltazar}{github.com/diogobaltazar}\\[2pt]
+    \href{https://linkedin.com/in/diogopereiramarques}{linkedin.com/in/diogopereiramarques}\\[2pt]
+    \href{https://diogopm.dev}{diogopm.dev}\\[2pt]
+    \href{https://replicablelabs.ai}{replicablelabs.ai}%
+  }%
+}
+
+\vspace{7pt}
+{\color{divider}\rule{\linewidth}{0.6pt}}
+\vspace{4pt}
+
+%--- Summary --------------------------------------------------
+\noindent{\small\color{light}%
+I build AI systems at the boundary of software engineering and science --- currently at Roche,
+designing agentic loops for autonomous drug discovery. My principal endeavour is
+\emph{Harness Engineering}: the architecture of guardrails, feedback controls, and observability
+that makes agents reliable rather than merely capable.%
+}
+
+%--------------------------------------------------------------
+\section{Experience}
+%--------------------------------------------------------------
+
+\cventry{Principal AI Engineer}{/ Roche · gRED Computational Sciences}{Jan 2026 – Present}{London, UK}
+Lab-In-The-Loop / AI for Accelerated Drug Discovery.
+\begin{itemize}
+  \item \textbf{EpicShelter} — Knowledge base of Roche system dependencies for refactoring,
+        decommission, and integration prioritisation.\\[3pt]
+        \tech{Python}\tech{Hugging Face}\tech{TypeScript}\tech{React}\tech{Claude API}%
+        \tech{LangChain}\tech{FastAPI}\tech{Docker}\tech{Kubernetes}\tech{GitHub}%
+        \tech{PostgreSQL}\tech{AWS CDK}\tech{MLflow}\tech{Pydantic}\tech{Alembic}%
+        \tech{Langfuse}\tech{Grafana}
+  \item \textbf{AutoLab} — Autonomous agentic loop for oligonucleotide experimental design
+        and lab execution.\\[3pt]
+        \tech{Python}\tech{Claude API}\tech{LangChain}\tech{FastAPI}\tech{React}%
+        \tech{TypeScript}\tech{Docker}\tech{AWS}\tech{PostgreSQL}\tech{MLflow}%
+        \tech{Pydantic}\tech{Alembic}\tech{Langfuse}\tech{Grafana}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Lead Software Engineer}{/ Novo Nordisk · R\&ED Target Discovery}{Oct 2023 – Dec 2025}{Oxford \& London, UK}
+Led GenAI engineering for drug target discovery, fusing ML with computational biology.
+\begin{itemize}
+  \item \textbf{Gennyx} — GenAI scientific committee assistant for decision support and
+        target evaluation workflows.\\[3pt]
+        \tech{Python}\tech{TypeScript}\tech{React}\tech{Codex}\tech{LangChain}%
+        \tech{FastAPI}\tech{Docker}\tech{ACI}\tech{Azure}\tech{Terraform}%
+        \tech{PostgreSQL}\tech{MLflow}\tech{Alembic}\tech{Langfuse}\tech{Grafana}%
+        \tech{Okta}\tech{EntraID}
+  \item \textbf{Bio Reasoning FM Training} — Scalable infrastructure for Foundation Model
+        pre-training on OMICS biological sequence data.\\[3pt]
+        \tech{Python}\tech{MLflow}\tech{Docker}\tech{Kubernetes}\tech{AWS}\tech{GraphQL}\tech{AWS CDK}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Senior Platform Engineer}{/ Novo Nordisk}{Jan 2023 – Oct 2023}{Copenhagen, Denmark}
+Cloud and data platform engineering for enterprise-scale data governance.
+\begin{itemize}
+  \item \textbf{DataHub} — Event-driven data mesh platform forked from AWS DataAll,
+        adapted for enterprise regulatory requirements.\\[3pt]
+        \tech{Python}\tech{TypeScript}\tech{React}\tech{AWS CDK}\tech{Docker}%
+        \tech{PostgreSQL}\tech{Elasticsearch}\tech{AWS}\tech{GitHub}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Senior Software Engineer}{/ Novo Nordisk · CMC Lab Automation}{Sep 2020 – Jan 2023}{Copenhagen, Denmark}
+Data engineering and ML for pharmaceutical manufacturing and laboratory automation.
+\begin{itemize}
+  \item \textbf{CMC Campaign Cockpit} — Real-time toxicity and quality attribute monitoring
+        with anomaly alerting for manufacturing batches.\\[3pt]
+        \tech{TypeScript}\tech{Python}\tech{React}\tech{FastAPI}\tech{PostgreSQL}%
+        \tech{Grafana}\tech{Docker}\tech{AWS}
+  \item \textbf{HPLC Performance} — Predictive models for chromatography column degradation
+        and maintenance scheduling.\\[3pt]
+        \tech{Python}\tech{FastAPI}\tech{Docker}\tech{AWS}\tech{AWS CDK}\tech{GitHub}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Software Engineer}{/ A.P.\ M{\o}ller -- M{\ae}rsk}{Oct 2019 – Sep 2020}{Copenhagen, Denmark}
+Data engineering for global shipping and intermodal logistics optimisation.
+\begin{itemize}
+  \item \textbf{InRoute} — Inland container routing and capacity forecasting across
+        intermodal networks.\\[3pt]
+        \tech{Python}\tech{PySpark}\tech{Databricks}\tech{Docker}
+  \item \textbf{Emma} — REST microservices for booking insurance policy management
+        and claims integration.\\[3pt]
+        \tech{Python}\tech{FastAPI}\tech{PostgreSQL}\tech{Docker}\tech{Alembic}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Software Engineer}{/ Airbus · Skywise Core (Contractor)}{Sep 2018 – Sep 2019}{Toulouse, France}
+Aerospace data engineering on the Palantir Foundry platform.
+\begin{itemize}
+  \item \textbf{Fleet Reliability} — Benchmarking global fleet performance against
+        Airbus Engineering standards.\\[3pt]
+        \tech{Python}\tech{PySpark}\tech{JavaScript}\tech{Palantir Foundry}%
+        \tech{PostgreSQL}\tech{Elasticsearch}
+  \item \textbf{A350 Quality} — Migration of the A350 quality platform to Palantir
+        Foundry, covering Final Assembly Line quality assurance.\\[3pt]
+        \tech{Python}\tech{PySpark}\tech{Palantir Foundry}\tech{PostgreSQL}
+\end{itemize}
+
+\vspace{5pt}
+
+\cventry{Software Engineer}{/ Accenture}{Sep 2017 – Aug 2018}{Lisbon, Portugal}
+Consulting across telco and healthcare clients.
+\begin{itemize}
+  \item \textbf{Client360} — Unified 360\textdegree\ customer analytics integrating CRM,
+        billing, and usage data on Cloudera Hadoop.\\[3pt]
+        \tech{Python}\tech{PySpark}\tech{Java}\tech{Cloudera Hadoop}\tech{PostgreSQL}
+  \item \textbf{ClinFlow} — Clinical workflow automation for patient-pathway orchestration
+        and bed management.\\[3pt]
+        \tech{C\# ASP.NET}\tech{JavaScript}\tech{MySQL}\tech{Docker}
+\end{itemize}
+
+%--------------------------------------------------------------
+\section{Education}
+%--------------------------------------------------------------
+
+\cvedu{MSc Computer Science}{University of Copenhagen}{2021}%
+{Signal Processing · Fourier Analysis · Wavelets · Deep Learning}
+
+\cvedu{BSc Computer Software Engineering}{University of Lisbon}{2015 – 2017}%
+{Computer Architecture · Distributed Systems · Algorithms · Machine Learning}
+
+\cvedu{BSc Mathematics}{University of Lisbon}{2014 – 2015}%
+{Calculus · Algebra · Discrete Mathematics · Logic}
+
+\cvedu{BPhil Philosophy}{University of Lisbon}{2011 – 2014}%
+{Logic · Philosophy of Mathematics · Philosophy of Language
+ · \textit{Thesis: ``The Logicist Programme of Arithmetic: Frege and Russell''}}
+
+%--------------------------------------------------------------
+\section{Open Source}
+%--------------------------------------------------------------
+
+\noindent
+\textbf{TopGun}\enspace
+{\small\color{light}\href{https://github.com/diogobaltazar/TopGun}{github.com/diogobaltazar/TopGun}}
+\hfill
+\tech{Python}\tech{TypeScript}\tech{Claude API}\tech{LangChain}\tech{FastAPI}\tech{Docker}\\
+{\small Harness Engineering for High Performance Teams --- guardrails, feedback controls,
+and observability for reliable AI agents.}
+
+\vspace{5pt}
+
+\noindent
+\textbf{Move37}\enspace
+{\small\color{light}\href{https://github.com/Genentech/Move37}{github.com/Genentech/Move37}}
+\hfill
+\tech{Python}\tech{NumPy}\tech{FastAPI}\tech{Docker}\tech{AWS}\\
+{\small AI-powered drug-target interaction and molecular movement analysis (Genentech).}
+
+%--------------------------------------------------------------
+\section{Skills}
+%--------------------------------------------------------------
+
+\small
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{brand}}p{2.4cm} X@{}}
+  AI / Agents   &
+    \tech{Claude API}\tech{LangChain}\tech{Hugging Face}\tech{OpenAI}\tech{Ollama}%
+    \tech{Mistral AI}\tech{MLflow}\tech{Gradio}\tech{Streamlit}\\[4pt]
+  Languages     &
+    \tech{Python}\tech{TypeScript}\tech{JavaScript}\tech{Rust}\tech{Scala}%
+    \tech{Java}\tech{C\#}\tech{SQL}\\[4pt]
+  Backend       &
+    \tech{FastAPI}\tech{Flask}\tech{Django}\tech{Node.js}\tech{REST}\tech{Microservices}\\[4pt]
+  Frontend      &
+    \tech{React}\tech{Astro}\tech{Svelte}\tech{Vue}\tech{Tailwind CSS}\tech{Vite}\\[4pt]
+  Data          &
+    \tech{PySpark}\tech{Pandas}\tech{NumPy}\tech{SciPy}\tech{Polars}%
+    \tech{Databricks}\tech{dbt}\tech{Airflow}\tech{Kafka}\\[4pt]
+  Databases     &
+    \tech{PostgreSQL}\tech{MySQL}\tech{MongoDB}\tech{Redis}%
+    \tech{Elasticsearch}\tech{DuckDB}\tech{Snowflake}\\[4pt]
+  Cloud / Infra &
+    \tech{AWS}\tech{Google Cloud}\tech{Docker}\tech{Kubernetes}%
+    \tech{Terraform}\tech{AWS CDK}\\[4pt]
+  Observability &
+    \tech{Prometheus}\tech{Grafana}\tech{Datadog}\tech{Sentry}\tech{ELK Stack}\\[4pt]
+\end{tabularx}
+
+\end{document}

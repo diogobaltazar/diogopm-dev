@@ -1,0 +1,25 @@
+services:
+  api:
+    container_name: diogopm-api
+    build:
+      context: .
+      dockerfile: src/api/Dockerfile
+    environment:
+      - AUTH0_DOMAIN=${AUTH0_DOMAIN}
+      - AUTH0_AUDIENCE=${AUTH0_AUDIENCE}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@store:6379
+      - ALLOWED_ORIGINS=https://diogopm.dev,https://pereiramarques.dev
+    ports:
+      - "8080:8000"
+    depends_on: [store]
+    restart: unless-stopped
+
+  store:
+    container_name: diogopm-store
+    image: redis:7-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes: [store-data:/data]
+    restart: unless-stopped
+
+volumes:
+  store-data:

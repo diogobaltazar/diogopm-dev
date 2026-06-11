@@ -1,0 +1,75 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/api/**"
+      - "cv/**"
+      - "compose.yml"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync code to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            --exclude='.env' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            . "${DEPLOY_USER}@${DEPLOY_HOST}:/opt/diogopm-dev/"
+
+      - name: Write env and deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=no \
+              "${DEPLOY_USER}@${DEPLOY_HOST}" bash <<REMOTE
+          set -euo pipefail
+
+          cd /opt/diogopm-dev
+
+          cat > .env <<'ENV'
+          AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          ENV
+
+          docker compose build --no-cache api
+          docker compose down --remove-orphans || true
+          docker compose up -d
+
+          echo "Waiting for services..."
+          sleep 8
+
+          if curl -sf http://localhost:8080/health > /dev/null; then
+            echo "API healthy"
+          else
+            echo "API not responding — logs:"
+            docker logs diogopm-api --tail 50
+            exit 1
+          fi
+          REMOTE
