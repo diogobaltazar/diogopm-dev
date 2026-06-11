@@ -13,5 +13,6 @@
     "jsx": "react-jsx",
     "strict": true
   },
-  "include": ["src"]
+  "include": ["src/web"],
+  "exclude": ["src/web/replicable-portfolio/Writings.tsx", "src/web/replicable-portfolio/WritingPost.tsx"]
 }

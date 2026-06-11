@@ -101,6 +101,7 @@ export default function Blog() {
       'usage-limit-reached': `/placeholders/thought/usage-limit-${themed}.svg`,
       'AIE-2026': `/placeholders/thought/aie-2026-${themed}.svg`,
       'Building-a-Team': `/placeholders/thought/team-building-${themed}.svg`,
+      'Engineering-Over-Hype': `/placeholders/thought/technology-review-${themed}.svg`,
     }
 
     return imageMap[slug] ?? `/placeholders/thought/technology-review-${themed}.svg`

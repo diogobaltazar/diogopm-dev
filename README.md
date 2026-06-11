@@ -8,15 +8,17 @@ Personal website — About page and blog.
 
 ## Stack
 
-| Concern    | Choice                        |
-|------------|-------------------------------|
-| Bundler    | Vite 5                        |
-| Framework  | React 18 + TypeScript         |
-| Styling    | Tailwind CSS v4               |
-| Animation  | Framer Motion                 |
-| Routing    | React Router v6               |
-| Blog       | MDX files in `src/posts/`     |
-| Hosting    | Cloudflare Pages (free tier)  |
+| Concern    | Choice                          |
+|------------|---------------------------------|
+| Bundler    | Vite 5                          |
+| Framework  | React 18 + TypeScript           |
+| Styling    | Tailwind CSS v4                 |
+| Animation  | Framer Motion                   |
+| Routing    | React Router v6                 |
+| Blog       | MDX files in `src/web/posts/`   |
+| Auth       | Auth0 (`@auth0/auth0-react`)    |
+| API        | FastAPI on Hetzner — see [`docs/api-deployment.md`](docs/api-deployment.md) |
+| Hosting    | Cloudflare Pages (site) + Hetzner (API) |
 
 ---
 
@@ -33,7 +35,7 @@ npm run preview   # preview the production build locally
 
 ## Writing a blog post
 
-Create a `.mdx` file in `src/posts/`:
+Create a `.mdx` file in `src/web/posts/`:
 
 ```mdx
 ---
