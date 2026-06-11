@@ -19,6 +19,7 @@
   background: var(--portfolio-bg);
   color: var(--portfolio-text);
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .portfolio-content {
@@ -30,8 +31,6 @@
 }
 
 .portfolio-main {
-  position: relative;
-  z-index: 2;
   flex: 1;
   width: min(1180px, calc(100% - 3rem));
   margin: 0 auto;
