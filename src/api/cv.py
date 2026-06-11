@@ -1,4 +1,4 @@
-"""POST /cv/request — validate JWT, log to Redis, stream CV PDF."""
+"""CV endpoints — version metadata and gated PDF download."""
 
 import os
 from datetime import datetime, timezone
@@ -12,6 +12,15 @@ from auth import require_user
 from store import append_cv_request
 
 CV_PDF_PATH = Path(os.environ.get("CV_PDF_PATH", "/cv/cv.pdf"))
+CV_VERSION_FILE = Path(os.environ.get("CV_VERSION_FILE", "/etc/cv-version"))
+
+
+def _cv_version() -> str:
+    try:
+        return CV_VERSION_FILE.read_text().strip() or "0.0.0"
+    except FileNotFoundError:
+        return "0.0.0"
+
 
 router = APIRouter(prefix="/cv")
 
@@ -26,6 +35,11 @@ def _pdf_chunks(path: Path, chunk_size: int = 64 * 1024):
             yield chunk
 
 
+@router.get("/version")
+async def cv_version() -> dict[str, str]:
+    return {"version": _cv_version()}
+
+
 @router.post("/request")
 async def request_cv(
     body: CvRequest,
@@ -34,13 +48,18 @@ async def request_cv(
     if not CV_PDF_PATH.is_file():
         raise HTTPException(status_code=500, detail="CV file not found")
 
+    version = _cv_version()
     ts = datetime.now(timezone.utc).isoformat()
-    await append_cv_request(sub=user.get("sub", ""), email=body.email, ts=ts)
+    await append_cv_request(
+        sub=user.get("sub", ""), email=body.email, ts=ts, version=version,
+    )
 
     return StreamingResponse(
         _pdf_chunks(CV_PDF_PATH),
         media_type="application/pdf",
         headers={
-            "Content-Disposition": 'attachment; filename="diogo-pereira-marques-cv.pdf"',
+            "Content-Disposition": f'attachment; filename="diogo-pereira-marques-cv-v{version}.pdf"',
+            "X-CV-Version": version,
+            "Access-Control-Expose-Headers": "X-CV-Version, Content-Disposition",
         },
     )

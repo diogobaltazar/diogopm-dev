@@ -17,8 +17,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /cv
-COPY cv/cv.tex .
-RUN tectonic cv.tex && rm cv.tex
+COPY cv/cv.tex cv/VERSION ./
+RUN tectonic cv.tex && rm cv.tex && CV_VERSION="$(cat VERSION)" && rm VERSION \
+    && echo "$CV_VERSION" > /etc/cv-version
 
 WORKDIR /app
 COPY src/api/pyproject.toml .
@@ -27,6 +28,7 @@ RUN pip install --no-cache-dir .
 COPY src/api/main.py src/api/auth.py src/api/cv.py src/api/store.py ./
 
 ENV CV_PDF_PATH=/cv/cv.pdf
+ENV CV_VERSION_FILE=/etc/cv-version
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \

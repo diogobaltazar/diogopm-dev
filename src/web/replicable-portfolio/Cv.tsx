@@ -1,6 +1,6 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { requestCvPdf } from "../api";
+import { fetchCvVersion, requestCvPdf } from "../api";
 import { CV_HIGHLIGHTS, EDUCATION, EXPERIENCE, OPEN_SOURCE, PROFILE, type CvEntry } from "./portfolio";
 
 function CvSection({
@@ -47,8 +47,17 @@ export default function Cv() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [cvVersion, setCvVersion] = useState<string | null>(null);
 
   const groupedHighlights = useMemo(() => CV_HIGHLIGHTS, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchCvVersion()
+      .then(v => { if (!cancelled) setCvVersion(v); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -93,16 +102,15 @@ export default function Cv() {
         <div className="portfolio-gate">
           <div className="portfolio-panel">
             <p className="portfolio-panel-label">Protected Curriculum Vitae</p>
-            <h2 className="portfolio-panel-title">Sign in to access the full CV.</h2>
             <p className="portfolio-panel-copy">
-              Writings remain public. The CV is intentionally behind a login and the PDF request flow is available once signed in.
+              Sign-in to access the full CV, including detailed experience, education, a snapshot of key highlights and PDF download.
             </p>
             <button
               type="button"
               className="portfolio-button"
               onClick={() => loginWithRedirect({ appState: { returnTo: "/cv" } })}
             >
-              Continue to CV
+              Sign in
             </button>
           </div>
         </div>
@@ -119,7 +127,9 @@ export default function Cv() {
             </section>
 
             <section className="portfolio-panel">
-              <p className="portfolio-panel-label">Request PDF</p>
+              <p className="portfolio-panel-label">
+                Request PDF{cvVersion ? ` · v${cvVersion}` : ""}
+              </p>
               <p className="portfolio-panel-copy">
                 Enter a valid email address to record the request and unlock the latest PDF version of the CV.
               </p>

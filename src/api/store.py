@@ -16,6 +16,9 @@ def _get_client() -> aioredis.Redis:
     return _client
 
 
-async def append_cv_request(sub: str, email: str, ts: str) -> None:
+async def append_cv_request(sub: str, email: str, ts: str, version: str) -> None:
     client = _get_client()
-    await client.xadd("cv:requests", {"sub": sub, "email": email, "ts": ts})
+    await client.xadd(
+        "cv:requests",
+        {"sub": sub, "email": email, "ts": ts, "version": version},
+    )
