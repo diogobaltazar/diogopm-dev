@@ -27,9 +27,11 @@ import {
   SiMistralai, SiPydantic, SiSentry, SiDatadog, SiJira, SiNotion, SiSlack,
   SiGooglecloud, SiPytest, SiGraphql, SiOkta,
 } from 'react-icons/si'
+import { useAuth0 } from '@auth0/auth0-react'
 import GitGraph from '../components/GitGraph'
 import { useGlobeCtx, type CityClickAnchor } from '../context/GlobeContext'
 import { useTheme } from '../context/ThemeContext'
+import { requestCvPdf } from '../api'
 
 type IconComponent = ComponentType<{ size?: number; style?: CSSProperties }>
 
@@ -756,26 +758,129 @@ function InfoToggleButton({ open, onClick }: { open: boolean; onClick: (event: M
 }
 
 function EmailCapture() {
+  const { isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0()
+  const [phase, setPhase] = useState<CapturePhase>('idle')
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+    if (!email) return
+    setError(null)
+    try {
+      const token = await getAccessTokenSilently()
+      const { download_url } = await requestCvPdf(token, email)
+      const link = document.createElement('a')
+      link.href = download_url
+      link.download = 'diogo-pereira-marques-cv.pdf'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      setTimeout(() => URL.revokeObjectURL(download_url), 60_000)
+      setPhase('done')
+      setTimeout(() => {
+        setPhase('idle')
+        setEmail('')
+      }, 2200)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Download failed')
+      setPhase('idle')
+    }
+  }
+
+  function handleClick() {
+    if (!isAuthenticated) {
+      loginWithRedirect({ appState: { returnTo: '/cv' } })
+      return
+    }
+    if (phase === 'idle') setPhase('open')
+  }
+
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <button
-        disabled
-        aria-label="Download CV unavailable"
-        title="Download CV unavailable"
+        type="button"
+        onClick={handleClick}
+        aria-label={
+          !isAuthenticated
+            ? 'Sign in to download CV'
+            : phase === 'done'
+              ? 'Download sent'
+              : 'Download CV'
+        }
+        title={!isAuthenticated ? 'Sign in to download CV' : 'Download CV'}
         style={{
           background: 'none',
           border: 'none',
           padding: '0.2rem',
-          cursor: 'not-allowed',
-          color: 'var(--muted)',
+          cursor: phase === 'done' ? 'default' : 'pointer',
+          color: phase === 'done' ? 'var(--accent)' : 'var(--muted)',
           display: 'flex',
           alignItems: 'center',
-          opacity: 0.38,
           flexShrink: 0,
+          transition: 'color 0.2s ease',
         }}
+        onMouseEnter={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--fg)' }}
+        onMouseLeave={event => { if (phase === 'idle') event.currentTarget.style.color = 'var(--muted)' }}
       >
-        <Download size={15} strokeWidth={1.5} />
+        {phase === 'done' ? <Check size={15} strokeWidth={1.5} /> : <Download size={15} strokeWidth={1.5} />}
       </button>
+
+      <AnimatePresence>
+        {phase === 'open' && (
+          <motion.form
+            key="cv-email"
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 'auto', opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            onSubmit={handleSubmit}
+            style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '0.2rem', marginLeft: '0.2rem' }}
+          >
+            <input
+              autoFocus
+              type="email"
+              required
+              placeholder="your@email.com"
+              value={email}
+              onChange={event => { setEmail(event.target.value); setError(null) }}
+              onKeyDown={event => event.key === 'Escape' && setPhase('idle')}
+              style={{
+                background: 'none',
+                border: 'none',
+                borderBottom: '1px solid var(--border)',
+                color: 'var(--fg)',
+                fontSize: FONT.micro,
+                padding: '0.1rem 0.2rem',
+                outline: 'none',
+                fontFamily: 'var(--font-sans)',
+                width: 160,
+              }}
+            />
+            <button
+              type="submit"
+              aria-label="Submit"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--muted)',
+                fontSize: FONT.meta,
+                padding: '0.1rem 0.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                flexShrink: 0,
+              }}
+            >
+              →
+            </button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+
+      {error && (
+        <span style={{ marginLeft: '0.6rem', fontSize: FONT.micro, color: 'var(--muted)' }}>{error}</span>
+      )}
     </div>
   )
 }
